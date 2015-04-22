@@ -1,5 +1,5 @@
 # glow-aurora
-Stan Solomon's GLOW Auroral model -- now in Python!
+[Stan Solomon's GLOW Auroral model](http://download.hao.ucar.edu/pub/stans/glow/) -- now in Python!
 
 ![Aurora VER demo](http://blogs.bu.edu/mhirsch/files/2015/04/plotglow.png)
 
@@ -14,6 +14,14 @@ python demo_aurora.py
 ```
 will show modeled VER vs. altitude for the input parameter set.
 
+
+Papers:
+------
+(Thanks to Stephen Kaeppler to pointing these out)
+
+http://download.hao.ucar.edu/pub/stans/papers/BaileyJGR2002.pdf 
+
+http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user):
 ----------------------------------------------
