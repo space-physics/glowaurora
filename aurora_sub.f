@@ -213,19 +213,19 @@ C Output section:
 C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
-      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
-  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
-     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
-      WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
-  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
-     >        ' Ec=',F6.3,' Ie=',I1)
+C      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
+C  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
+C     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
+C      WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
+C  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
+C     >        ' Ec=',F6.3,' Ie=',I1)
 C
 C Output photoionization, electron impact ionization, 
 C electron density, and ion densities:
 C
-      write (6,690)
-  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
-     >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
+C     write (6,690)
+C  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
+C     >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
 C    >        '     O        O2         N2        NO')
       do j=1,jmax
         do i=1,nmaj
@@ -236,7 +236,7 @@ C    >        '     O        O2         N2        NO')
         End Do
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
-        write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
+C       write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
 C    >                zo(j),zo2(j),zn2(j),zno(j)
   730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
