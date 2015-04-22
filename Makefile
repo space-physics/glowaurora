@@ -8,7 +8,8 @@ ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
- FFLAGS = -O3 -I $(INC_NETCDF)
+FFLAGS = -O3 -I $(INCLUDE) -std=legacy
+#FFLAGS = -O3 -I $(INC_NETCDF)
 #FFLAGS = -g $(DBGFLAGS) -I $(INC_NETCDF)
 
 DBGFLAGS = -debug full -traceback
@@ -38,6 +39,7 @@ $(EXEC): $(OBJS)
 #INC_NETCDF = $(HOME)/intel/netcdf-4.1.1/include
 #LIBS       = -L /usr/lib64 -lcurl -#-L$(LIB_NETCDF) -lnetcdf
 LIBS = -lcurl -lnetcdf
+INCLUDE = /usr/include
 
 clean:
 	rm -f *.o *.mod $(EXEC)

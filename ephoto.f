@@ -114,7 +114,7 @@ C
       IF (IFIRST .EQ. 1) THEN
       IFIRST = 0
 C
-      open(unit=1,file='ephoto_xn2.dat',status='old',readonly)
+      open(unit=1,file='ephoto_xn2.dat',status='old')
       read(1,*)
       read(1,*)
       read(1,*)
@@ -125,7 +125,7 @@ C
  3       continue
       close(1)
 C
-      open(unit=1,file='ephoto_xo2.dat',status='old',readonly)
+      open(unit=1,file='ephoto_xo2.dat',status='old')
       read(1,*)
       read(1,*)
       read(1,*)
@@ -135,7 +135,7 @@ C
  4    continue
       close(1)
 C 
-      open(unit=1,file='ephoto_xo.dat',status='old',readonly)
+      open(unit=1,file='ephoto_xo.dat',status='old')
       read(1,*)
       read(1,*)
       read(1,*)
