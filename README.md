@@ -13,14 +13,11 @@ wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://
 
 ### compile the Fortran code by itself
 ```
-sudo apt-get install libnetcdf-dev libcurl3
-```
-```
-make -s
+make
 ```
 
 ### Fortran self-test
 ```
-
+./auroraexample < aurexample.in > aurtest.out
 ```
 
