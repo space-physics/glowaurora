@@ -20,11 +20,13 @@ C
 C
       INCLUDE 'glow.h'
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INTENT(OUT) ROOT
+      INTENT(IN) A,NJ
       DIMENSION A(JMAX,5), ROOT(JMAX)
       DIMENSION W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
       DATA E/1.D-38/, Z/0.D0/
 C
-      DO 200 I=1,NJ
+      DO I=1,NJ
       W1(I) = -(A(I,5)*A(I,1)-4.D0*A(I,4)*A(I,2)+3.D0*A(I,3)**2) / 12.D0
       W2(I) = ( A(I,5)*(A(I,3)*A(I,1)-A(I,2)**2)
      >          -A(I,4)*(A(I,4)*A(I,1)-A(I,2)*A(I,3))
@@ -44,7 +46,7 @@ C
       W5(I) = W3(I)**2 - A(I,5)*(A(I,3)+2.D0*W4(I)-W2(I))
       IF (W5(I) .LE. E) W5(I) = E
       ROOT(I) = (W3(I)+DSQRT(W5(I))) / A(I,5)
-  200 CONTINUE
+      End Do
 C
-      RETURN
-      END
+
+      END Subroutine VQUART
