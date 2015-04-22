@@ -32,6 +32,7 @@ def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 
 def plotaurora(ver,photIon,dtime,glat,glon):
     fg,axs = subplots(1,3,sharey=True)
+    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='large')
 
     ax = axs[0]
     ax.plot(ver.values,ver.index)
@@ -39,14 +40,14 @@ def plotaurora(ver,photIon,dtime,glat,glon):
     ax.set_ylabel('altitude [km]')
     ax.grid(True)
     ax.legend(ver.columns)
-    ax.set_title('{}  ({},{})'.format(dtime,glat,glon))
+    ax.set_title('Volume emission rate')
 
     ax = axs[1]
     ax.plot(photIon[['photoIoniz','eImpactIoniz']],photIon.index)
     ax.set_xlabel('ionization')
     ax.grid(True)
     ax.legend(photIon.columns[:2])
-    ax.set_title('{}  ({},{})'.format(dtime,glat,glon))
+    ax.set_title('Photo and e$^-$ impact ionization')
 
     ax = axs[2]
     ax.semilogx(photIon[['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
