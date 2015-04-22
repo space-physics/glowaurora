@@ -1,10 +1,13 @@
                  Preliminary Documentation for the GLOW Model
     
                                Version 0.97
+                               Version 0.973
 
                ***  see README file for release notes  ***
+       ***  note that v. 0.973 is an minor incremental release  ***
   
                               Stan Solomon, 4/05
+                              Stan Solomon, 3/15
   
    This directory contains a family of subroutines which calculate ionization
 and excitation rates, energetic electron production and transport, excited
@@ -31,7 +34,7 @@ to incorrect results.
    Programs DAYEXAMPLE and AUREXAMPLE are provided to give some guidance in
 how to use the subroutine package for a daytime and auroral run, respectively.
 Program HEXEXAMPLE shows how to do a high-energy electron flux calculation.
-These programs use MSIS-90 and IRI-90 to specify the neutral atmosphere and
+These programs use MSIS-2K and IRI-90 to specify the neutral atmosphere and
 initial electron density profile.  The programs should be modified by the
 user to suit particular purposes.  It is not necessary to use MSIS and IRI;
 any model or measurement that specifies neutral densities, temperatures, and
@@ -62,17 +65,18 @@ same in all input files.
    These routines are written in standard Fortran-77, and should be
 compatible with most compilers, including Fortran-90 compilers.  However,
 their performace has only been tested using Portland Group Fortran-77 (pgf77)
-running under Linux (RH9) and using Sun f77 under Sun OS 5.8.  I generally
-ompile using third-level optimization (f77 -O3) (which defaults to -O2 under
-pgf77).  I would be interested in hearing of experiences with other compilers,
-but make no claims or promises.
+and Intel Fortran-90 (ifort) compilers running under Linux Centos 6.3.  I
+generally compile using third-level optimization (-O3).  I would be interested
+in hearing of experiences with other compilers, but make no claims or promises.
   
 Subroutines called by the example programs include:
-  GTD6    Mass Spectrometer Incoherent Scatter (MSIS-90) model (Hedin, 1987)
-  TSELEC  Set-up entry for MSIS-90
+  GTD7    NRL Mass Spectrometer Incoherent Scatter (MSIS-2K) model 
+  TSELEC  Set-up entry for MSIS-2K
   IRI90   International Reference Ionosphere-1990 (IRI-90) model (Belitza, 1990)
   GEOMAG  translates geographic to geomagnetic coordinates and vice versa
   MAXT    generates a Maxwellian electron spectrum
+  SNOEMINT interpolates nitric oxide profile from SNOEM
+  SNOEM    special version of NOEM (Marsh et al., 2004) 
   
 Subroutines called by GLOW are:
   EGRID   sets up electron energy grid
@@ -159,7 +163,7 @@ Calculated by subroutine:
  TEZ     total energetic electron energy deposition, eV cm-3 s-1
  ECALC   electron density, calculated below 200 km, cm-3
  ZXDEN   array of excited and and/or ionized state densities:
-           O+(2P), O+(2D), O+(4S), N2+, N+, O2+, NO+, N2(A), N(2P),
+           O+(2P), O+(2D), O+(4S), N+, N2+, O2+, NO+, N2(A), N(2P),
            N(2D), O(1S), O(1D), 8 spares, at each altitude; cm-3
  ZETA    array of volume emission rates:
            3371A, 4278A, 5200A, 5577A, 6300A, 7320A, 10400A, 3466A,
@@ -182,18 +186,16 @@ Array dimensions:
   
    A few notes:
   
-   Versions of MSIS-90 and IRI-90 are provided for the convenience of users
+   Versions of MSIS-2K and IRI-90 are provided for the convenience of users
 who do not have their own copies.  Attribution to the appropriate sources
-(Hedin, 1991; Belitza, 1990) should be made.  These are not the standard
-versions of the codes as I have modified them to make them work on various
+(Hedin, 1991; Picone, 2002; Belitza, 1990) should be made.  This is not the
+standard version of IRI, as I have modified it to make it work on various
 systems, particularly volatile memory systems.  However, I cannot guarantee
 that the results obtained from them are correct.  Caution: IRI occasionally
-writes mysterious messages on unit 12.  The MSIS-90 subroutine (GTD6) may
-be obtained by from http://download.hao.ucar.edu/pub/stans/msis or
-from /tethys/i/stans/mod/msis for those with access to HAO/NCAR computers.
+writes mysterious messages on unit 12.  The MSIS-2K subroutine (GTD7) may
+be obtained by from http://download.hao.ucar.edu/pub/stans/msis.
 The IRI90 subroutine in file iri90.f and its data files ccir*.asc and ursi*.asc
-may be obtained by from http://download.hao.ucar.edu/pub/stans/iri or
-from /tethys/i/stans/mod/iri for those with access to HAO/NCAR computers.
+may be obtained by from http://download.hao.ucar.edu/pub/stans/iri.
 Note that the user must change the directory specified in the call to IRI90
 to correspond to the location of the ccir*.asc and ursi*.asc data files.
   
@@ -253,16 +255,19 @@ the wavelength ranges must correspond to those in ephoto_x*.dat.
 specified by the PHITOP array, which may contain a flux of auroral electrons,
 conjugate photoelectrons, or both.  In the program AUREXAMPLE, an initial
 electron density profile is obtained from IRI for the first call to GLOW,
-then it is replaced by the calculated profile below 200 km, and GLOW called
-again.  This isn't really necessary but gives an improved estimate of the
-low-energy electron flux (which depends on the ambient electron density),
-since IRI isn't valid in the auroral regions.  For high-energy calculations
-this second call may safely be skipped.
+then it is replaced by the calculated profile below 200 km (and a constant
+value above 200 km), and GLOW is called again.  This isn't really necessary
+but it gives an improved estimate of the low-energy electron flux (which
+depends on the ambient electron density), since IRI isn't valid in the auroral
+regions.  For high-energy calculations this second call may safely be skipped.
+In any case, it is safest to put a floor on the electron density profile,
+e.g., ZE(J) > 100.
 
-   The example programs contain a very crude estimation of NO density, based
-on a low-to-moderate non-auroral profile.  This can be important for the
-NO+/O2+ ratio in the lower ionosphere and hence has a small effect on E-region
-electron density, but does not otherwise significantly affect the model.
+   The example programs contain an estimate of NO density from the NOEM
+empirical model (Marsh et al., 2004), which is based on measurements by the
+SNOE satellite.  This can be important for the NO+/O2+ ratio in the lower
+ionosphere and hence has a small effect on E-region electron density, but does
+not otherwise significantly affect the model.
   
    Electron impact cross sections employed by the model can be obtained from
 common block CXSECT if necessary; just include a copy of this common block

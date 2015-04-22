@@ -4,9 +4,9 @@ C This software is part of the GLOW model.  Use is governed by the Open Source
 C Academic Research License Agreement contained in the file glowlicense.txt.
 C For more information see the file glow.txt.
 C
-C Version 0.97
+C Version 0.973
 C
-C Stan Solomon, 1988, 1989, 1990, 1991, 1992, 1994, 2000, 2002, 2005
+C Stan Solomon, 1988, 1989, 1990, 1991, 1992, 1994, 2000, 2002, 2005, 2015
 C
 C Subroutine GLOW is the master routine of the /glow package.  It
 C receives input parameters from the calling program in common block
@@ -119,22 +119,38 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-
-      use cglow,only: JMAX,LMAX,NW,NST,NMAJ,NBINS,ISCALE,NEI,IERR
-      use cglow,only: glat,glong,idate,ut,f107,f107a
-      use cglow,only: ENER,DEL,DIP,SZA,HLYBR,FEXVIR,HLYA,HEIEW,XUVFAC,
-     |  WAVE1,WAVE2,SFLUX,ZMAJ,ZO,ZO2,ZN2,ZZ,ZTN,ZCOL,PHOTOI,PHOTOD,
-     |  PHONO,PESPEC,PIA,SESPEC,PHITOP,UFLX,DFLX,SION,AGLW,EHEAT,TEZ,
-     |  EFRAC,ZNO
-C     use ephoto_mod,only: ephoto
-
-      implicit none
 C
-      real :: ZVCD(NMAJ,JMAX),xf,yf,zf,ff,dec,sdip,teflux
+      INCLUDE 'glow.h'
+      PARAMETER (NMAJ=3)
+      PARAMETER (NEX=20)
+      PARAMETER (NW=20)
+      PARAMETER (NC=10)
+      PARAMETER (NST=6)
+      PARAMETER (NEI=10)
+      PARAMETER (NF=4)
 C
-      real,parameter :: PI=3.1415926536
-      integer,save :: ifirst=1
-      integer :: j,i,ist,n,iei
+      COMMON /CGLOW/
+     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
+     >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
+     >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
+     >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
+     >    SZA, DIP, EFRAC, IERR,
+     >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
+     >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
+     >    ENER(NBINS), DEL(NBINS),
+     >    PESPEC(NBINS,JMAX), SESPEC(NBINS,JMAX),
+     >    PHOTOI(NST,NMAJ,JMAX), PHOTOD(NST,NMAJ,JMAX), PHONO(NST,JMAX),
+     >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
+     >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
+     >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
+C
+      DIMENSION ZVCD(NMAJ,JMAX)
+C
+      DATA IFIRST/1/, PI/3.1415926536/
+C
 C
 C First call only: set up energy grid:
 C
@@ -151,6 +167,7 @@ C
 C
       CALL SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
       SZA = SZA * PI/180.
+C
 C
 C Scale solar flux:
 C
