@@ -1,5 +1,12 @@
-#
-FC = ifort
+# USAGE: 
+# make -s FC=<compiler> netcdfpath=<path to netcdflib>
+# EXAMPLE:
+# make -s FC=gfortran 
+
+# use gfortran by default
+ifeq ($(strip $(fc)),)
+FC=gfortran
+endif
 
  FFLAGS = -O3 -I $(INC_NETCDF)
 #FFLAGS = -g $(DBGFLAGS) -I $(INC_NETCDF)
@@ -27,9 +34,10 @@ EXEC = glow.exe
 $(EXEC): $(OBJS)
 	$(FC) -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
 
-LIB_NETCDF = /home/tgcm/intel/netcdf-4.1.1/lib
-INC_NETCDF = /home/tgcm/intel/netcdf-4.1.1/include
-LIBS       = -L /usr/lib64 -lcurl -L$(LIB_NETCDF) -lnetcdf
+#LIB_NETCDF = $(HOME)/intel/netcdf-4.1.1/lib
+#INC_NETCDF = $(HOME)/intel/netcdf-4.1.1/include
+#LIBS       = -L /usr/lib64 -lcurl -#-L$(LIB_NETCDF) -lnetcdf
+LIBS = -lcurl -lnetcdf
 
 clean:
 	rm -f *.o *.mod $(EXEC)
