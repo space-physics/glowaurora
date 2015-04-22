@@ -42,7 +42,6 @@ $(EXEC): $(OBJS)
 #LIB_NETCDF = $(HOME)/intel/netcdf-4.1.1/lib
 #INC_NETCDF = $(HOME)/intel/netcdf-4.1.1/include
 #LIBS       = -L /usr/lib64 -lcurl -#-L$(LIB_NETCDF) -lnetcdf
-LIBS = -lnetcdff -lnetcdf
 INCLUDE = /usr/include
 LIBDIR = /usr/lib
 
