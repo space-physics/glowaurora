@@ -20,4 +20,4 @@ make
 ```
 ./auroraexample < aurexample.in > aurtest.out
 ```
-
+observe that aurtest.out is almost exactly equal to aurexample.out, to the least digit of precision.
