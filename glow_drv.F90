@@ -92,7 +92,8 @@ program glow_drv
 !
 ! Namelist read from input file:
 !
-  read (5,nml=glow_input)
+  read (5,nml=glow_input,ERR=10)
+10 continue
 !
 ! Read tgcm history file (tiegcm or timegcm), if provided:
 !

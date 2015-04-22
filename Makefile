@@ -5,7 +5,7 @@
 #
 # PREREQS:
 # libnetcdf-dev
-# libcurl-dev
+# libcurl
 
 # use gfortran by default
 ifeq ($(strip $(fc)),)
