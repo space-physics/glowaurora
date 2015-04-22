@@ -25,7 +25,7 @@ def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
                              7774, 8446])
     photIon = DataFrame(index=z,
                    data=hstack((photI[:,None],ImpI[:,None],ecalc[:,None],ion)),
-                    columns=['photoIoniz','eImpactIoniz','eDens',
+                    columns=['photoIoniz','eImpactIoniz','ne',
                     'nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
                     'nO','nO2','nN2','nNO'])
     return ver,photIon
@@ -45,16 +45,16 @@ def plotaurora(ver,photIon,dtime,glat,glon):
     ax.plot(photIon[['photoIoniz','eImpactIoniz']],photIon.index)
     ax.set_xlabel('ionization')
     ax.grid(True)
-    ax.legend(photIon.columns)
+    ax.legend(photIon.columns[:2])
     ax.set_title('{}  ({},{})'.format(dtime,glat,glon))
 
     ax = axs[2]
-    ax.semilogx(photIon[['nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
+    ax.semilogx(photIon[['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
                     'nO','nO2','nN2','nNO']], photIon.index)
-    ax.set_xlabel('density')
+    ax.set_xlabel('Density')
     ax.grid(True)
-    ax.legend(photIon.columns)
-    ax.set_title('{}  ({},{})'.format(dtime,glat,glon))
+    ax.legend(photIon.columns[2:])
+    ax.set_title('Electron and Ion Densities')
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
