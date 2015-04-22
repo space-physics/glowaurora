@@ -71,15 +71,35 @@ C
 C
       SUBROUTINE EPHOTO
 C
-      use cglow,only: JMAX,NBINS,LMAX,NMAJ,NST
-      use cglow,only: WAVE1,WAVE2,PHONO,PHOTOI,PHOTOD,PESPEC,ZCOL,SFLUX,
-     |  ZMAJ,DEL,ENER,ZNO
 C
-      implicit none
-      save
+      INCLUDE 'glow.h'
+      PARAMETER (NMAJ=3)
+      PARAMETER (NEX=20)
+      PARAMETER (NW=20)
+      PARAMETER (NC=10)
+      PARAMETER (NST=6)
+      PARAMETER (NEI=10)
+      PARAMETER (NF=4)
 C
-      integer :: NNN(NMAJ)
-      real ::   DSPECT(JMAX), FLUX(LMAX,JMAX),
+      COMMON /CGLOW/
+     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
+     >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
+     >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
+     >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
+     >    SZA, DIP, EFRAC, IERR,
+     >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
+     >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
+     >    ENER(NBINS), DEL(NBINS),
+     >    PESPEC(NBINS,JMAX), SESPEC(NBINS,JMAX),
+     >    PHOTOI(NST,NMAJ,JMAX), PHOTOD(NST,NMAJ,JMAX), PHONO(NST,JMAX),
+     >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
+     >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
+     >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
+C
+      DIMENSION DSPECT(JMAX), FLUX(LMAX,JMAX), NNN(NMAJ),
      >          SIGION(NMAJ,LMAX), SIGABS(NMAJ,LMAX),
      >          TPOT(NST,NMAJ), PROB(NST,NMAJ,LMAX),
      >          EPSIL1(NST,NMAJ,LMAX), EPSIL2(NST,NMAJ,LMAX),
@@ -89,24 +109,22 @@ C
      >          BSO2(LMAX), AUGE(NMAJ), AUGL(NMAJ), TAU(LMAX),
      >          RION(LMAX,NMAJ,JMAX)
 C
-      real,parameter :: signo = 2.0E-18
-      integer,save :: ifirst=1
-      integer :: l,n,k,i,j,m,m1,m2
-      real :: aa,bb,fac,e1,e2,y,r1,r2
+      SAVE SIGION, SIGABS, PROB, EPSIL1, EPSIL2
 C
-      NNN = (/5,4,6/)
-      TPOT(1:NST,1) = (/13.61, 16.93, 18.63, 28.50, 40.00,  0.00/)
-      TPOT(1:NST,2) = (/12.07, 16.10, 18.20, 20.00,  0.00,  0.00/)
-      TPOT(1:NST,3) = (/15.60, 16.70, 18.80, 30.00, 34.80, 25.00/)
-      BSO2(1:12) = 0.
-      BSO2(13:14) = (/.01,.03/)
-      BSO2(15:21) = .10
-      BSO2(22:29) = .07
-      BSO2(30:34) = .03
-      BSO2(35:39) = .01
-      BSO2(40:LMAX) = 0.
-      AUGE = (/500.,500.,360./)
-      AUGL = (/24.,24.,33./)
+      DATA SIGNO/2.0 E-18/, NNN/5,4,6/, IFIRST/1/
+C
+      DATA TPOT/13.61, 16.93, 18.63, 28.50, 40.00,  0.00,
+     >          12.07, 16.10, 18.20, 20.00,  0.00,  0.00,
+     >          15.60, 16.70, 18.80, 30.00, 34.80, 25.00/
+C
+      DATA BSO2/12*0.,.01,.03,7*.10,8*.07,5*.03,5*.01,84*0./
+C
+      DATA AUGE/500., 500., 360./, AUGL/24., 24., 33./
+C
+C
+C NB - absorption and ionization cross sections are multiplied by 1.E-18
+C on first call.
+C
 C
 C First time only: Read cross section data from files, convert to cm2,
 C calculate energy losses:
@@ -114,7 +132,7 @@ C
       IF (IFIRST .EQ. 1) THEN
       IFIRST = 0
 C
-      open(unit=1,file='ephoto_xn2.dat',status='old')
+      open(unit=1,file='ephoto_xn2.dat',status='old',readonly)
       read(1,*)
       read(1,*)
       read(1,*)
@@ -125,7 +143,7 @@ C
  3       continue
       close(1)
 C
-      open(unit=1,file='ephoto_xo2.dat',status='old')
+      open(unit=1,file='ephoto_xo2.dat',status='old',readonly)
       read(1,*)
       read(1,*)
       read(1,*)
@@ -135,7 +153,7 @@ C
  4    continue
       close(1)
 C 
-      open(unit=1,file='ephoto_xo.dat',status='old')
+      open(unit=1,file='ephoto_xo.dat',status='old',readonly)
       read(1,*)
       read(1,*)
       read(1,*)
@@ -172,7 +190,7 @@ C
         ENDIF
    40   CONTINUE 
 C
-      ENDIF ! ifirst
+      ENDIF
 C
 C
 C Zero arrays:
@@ -310,18 +328,12 @@ C
 C
       RETURN
 C
-      END subroutine ephoto
+      END
 C
-C-----------------------------------------------------------------------
+C
+C
 C
       SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER)
-      implicit none
-C
-C Args:
-      real,intent(in) :: e1,e2
-      real,intent(out) :: r1,r2
-      integer,intent(in) :: nbins
-      integer,intent(out) :: m1,m2
 C
 C This subroutine finds the box numbers corresponding to
 C energies E1 and E2, and calls them M1 and M2
@@ -330,8 +342,7 @@ C R1 is the upper edge of the lower box, R2 is the lower edge of the
 C upper box.
 C
 C
-      real :: DEL(NBINS), ENER(NBINS)
-      integer :: i
+      DIMENSION DEL(NBINS), ENER(NBINS)
 C
       DO 100 I=1,NBINS
       IF (E1 .LT. ENER(I)+DEL(I)/2.) GOTO 200
@@ -356,4 +367,4 @@ C
 C
       RETURN 
 C
-      END subroutine boxnum
+      END

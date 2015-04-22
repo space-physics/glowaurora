@@ -95,7 +95,7 @@ C
 C
 C
       FUNCTION CHAP (CHI, Z, T, I)
-      use cglow,only: NMAJ
+      PARAMETER (NMAJ=3)
       DIMENSION AM(NMAJ)
       DATA AM/16., 32., 28./, PI/3.1415926535/, RE/6.37E8/, G/978.1/
       GR=G*(RE/(RE+Z))**2 
