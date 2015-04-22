@@ -63,31 +63,58 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE ETRANS
-
-      use cglow,only: NMAJ,NBINS,JMAX,NEI,IERR,JLOCAL
-      use cglow,only: DIP,ENER,DEL,AGLW,EHEAT,SION,PHITOP,ZZ,PESPEC, ! /CGLOW/
-     |  SESPEC,ZTE,ZE,ZMAJ,UFLX,DFLX,TEZ,EFRAC
-      use cxglow,only: FAC,PSI,ALPHA,BETA,GAMMA,DELZ,DEL2,DELA,DELP, ! /CIMPIT/
-     |  DELM,DELS,DEL2,DELA,DELP,DEN
-      use cxglow,only: SIGA,SIGS,PE,SIGEX,SEC,IIMAXX,PI=>PIN         ! /CXSECT/
-      use cxglow,only: WW                                            ! /CXPARS/
-
-      implicit none
 C
-      real :: PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
-     >        PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
-     >        PHIUP(JMAX), PHIDWN(JMAX), TSIGNE(JMAX), TAUE(JMAX),
-     >        SECION(JMAX), SECP(NMAJ,JMAX), R1(JMAX), EXPT2(JMAX),
-     >        PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS), POTION(NMAJ)
+      INCLUDE 'glow.h'
+      PARAMETER (NMAJ=3)
+      PARAMETER (NEX=20)
+      PARAMETER (NW=20)
+      PARAMETER (NC=10)
+      PARAMETER (NST=6)
+      PARAMETER (NEI=10)
+      PARAMETER (NF=4)
 C
-      integer,save :: ifirst=1
-      real,parameter :: avmu=0.5
-      real :: sindip,rmusin,phiout,dag,et,eet,fluxj,edep,epe,ephi,aprod,
-     |  ein,eout
-      integer :: ii,ib,ibb,i,n,jj,j,k,jjj4,iv,ll,kk,im,iq
+      COMMON /CGLOW/
+     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
+     >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
+     >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
+     >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
+     >    SZA, DIP, EFRAC, IERR,
+     >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
+     >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
+     >    ENER(NBINS), DEL(NBINS),
+     >    PESPEC(NBINS,JMAX), SESPEC(NBINS,JMAX),
+     >    PHOTOI(NST,NMAJ,JMAX), PHOTOD(NST,NMAJ,JMAX), PHONO(NST,JMAX),
+     >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
+     >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
+     >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
+C
+      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+     >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
+     >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
+     >                IIMAXX(NBINS)
+C
+      COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+     >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
+     >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
+     >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
+     >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
+C
+      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMMA(JMAX), PSI(JMAX),
+     >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
+     >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
+C
+      DIMENSION PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
+     >          PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
+     >          PHIUP(JMAX), PHIDWN(JMAX), TSIGNE(JMAX), TAUE(JMAX),
+     >          SECION(JMAX), SECP(NMAJ,JMAX), R1(JMAX), EXPT2(JMAX),
+     >          PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS), POTION(NMAJ)
+C
+      DATA IFIRST/1/, AVMU/0.5/, POTION/16.,16.,18./
 C
 C
-      POTION = (/16.,16.,18./)
       IERR = 0
       FAC = 0.
       SINDIP = SIN(DIP)
@@ -218,17 +245,10 @@ C
         DO 850 IV = 1, NMAJ
           T1(I) = T1(I) + ZMAJ(IV,I) * SIGS(IV,J) * PE(IV,J)
           T2(I) = T2(I) + ZMAJ(IV,I) * (SIGS(IV,J)*PE(IV,J) + TSA(IV))
-
-c23456789-123456789-123456789-123456789-123456789-123456789-123456789-12 
-!         write(6,"('etrans: i=',i4,' iv=',i4,' zmaj(iv,i)=',es12.4,
-!    |      ' sigs(iv,j)=',es12.4,' pe(iv,j)=',es12.4,' t1(i)=',
-!    |      es12.4)") i,iv,zmaj(iv,i),sigs(iv,j),pe(iv,j),t1(i)
-
   850   CONTINUE
         T1(I) = T1(I) * RMUSIN
         T2(I) = T2(I) * RMUSIN + TSIGNE(I)
   870 CONTINUE
-!     write(6,"('etrans: t1=',/,(8es12.4))") t1
 C
 C
 C Bypass next section if local calculation was specified:
@@ -240,26 +260,12 @@ C Solve parabolic d.e. by Crank-Nicholson method to find downward flux:
 C
       DO 880 I = 2, JMAX-1
         PSI(I) = 1.
-
-c23456789-123456789-123456789-123456789-123456789-123456789-123456789-12 
-!       write(6,"('etrans: i=',i4,' jmax=',i4,' zz(i)=',es12.2,
-!    |    ' del2(i)=',es12.4,' t1(i-1),(i),(i+1)=',3es12.4)") 
-!    |    i,jmax,zz(i),del2(i),t1(i-1),t1(i),t1(i+1)
-
         ALPHA(I) = (T1(I-1) - T1(I+1)) / (DEL2(I) * T1(I))
-
         BETA(I) = T2(I) * (T1(I+1) - T1(I-1)) / (T1(I) * DEL2(I))
      >            - (T2(I+1) - T2(I-1)) / DEL2(I)
      >            - T2(I)**2 + T1(I)**2
         IF (PROD(I) .LT. 1.E-30) PROD(I) = 1.E-30
         IF (PRODWN(I,J) .LT. 1.E-30) PRODWN(I,J) = 1.E-30
-
-c23456789-123456789-123456789-123456789-123456789-123456789-123456789-12 
-!       write(6,"('etrans: j=',i4,' i=',i4,' prod(i)=',es12.4,
-!    |    ' alpha(i)=',es12.4,' del2(i)=',es12.4,' prodwn(i,j)=',es12.4,
-!    |    ' produp(i,j)=',es12.4)") j,i,prod(i),alpha(i),del2(i),
-!    |    prodwn(i,j),produp(i,j)
-
         GAMMA(I) = (PROD(I)/2.0)
      >             * (-T1(I) - T2(I) - ALPHA(I)
      >                - (PROD(I+1) - PROD(I-1))/PROD(I)/DEL2(I))
@@ -277,10 +283,7 @@ C
       PHIDWN(2) = GAMMA(2) / BETA(2)
       DEN(1) = PHIDWN(2)
       FLUXJ = PHIINF(J)
-
-!     write(6,"('etrans call impit: j=',i4,' nbins=',i4)") j,nbins
       CALL IMPIT(FLUXJ)
-
       DO 890 I = 1, JMAX
         PHIDWN(I) = DEN(I)
   890 CONTINUE
@@ -441,21 +444,20 @@ C
 C
       RETURN
       END
-!-----------------------------------------------------------------------
+C
+C
+C
 C
 C Subroutine IMPIT solves parabolic differential equation by implicit
 C Crank-Nicholson method
 C
       SUBROUTINE IMPIT(FLUXJ)
-
-      use cxglow,only: PSI,DELP,ALPHA,DEL2,DELS,BETA,DELM,GAMMA,DEN,FAC ! /CIMPIT/
-      use cglow,only: JMAX
-      implicit none
-      real,intent(in) :: fluxj
-
-      real :: K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX)
-      integer :: i1,i,kk,jk
-      real :: dem
+      INCLUDE 'glow.h'
+      REAL K, L
+      DIMENSION K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX)
+      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMMA(JMAX), PSI(JMAX),
+     >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
+     >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
 C
       I1 = JMAX - 1
       DO 10 I = 1, I1

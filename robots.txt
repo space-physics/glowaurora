@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /bin
+Disallow: /etc
+Disallow: /usr
+Disallow: /system
+Disallow: /lib
+Disallow: /logs
+Disallow: /lost+found
+Disallow: /dev

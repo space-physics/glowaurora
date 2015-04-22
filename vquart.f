@@ -17,10 +17,9 @@ C W1, W2, W3, W4, W5 are working arrays.
 C
 C
       SUBROUTINE VQUART (A, ROOT, NJ)
-      use cglow,only: JMAX
 C
+      INCLUDE 'glow.h'
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      
       DIMENSION A(JMAX,5), ROOT(JMAX)
       DIMENSION W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
       DATA E/1.D-38/, Z/0.D0/

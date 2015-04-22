@@ -8,31 +8,46 @@ C
 C SMB/SCS, 9/94
 C Replaced 834 with LBH, SCS, 2/03
 C Reduced cascade contribution to 1356, SCS, 9/03
-C Included radiative recombination in 1356 but commented out, SCS, 9/03
+C Included radiative recombination in 1356 SCS, 9/03
 C
       SUBROUTINE ROUT(ROFILE,LUN,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 
-      use cglow,only: jmax,idate
-      use cglow,only: ut,glat,glong,f107,f107p,f107a
-      use cglow,only: zz,aglw,sza,dip,hlybr,fexvir,hlya,heiew,xuvfac,
-     |  ztn,zti,zte,zo,zo2,zns,zn2,ecalc,zxden
-
-      implicit none
-!
-! Args:
-      integer,intent(in) :: lun,itail
-      real,intent(in) :: ef,ez,fraco,fraco2,fracn2
-      character(len=40),intent(in) :: rofile
+      INCLUDE 'glow.h'
+      PARAMETER (NMAJ=3)
+      PARAMETER (NEX=20)
+      PARAMETER (NW=20)
+      PARAMETER (NC=10)
+      PARAMETER (NST=6)
+      PARAMETER (NEI=10)
+      PARAMETER (NF=4)
 C
-      real ::   z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
+      COMMON /CGLOW/
+     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
+     >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
+     >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
+     >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
+     >    SZA, DIP, EFRAC, IERR,
+     >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
+     >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
+     >    ENER(NBINS), DEL(NBINS),
+     >    PESPEC(NBINS,JMAX), SESPEC(NBINS,JMAX),
+     >    PHOTOI(NST,NMAJ,JMAX), PHOTOD(NST,NMAJ,JMAX), PHONO(NST,JMAX),
+     >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
+     >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
+     >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
+C
+      dimension z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
      >          e1027(jmax), e989(jmax), elbh(jmax)
-      integer :: j
+      character*40 rofile
 C
       do 50 j=1,jmax
       z(j)=zz(j)/1.e5
       zhe(j)=0.
 C Temporary fix-up to 1356:
-      e1356(j)=aglw(3,1,j)+aglw(5,1,j)*0.5 !+ecalc(j)*zxden(3,j)*4.9e-13
+      e1356(j)=aglw(3,1,j)+aglw(5,1,j)*0.7+ecalc(j)*zxden(3,j)*4.9e-13
       e1304(j)=aglw(4,1,j)+aglw(6,1,j)+aglw(7,1,j)+aglw(8,1,j)*0.1
       e1027(j)=aglw(7,1,j)
       e989(j)=aglw(8,1,j)

@@ -111,7 +111,6 @@ C      k38 O+ + N(2D)              Bates, 1989 (PSS 37, 363)
 C      k39 N2+ + O -> N2 + O+      Torr, 1985; Torr et al, 1988;
 C                                  Knutsen et al, 1988
 C      k40 O+ + NO                 St. Maurice & Torr, 1978
-C      k41 O+ + e -> 1356          
 C      A1  5200       N(4S-2D)     Wiese et al, 1966
 C      A2  6300       O(3P-1D)     Baluja and Zeippen, 1988
 C      A3  6364       O(3P-1D)     Baluja and Zeippen, 1988
@@ -169,7 +168,6 @@ C      B41 O+(2Po) fr. O+(2Pe)     Kirby et al, 1979
 C      B42 O+(2Do) fr. O+(2Pe)     Kirby et al, 1979
 C      B43 N2(C) bound fraction    ?
 C      B44 7990 fr. O(3s'3D)       appx. fr. Hecht, p.c.
-C      B45 O(5S) fr. O(3p5P)       guess
 C      G1  N2+B(0,0) (3914)        Broadfoot, 1967
 C      G2  N2+B(0,1) (4278)        Broadfoot, 1967
 C
@@ -189,18 +187,38 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE GCHEM
-
-      use cglow,only: jmax, nmaj, nex, nw, nc, kchem, sza,
-     >                zz, zo, zn2, zo2, zno, zns, znd, ze,
-     >                ztn, zti, zte,
-     >                photoi, photod, phono, pia, sion, aglw, 
-     >                e=>ecalc, den=>zxden, zeta, zceta, vcb
-
-      implicit none
-      integer,parameter :: nr=50
-      real,parameter :: re=6.37E8
 C
-      real ::   A(NR), B(NR), BZ(NR,JMAX), G(NR,JMAX), KZ(NR,JMAX),
+      INCLUDE 'glow.h'
+      PARAMETER (NMAJ=3)
+      PARAMETER (NEX=20)
+      PARAMETER (NW=20)
+      PARAMETER (NC=10)
+      PARAMETER (NST=6)
+      PARAMETER (NEI=10)
+      PARAMETER (NF=4)
+      PARAMETER (NR=50)
+C
+      COMMON /CGLOW/
+     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
+     >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
+     >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
+     >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
+     >    SZA, DIP, EFRAC, IERR,
+     >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
+     >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
+     >    ENER(NBINS), DEL(NBINS),
+     >    PESPEC(NBINS,JMAX), SESPEC(NBINS,JMAX),
+     >    PHOTOI(NST,NMAJ,JMAX), PHOTOD(NST,NMAJ,JMAX), PHONO(NST,JMAX),
+     >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
+     >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
+     >    EHEAT(JMAX), TEZ(JMAX), E(JMAX),
+     >    DEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
+C
+      REAL KZ, L
+C
+      DIMENSION A(NR), B(NR), BZ(NR,JMAX), G(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
      >          P(NEX,JMAX), L(NEX,JMAX),
@@ -212,6 +230,7 @@ C
 C
       DOUBLE PRECISION COEF(JMAX,5), ROOT(JMAX)
 C
+      DATA RE/6.37E8/
       DATA A / 1.07E-5, 0.00585, 0.00185, 0.04500, 1.06000,
      >         9.70E-5, 0.04790, 0.17120, 0.00100, 0.77000,
      >         0.00540, 0.07900, 38*0.0 /
@@ -219,9 +238,7 @@ C
      >       0.48, 0.10, 0.10, 0.10, 0.16, 0.50, 0.30, 0.19, 0.00, 0.10,
      >       0.43, 0.51, 0.10, 0.60, 0.54, 0.44, 0.80, 0.20, 1.00, 0.33,
      >       0.33, 0.34, 0.21, 0.20, 0.10, 0.11, 0.65, 0.20, 0.24, 0.02,
-     >       0.18, 0.72, 0.75, 0.10, 0.70, 5*0./
-      integer :: i,iw,ic,ix,n,j200,iter
-      real :: GH,DZ
+     >       0.18, 0.72, 0.75, 0.10, 6*0./
 C
 C
       IF (KCHEM .EQ. 0) RETURN
@@ -333,7 +350,6 @@ C
         KZ(40,I) = 5.33E-13 - 1.64E-14*T5(I) + 4.72E-14*T5(I)**2
      >                      - 7.05E-16*T5(I)**3
       ENDIF
-      KZ(41,I) = 4.9E-13
    70 CONTINUE
 C
 C
@@ -341,6 +357,7 @@ C Calculate Electron impact ionization, photoionization, and electron
 C impact dissociation rates at each altitude; put a priori electron
 C density in calculated electron density array: put rough estimate of
 C O+ and a priori N(2D) in DEN array:
+
 C
       DO 100 I=1,JMAX
       OEI(I)   = SION(1,I) + PIA(1,I)
@@ -759,12 +776,6 @@ C
       ZCETA(5,11,I) = A(6) * B(8)  * KZ(18,I) * DEN(1,I) * E(I) / L(2,I)
       ZCETA(6,11,I) = A(6) * A(8)  * DEN(1,I) / L(2,I)
 C
-      ZCETA(1,12,I) = AGLW(4,3,I)
-C
-      ZCETA(1,13,I) = AGLW(3,1,I)
-      ZCETA(2,13,I) = AGLW(5,1,I) * B(45)
-      ZCETA(3,13,I) = E(I) * DEN(3,I) * KZ(41,I)
-C
       ZETA(1,I)  = ZCETA(1,1,I)+ZCETA(2,1,I)
       ZETA(2,I)  = ZCETA(1,2,I)+ZCETA(2,2,I)+ZCETA(3,2,I)
       ZETA(3,I)  = ZCETA(1,3,I)+ZCETA(2,3,I)+ZCETA(3,3,I)
@@ -783,8 +794,6 @@ C
       ZETA(10,I) = ZCETA(1,10,I)+ZCETA(2,10,I)+ZCETA(3,10,I)
       ZETA(11,I) = ZCETA(1,11,I)+ZCETA(2,11,I)+ZCETA(3,11,I)
      >            +ZCETA(4,11,I)+ZCETA(5,11,I)+ZCETA(6,11,I)
-      ZETA(12,I) = ZCETA(1,12,I)
-      ZETA(13,I) = ZCETA(1,13,I)+ZCETA(2,13,I)+ZCETA(3,13,I)
 C
   400 CONTINUE
 C
