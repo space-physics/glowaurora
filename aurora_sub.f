@@ -27,7 +27,7 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      PROGRAM AURORA
+      SUBROUTINE AURORA(z)
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
       PARAMETER (NEX=20)
@@ -36,6 +36,8 @@ C
       PARAMETER (NST=6)
       PARAMETER (NEI=10)
       PARAMETER (NF=4)
+
+      Intent(Out) z
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -219,32 +221,32 @@ C
   690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
      >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
 C    >        '     O        O2         N2        NO')
-      do 750 j=1,jmax
-        do 700 i=1,nmaj
+      do j=1,jmax
+        do i=1,nmaj
           tpi(i) = 0.
-          do 700 ns=1,nst
+          do ns=1,nst
             tpi(i) = tpi(i) + photoi(ns,i,j)
-  700     continue
+          End Do
+        End Do
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
         write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
 C    >                zo(j),zo2(j),zn2(j),zno(j)
   730   format (1x, 0p, f5.1, 1p, 14e10.2)
-  750 continue
+      End Do
 C
 C
 C Output selected volume emission rates and column brightnesses:
 C
-      write (6,780)
-  780 format ('   z     3371   4278   5200   5577   6300',
-     >        '   7320  10400   3466   7774   8446')
-      write (6,790) (z(j), (zeta(iw,j),iw=1,10), j=1,jmax)
-  790 format (1x, f5.1, 10f7.1)
-      write (6,795)  (vcb(iw),iw=1,10)
-  795 format (' VCB:',11f7.0)
+C      write (6,780)
+C  780 format ('   z     3371   4278   5200   5577   6300',
+C     >        '   7320  10400   3466   7774   8446')
+C      write (6,790) (z(j), (zeta(iw,j),iw=1,10), j=1,jmax)
+C  790 format (1x, f5.1, 10f7.1)
+C      write (6,795)  (vcb(iw),iw=1,10)
+C  795 format (' VCB:',11f7.0)
 C
 C
 C     CALL ROUT('rt.out',13,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 C
-      STOP
-      END PROGRAM AURORA
+      END SUBROUTINE AURORA
