@@ -2,13 +2,17 @@
 # make -s FC=<compiler> netcdfpath=<path to netcdflib>
 # EXAMPLE:
 # make -s FC=gfortran 
+#
+# PREREQS:
+# libnetcdf-dev
+# libcurl-dev
 
 # use gfortran by default
 ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
-FFLAGS = -O3 -I $(INCLUDE) -std=legacy
+FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR)
 #FFLAGS = -O3 -I $(INC_NETCDF)
 #FFLAGS = -g $(DBGFLAGS) -I $(INC_NETCDF)
 
@@ -38,8 +42,9 @@ $(EXEC): $(OBJS)
 #LIB_NETCDF = $(HOME)/intel/netcdf-4.1.1/lib
 #INC_NETCDF = $(HOME)/intel/netcdf-4.1.1/include
 #LIBS       = -L /usr/lib64 -lcurl -#-L$(LIB_NETCDF) -lnetcdf
-LIBS = -lcurl -lnetcdf
+LIBS = -lnetcdff -lnetcdf
 INCLUDE = /usr/include
+LIBDIR = /usr/lib
 
 clean:
 	rm -f *.o *.mod $(EXEC)

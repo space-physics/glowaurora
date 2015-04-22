@@ -114,7 +114,7 @@ program glow_drv
     write(6,"('glow_drv: tgcm_ncfile not provided, will use MSIS/IRI')")
   endif
 
-  if (loop_lons == .false.) then
+  if (loop_lons .eqv. .false.) then
     nlon = 1
     write(6,"('glow_drv: loop_lons = .false. --> will not loop over longitudes.')")
   endif
@@ -141,7 +141,7 @@ program glow_drv
     lon(:) = glon_tgcm(:)
     lat(:) = glat_tgcm(:)
   else
-    if (loop_lons == .true.) then
+    if (loop_lons .eqv. .true.) then
       do i=1,nlon
         lon(i) = float(i)*5. - 185. ! note this is tgcm 5-deg grid 
       enddo
@@ -256,7 +256,7 @@ program glow_drv
 !
 ! Create and define netcdf output file, if this is the first history processed:
 !
-  if (first == .true.) call create_ncfile(glow_ncfile,tgcm_ncfile)
+  if (first .eqv. .true.) call create_ncfile(glow_ncfile,tgcm_ncfile)
   first = .false.
 !
 ! Write global arrays to netCDF file:
