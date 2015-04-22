@@ -1657,6 +1657,7 @@ C       O&O2 CHEMISTRY/DISSOCIATION CORRECTION FOR MSIS MODELS
 C-----------------------------------------------------------------------
       BLOCK DATA GTD7BK
 C          MSISE-00 01-FEB-02   
+      CHARACTER(len=4) :: ISDATE,ISTIME,NAME
       COMMON/PARM7/PT1(50),PT2(50),PT3(50),PA1(50),PA2(50),PA3(50),
      $ PB1(50),PB2(50),PB3(50),PC1(50),PC2(50),PC3(50),
      $ PD1(50),PD2(50),PD3(50),PE1(50),PE2(50),PE3(50),
