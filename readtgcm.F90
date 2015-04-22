@@ -1,5 +1,5 @@
 module readtgcm
-  use libnetcdf
+  use netcdf
   implicit none
 !
 ! Read tgcm (tiegcm or timegcm) history file, obtaining needed inputs 
