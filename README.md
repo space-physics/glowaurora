@@ -8,10 +8,9 @@ f2py3 -m aurora -c aurora_sub.f maxt.f glow.f gchem.f ephoto.f solzen.f rcolum.f
 ```
 
 ```
-python
-import aurora
-z,zeta = aurora.aurora(99355,0,70,0,100,100,100,4,1,1000)
+python demo_aurora.py
 ```
+will show modeled VER vs. altitude for the input parameter set.
 
 
 Appendix (Not necessary for the typical user):
