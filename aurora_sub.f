@@ -27,7 +27,10 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(z)
+      SUBROUTINE AURORA(PyZ)
+c     Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
+C    &                  Pyf107p, Pyap, Pyef, Pyec,
+C    &                  PyZ)
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
       PARAMETER (NEX=20)
@@ -36,8 +39,9 @@ C
       PARAMETER (NST=6)
       PARAMETER (NEI=10)
       PARAMETER (NF=4)
+      
+      Real, Dimension(JMAX) :: PyZ
 
-      Intent(Out) z
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -81,11 +85,15 @@ C
      >           417.,428.,440.,453.,467.,482.,498.,515.,533.,551.,
      >           570.,590.,610.,630.,650.,670.,690.,710.,730.,750.,
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
-C
+C   Python connection
+      PyZ = Z
+C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
+C      idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong; f107a=Pyf107a
+C      Real,Dimension(JMAX), Intent(Out) :: PyZ
 C
 C Obtain input parameters:
 C
-      read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
+C     read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
 C
 C
 C Set other parameters and switches:
