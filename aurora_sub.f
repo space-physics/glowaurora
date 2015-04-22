@@ -27,10 +27,9 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(PyZ)
-c     Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
-C    &                  Pyf107p, Pyap, Pyef, Pyec,
-C    &                  PyZ)
+      SUBROUTINE AURORA(PyZ,
+     &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
+     &                  Pyf107p, Pyap, Pyef, Pyec)
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
       PARAMETER (NEX=20)
@@ -40,7 +39,7 @@ C    &                  PyZ)
       PARAMETER (NEI=10)
       PARAMETER (NF=4)
       
-      Real, Dimension(JMAX) :: PyZ
+      Real, Dimension(JMAX),Intent(Out) :: PyZ
 
 C
       COMMON /CGLOW/
@@ -89,7 +88,6 @@ C   Python connection
       PyZ = Z
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
 C      idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong; f107a=Pyf107a
-C      Real,Dimension(JMAX), Intent(Out) :: PyZ
 C
 C Obtain input parameters:
 C
