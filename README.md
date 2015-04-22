@@ -10,7 +10,7 @@ f2py3 -m aurora -c aurora_sub.f maxt.f glow.f gchem.f ephoto.f solzen.f rcolum.f
 ```
 python
 import aurora
-z = aurora.aurora(99355,0,70,0,100,100,100,4,1,1000)
+z,zeta = aurora.aurora(99355,0,70,0,100,100,100,4,1,1000)
 ```
 
 
