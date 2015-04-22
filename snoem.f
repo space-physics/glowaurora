@@ -12,6 +12,12 @@
       subroutine snoem(doy, kp, f107, z, mlat, nozm)
       implicit none
       save
+
+      real cosd, sind,x,thet,pi
+      parameter(pi=4*ATAN(1.))
+      sind(thet) = sin(thet/180.0*pi)
+      cosd(thet) = cos(thet*pi/180.0)
+
       integer doy
       real f107
       real kp
@@ -30,7 +36,7 @@
 
       if (ifirst .eq. 1) then
         ifirst = 0
-        open(unit=1,file='snoem_eof.dat',status='old',readonly)
+        open(unit=1,file='snoem_eof.dat',status='old')
         read(1,*) (z(k),k=1,16)
         read(1,*) (mlat(j),j=1,33)
         read(1,*) ((no_mean(j,k),j=1,33),k=1,16)
