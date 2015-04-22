@@ -31,7 +31,7 @@ DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
 #
 # Sources (in order of dependency):
 #
-SOURCES = cglow.F90 cxglow.F90 readtgcm.F90 output.F90 ephoto.f glow_drv.F90 egrid.f etrans.f exsect.f fieldm.f gchem.f geomag.f glow.f iri90.f maxt.f nrlmsise00.F qback.f rcolum.f rout.f snoem.f snoemint.f solzen.f ssflux.f vquart.f
+SOURCES = ephoto.f glow_drv.F90 egrid.f etrans.f exsect.f fieldm.f gchem.f geomag.f glow.f iri90.f maxt.f nrlmsise00.F qback.f rcolum.f rout.f snoem.f snoemint.f solzen.f ssflux.f vquart.f
 
 OBJS := $(addsuffix .o, $(basename $(SOURCES)))
 EXEC = glow.exe
