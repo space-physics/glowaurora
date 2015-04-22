@@ -1,11 +1,8 @@
 # USAGE: 
-# make -s FC=<compiler> netcdfpath=<path to netcdflib>
+# make -s FC=<compiler>
 # EXAMPLE:
 # make -s FC=gfortran 
 #
-# PREREQS:
-# libnetcdf-dev
-# libcurl
 
 # use gfortran by default
 ifeq ($(strip $(fc)),)
@@ -13,8 +10,7 @@ FC=gfortran
 endif
 
 FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR)
-#FFLAGS = -O3 -I $(INC_NETCDF)
-#FFLAGS = -g $(DBGFLAGS) -I $(INC_NETCDF)
+#FFLAGS = -g $(DBGFLAGS) 
 
 DBGFLAGS = -debug full -traceback
 DBGFLAGS += -check bounds -check format -check output_conversion -check pointers -check uninit
@@ -39,9 +35,6 @@ EXEC = auroraexample
 $(EXEC): $(OBJS)
 	$(FC) -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
 
-#LIB_NETCDF = $(HOME)/intel/netcdf-4.1.1/lib
-#INC_NETCDF = $(HOME)/intel/netcdf-4.1.1/include
-#LIBS       = -L /usr/lib64 -lcurl -#-L$(LIB_NETCDF) -lnetcdf
 INCLUDE = /usr/include
 LIBDIR = /usr/lib
 

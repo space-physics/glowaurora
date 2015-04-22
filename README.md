@@ -1,5 +1,5 @@
 # glow-aurora
-Stan Solomon's Aurora model -- now in Python!
+Stan Solomon's GLOW Auroral model -- now in Python!
 
 Installation:
 -------------
