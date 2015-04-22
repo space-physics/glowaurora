@@ -1,6 +1,8 @@
 # glow-aurora
 Stan Solomon's GLOW Auroral model -- now in Python!
 
+![Aurora VER demo](http://blogs.bu.edu/mhirsch/files/2015/04/plotglow.png)
+
 Installation:
 -------------
 ```
