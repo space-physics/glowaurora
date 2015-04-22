@@ -2,7 +2,7 @@
 [Stan Solomon's GLOW Auroral model](http://download.hao.ucar.edu/pub/stans/glow/) -- now in Python!
 
 ![Aurora VER demo](http://blogs.bu.edu/mhirsch/files/2015/04/plotglow.png)
-
+ 
 Installation:
 -------------
 ```
