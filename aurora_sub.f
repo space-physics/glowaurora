@@ -87,7 +87,7 @@ C
 C   Python connection
       PyZ = Z
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
-C      idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong; f107a=Pyf107a
+      idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong; f107a=Pyf107a
 C
 C Obtain input parameters:
 C
