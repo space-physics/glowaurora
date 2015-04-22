@@ -20,6 +20,11 @@ Appendix (Not necessary for the typical user):
 wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 ```
 
+### Download Stan's copy of IRI files:
+```
+wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
+```
+
 ### compile the Fortran code by itself
 ```
 make
