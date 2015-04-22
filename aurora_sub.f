@@ -27,7 +27,7 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(PyZ,
+      SUBROUTINE AURORA(PyZ,PyZeta,
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, Pyef, Pyec)
       INCLUDE 'glow.h'
@@ -39,7 +39,8 @@ C
       PARAMETER (NEI=10)
       PARAMETER (NF=4)
       
-      Real, Dimension(JMAX),Intent(Out) :: PyZ
+      Real, Dimension(JMAX),Intent(Out)    :: PyZ
+      Real, Dimension(NW,JMAX),Intent(Out)  :: PyZeta
 
 C
       COMMON /CGLOW/
@@ -213,6 +214,9 @@ C Output section:
 C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
+      
+      PyZeta = zeta
+      
 C      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
 C  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
 C     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
@@ -238,7 +242,7 @@ C    >        '     O        O2         N2        NO')
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
 C       write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
 C    >                zo(j),zo2(j),zn2(j),zno(j)
-  730   format (1x, 0p, f5.1, 1p, 14e10.2)
+C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
 C
 C
