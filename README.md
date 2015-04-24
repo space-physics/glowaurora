@@ -11,7 +11,7 @@ f2py -m aurora -c aurora_sub.f maxt.f glow.f gchem.f ephoto.f solzen.f rcolum.f 
 
 Note: If on Windows and using MinGW compiler, add the option ``` --compiler=mingw32 ```
 
-Yes, even though [http://blogs.bu.edu/mhirsch/2015/04/f2py-running-fortran-code-in-python-on-windows/](you're using 64-bit MinGW)
+Yes, even though [you're using 64-bit MinGW](http://blogs.bu.edu/mhirsch/2015/04/f2py-running-fortran-code-in-python-on-windows/)
 
 ```
 python demo_aurora.py
