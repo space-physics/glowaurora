@@ -21,7 +21,7 @@ except ImportError as e:
     exit('you must compile with f2py first. See README.md  {}'.format(e))
 
 def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
-    z,zeta,ion,ecalc,photI,ImpI,isr = aurora(iyd,utsec,glat,glon,
+    z,zeta,ion,ecalc,photI,ImpI,isr,phitop = aurora(iyd,utsec,glat,glon,
                                              f107a,f107,f107p,ap,1,1000)
 
     ver = DataFrame(index=z,
@@ -37,9 +37,19 @@ def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
     isrparam = DataFrame(index=z,
                          data=isr,
                          columns=['ne','Te','Ti'])
-    return ver,photIon,isrparam
 
-def plotaurora(ver,photIon,isr,dtime,glat,glon):
+    phitop = DataFrame(index=phitop[:,0],
+                       data=phitop[:,1],
+                       columns=['flux'])
+    return ver,photIon,isrparam,phitop
+
+def plotaurora(phitop,ver,photIon,isr,dtime,glat,glon):
+    ax = figure().gca()
+    phitop.plot(ax=ax,logx=True,logy=True)
+    ax.set_xlabel('Beam Energy [eV]')
+    ax.set_ylabel('Flux')
+
+
     fg,axs = subplots(1,4,sharey=True)
     fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='xx-large')
 
@@ -92,6 +102,7 @@ if __name__ == '__main__':
 
     (glat,glon) = p.latlon
 
-    ver,photIon,isr = demoaurora(iyd,utsec,glat,glon,p.f107a,p.f107,p.f107p,p.ap)
-    plotaurora(ver,photIon,isr,dtime,glat,glon)
+    ver,photIon,isr,phitop = demoaurora(iyd,utsec,glat,glon,
+                                        p.f107a,p.f107,p.f107p,p.ap)
+    plotaurora(phitop,ver,photIon,isr,dtime,glat,glon)
     show()

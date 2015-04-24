@@ -177,11 +177,11 @@ C
 C
 C Pack major species density array:
 C
-      DO 100 J=1,JMAX
+      DO J=1,JMAX
         ZMAJ(1,J) = ZO(J)
         ZMAJ(2,J) = ZO2(J)
         ZMAJ(3,J) = ZN2(J)
-  100 CONTINUE
+      End Do
 C
 C
 C Calculate slant path column densities of major species in the
@@ -197,19 +197,20 @@ C
       IF (SZA .LT. 2.) THEN
         CALL EPHOTO
       ELSE
-        DO 240 J=1,JMAX
-          DO 200 I=1,NMAJ
-          DO 200 IST=1,NST
-            PHOTOI(IST,I,J) = 0.0
-            PHOTOD(IST,I,J) = 0.0
-  200     CONTINUE
-          DO 210 IST=1,NST
+        DO J=1,JMAX
+          DO I=1,NMAJ
+              DO IST=1,NST
+                PHOTOI(IST,I,J) = 0.0
+                PHOTOD(IST,I,J) = 0.0
+              End Do
+          End Do
+          DO IST=1,NST
             PHONO(IST,J) = 0.0
-  210     CONTINUE
-          DO 220 N=1,NBINS
+          End Do
+          DO N=1,NBINS
             PESPEC(N,J) = 0.0
-  220     CONTINUE
-  240   CONTINUE
+          End Do
+        End Do
       ENDIF
 C
 C
@@ -224,7 +225,7 @@ C
   250   CONTINUE
   255 CONTINUE
 C
-C 
+C
 C Add background ionization to photoionization:
 C
       CALL QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO, JMAX, NMAJ, NST)
@@ -267,5 +268,4 @@ C
       CALL GCHEM
 C
 C
-      RETURN
-      END
+      END Subroutine GLOW
