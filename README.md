@@ -6,8 +6,12 @@
 Installation:
 -------------
 ```
-f2py3 -m aurora -c aurora_sub.f maxt.f glow.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f vquart.f ssflux.f egrid.f snoemint.f snoem.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f
+f2py -m aurora -c aurora_sub.f maxt.f glow.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f vquart.f ssflux.f egrid.f snoemint.f snoem.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f
 ```
+
+Note: If on Windows and using MinGW compiler, add the option ``` --compiler=mingw32 ```
+
+Yes, even though [http://blogs.bu.edu/mhirsch/2015/04/f2py-running-fortran-code-in-python-on-windows/](you're using 64-bit MinGW)
 
 ```
 python demo_aurora.py
