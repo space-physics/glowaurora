@@ -9,6 +9,10 @@ from pandas import DataFrame
 from datetime import datetime
 from dateutil.parser import parse
 from numpy import hstack
+try:
+    import seaborn as sns
+except ImportError as e:
+    print('Seaborn not installed, falling back to basic Matplotlib plots.  {}'.format(e))
 #
 from fortrandates import datetime2gtd
 try:
@@ -17,10 +21,11 @@ except ImportError as e:
     exit('you must compile with f2py first. See README.md  {}'.format(e))
 
 def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
-    z,zeta,ion,ecalc,photI,ImpI = aurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap,1,1000)
+    z,zeta,ion,ecalc,photI,ImpI,isr = aurora(iyd,utsec,glat,glon,
+                                             f107a,f107,f107p,ap,1,1000)
 
     ver = DataFrame(index=z,
-                    data=zeta.T[:,:10],
+                    data=zeta[:,:10],
                     columns=[3371, 4278, 5200, 5577, 6300,7320,10400,3466,
                              7774, 8446])
     photIon = DataFrame(index=z,
@@ -28,34 +33,45 @@ def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
                     columns=['photoIoniz','eImpactIoniz','ne',
                     'nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
                     'nO','nO2','nN2','nNO'])
-    return ver,photIon
 
-def plotaurora(ver,photIon,dtime,glat,glon):
-    fg,axs = subplots(1,3,sharey=True)
-    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='large')
+    isrparam = DataFrame(index=z,
+                         data=isr,
+                         columns=['ne','Te','Ti'])
+    return ver,photIon,isrparam
+
+def plotaurora(ver,photIon,isr,dtime,glat,glon):
+    fg,axs = subplots(1,4,sharey=True)
+    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='xx-large')
 
     ax = axs[0]
     ax.plot(ver.values,ver.index)
-    ax.set_xlabel('VER')
-    ax.set_ylabel('altitude [km]')
+    ax.set_xlabel('VER',fontsize='large')
+    ax.set_ylabel('altitude [km]',fontsize='large')
     ax.grid(True)
     ax.legend(ver.columns)
-    ax.set_title('Volume emission rate')
+    ax.set_title('Volume emission rate',fontsize='x-large')
 
     ax = axs[1]
     ax.plot(photIon[['photoIoniz','eImpactIoniz']],photIon.index)
     ax.set_xlabel('ionization')
     ax.grid(True)
     ax.legend(photIon.columns[:2])
-    ax.set_title('Photo and e$^-$ impact ionization')
+    ax.set_title('Photo and e$^-$ impact ionization',fontsize='x-large')
 
     ax = axs[2]
     ax.semilogx(photIon[['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
                     'nO','nO2','nN2','nNO']], photIon.index)
-    ax.set_xlabel('Density')
+    ax.set_xlabel('Density',fontsize='large')
     ax.grid(True)
     ax.legend(photIon.columns[2:])
-    ax.set_title('Electron and Ion Densities')
+    ax.set_title('Electron and Ion Densities',fontsize='x-large')
+
+    ax = axs[3]
+    ax.semilogx(isr[['Te','Ti']], isr.index)
+    ax.set_xlabel('Temperature [K]',fontsize='large')
+    ax.grid(True)
+    ax.legend(isr.columns[1:])
+    ax.set_title('Particle Temperature',fontsize='x-large')
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -76,6 +92,6 @@ if __name__ == '__main__':
 
     (glat,glon) = p.latlon
 
-    ver,photIon = demoaurora(iyd,utsec,glat,glon,p.f107a,p.f107,p.f107p,p.ap)
-    plotaurora(ver,photIon,dtime,glat,glon)
+    ver,photIon,isr = demoaurora(iyd,utsec,glat,glon,p.f107a,p.f107,p.f107p,p.ap)
+    plotaurora(ver,photIon,isr,dtime,glat,glon)
     show()
