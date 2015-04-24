@@ -166,7 +166,10 @@ C
       DO IJF=1,12
         JF(IJF) = .TRUE.
       END DO
+
       JF(5) = .FALSE.
+      JF(12) = .FALSE.
+
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
