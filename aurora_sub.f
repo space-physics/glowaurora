@@ -38,7 +38,7 @@ C
       PARAMETER (NST=6)
       PARAMETER (NEI=10)
       PARAMETER (NF=4)
-      
+
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, Pyef, Pyec
@@ -93,7 +93,7 @@ C
 C   Python connection
       PyZ = Z
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
-      idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong; 
+      idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong;
       f107a=Pyf107a; f107=Pyf107; f107p=Pyf107p
       ap=Pyap; ef=Pyef; ec=Pyec
 C
@@ -221,7 +221,7 @@ C Output section:
 C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
-      
+
 C      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
 C  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
 C     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
@@ -229,7 +229,7 @@ C      WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
 C  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
 C     >        ' Ec=',F6.3,' Ie=',I1)
 C
-C Output photoionization, electron impact ionization, 
+C Output photoionization, electron impact ionization,
 C electron density, and ion densities:
 C
 C     write (6,690)
@@ -245,20 +245,20 @@ C    >        '     O        O2         N2        NO')
         End Do
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
-        
+
         Pypi(j) = totpi
         Pysi(j) = totsi
 C       write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
 C    >                zo(j),zo2(j),zn2(j),zno(j)
 C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
-      
+
       PyZeta = transpose(zeta)
       Pyecalc = ecalc
-     
+
       Pyion(:,1:7) = transpose(zxden(1:7,:))
       Pyion(:,8)=zo; Pyion(:,9)=zo2; Pyion(:,10)=zn2; Pyion(:,11)=zno
-      
+
       Pyisr(:,1)=ZE; Pyisr(:,2)=ZTE; Pyisr(:,3)=ZTI
 C
 C
