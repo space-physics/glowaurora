@@ -27,7 +27,7 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(PyZ,PyZeta,Pyion,Pyecalc,Pypi,Pysi,
+      SUBROUTINE AURORA(PyZ,PyZeta,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, Pyef, Pyec)
       INCLUDE 'glow.h'
@@ -43,8 +43,9 @@ C
       Real,Intent(In) :: Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, Pyef, Pyec
       Real, Dimension(JMAX),Intent(Out)    :: PyZ,Pyecalc,Pypi,Pysi
-      Real, Dimension(NW,JMAX),Intent(Out)  :: PyZeta
+      Real, Dimension(JMAX,NW),Intent(Out)  :: PyZeta
       Real, Dimension(JMAX,11),Intent(Out)  :: Pyion
+      Real, Dimension(JMAX,3),Intent(Out)   :: Pyisr
 
 C
       COMMON /CGLOW/
@@ -221,8 +222,6 @@ C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
       
-      PyZeta = zeta
-      
 C      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
 C  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
 C     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
@@ -254,10 +253,13 @@ C    >                zo(j),zo2(j),zn2(j),zno(j)
 C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
       
+      PyZeta = transpose(zeta)
       Pyecalc = ecalc
+     
       Pyion(:,1:7) = transpose(zxden(1:7,:))
       Pyion(:,8)=zo; Pyion(:,9)=zo2; Pyion(:,10)=zn2; Pyion(:,11)=zno
       
+      Pyisr(:,1)=ZE; Pyisr(:,2)=ZTE; Pyisr(:,3)=ZTI
 C
 C
 C Output selected volume emission rates and column brightnesses:
