@@ -7,20 +7,27 @@ C Academic Research License Agreement contained in the file glowlicense.txt.
 C For more information see the file glow.txt.
 C
       SUBROUTINE EGRID (ENER, DEL, NBINS)
-      DIMENSION ENER(NBINS), DEL(NBINS)
-      DO 20 N=1,NBINS
+      Implicit None
+      Integer N
+      Integer, Intent(In)  :: NBINS
+      Real, Intent(Out) :: ENER(NBINS), DEL(NBINS)
+
+      DO N=1,NBINS
         IF (N .LE. 21) THEN
           ENER(N) = 0.5 * FLOAT(N)
         ELSE
           ENER(N) = EXP (0.05 * FLOAT(N+26))
         ENDIF
-   20 CONTINUE
+      End Do
+
       DEL(1) = 0.5
-      DO 40 N=2,NBINS
+
+      DO N=2,NBINS
         DEL(N) = ENER(N)-ENER(N-1)
-   40 CONTINUE
-      DO 60 N=1,NBINS
+      End Do
+
+      DO N=1,NBINS
         ENER(N) = ENER(N) - DEL(N)/2.0
-   60 CONTINUE
-      RETURN
+      End Do
+
       END
