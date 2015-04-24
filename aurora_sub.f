@@ -28,6 +28,7 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       SUBROUTINE AURORA(PyZ,PyZeta,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
+     &                  PyPhitop,
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, Pyef, Pyec)
       INCLUDE 'glow.h'
@@ -43,9 +44,10 @@ C
       Real,Intent(In) :: Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, Pyef, Pyec
       Real, Dimension(JMAX),Intent(Out)    :: PyZ,Pyecalc,Pypi,Pysi
-      Real, Dimension(JMAX,NW),Intent(Out)  :: PyZeta
-      Real, Dimension(JMAX,11),Intent(Out)  :: Pyion
-      Real, Dimension(JMAX,3),Intent(Out)   :: Pyisr
+      Real,Intent(Out)  :: PyZeta(JMAX,NW)
+      Real, Intent(Out)  :: Pyion(JMAX,11)
+      Real,Intent(Out)   :: Pyisr(JMAX,3)
+      Real,Intent(Out)   :: PyPhitop(NBINS,2)
 
 C
       COMMON /CGLOW/
@@ -253,6 +255,7 @@ C    >                zo(j),zo2(j),zn2(j),zno(j)
 C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
 
+      PyPhitop(:,1) = ENER; PyPhitop(:,2) = PHITOP
       PyZeta = transpose(zeta)
       Pyecalc = ecalc
 
