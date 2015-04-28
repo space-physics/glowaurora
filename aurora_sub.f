@@ -28,9 +28,11 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       SUBROUTINE AURORA(PyZ,PyZeta,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
-     &                  PyPhitop,
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
-     &                  Pyf107p, Pyap, Pyef, Pyec)
+     &                  Pyf107p, Pyap,PyPhitop)
+
+      use machprec
+      
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
       PARAMETER (NEX=20)
@@ -41,13 +43,12 @@ C
       PARAMETER (NF=4)
 
       Integer, Intent(In) :: Pyidate
-      Real,Intent(In) :: Pyglat, Pyglong, Pyf107a, Pyf107,
-     &                  Pyf107p, Pyap, Pyef, Pyec
+      Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
+     &                  Pyf107p, Pyap, PyPhitop(NBINS,3)
       Real, Dimension(JMAX),Intent(Out)    :: PyZ,Pyecalc,Pypi,Pysi
       Real,Intent(Out)  :: PyZeta(JMAX,NW)
       Real, Intent(Out)  :: Pyion(JMAX,11)
       Real,Intent(Out)   :: Pyisr(JMAX,3)
-      Real,Intent(Out)   :: PyPhitop(NBINS,2)
 
 C
       COMMON /CGLOW/
@@ -79,7 +80,6 @@ C
       LOGICAL JF(12)
 C
       DATA SW/25*1./
-      DATA PI/3.1415926536/
       DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
      >            90., 91., 92., 93., 94., 95., 96., 97., 98., 99.,
      >           100.,101.,102.,103.,104.,105.,106.,107.,108.,109.,
@@ -92,12 +92,12 @@ C
      >           417.,428.,440.,453.,467.,482.,498.,515.,533.,551.,
      >           570.,590.,610.,630.,650.,670.,690.,710.,730.,750.,
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
-C   Python connection
+CC  Python connection
       PyZ = Z
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
       idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong;
-      f107a=Pyf107a; f107=Pyf107; f107p=Pyf107p
-      ap=Pyap; ef=Pyef; ec=Pyec
+      f107a=Pyf107a; f107=Pyf107; f107p=Pyf107p; ap=Pyap
+      ENER = PyPhitop(:,1); DEL=PyPhitop(:,2); PHITOP=PyPhitop(:,3)
 C
 C Obtain input parameters:
 C
@@ -114,19 +114,19 @@ C
       FEXVIR = 0.
       HLYA = 0.
       HEIEW = 0.
-      ITAIL = 0
-      FMONO = 0.
-      EMONO = 0.
+C      ITAIL = 0
+C      FMONO = 0.
+C      EMONO = 0.
 C
 C
 C Set up energy grid:
 C
-      CALL EGRID (ENER, DEL, NBINS)
+C      CALL EGRID (ENER, DEL, NBINS)
 C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      Phitop=MAXT(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO)
+C      Phitop=MAXT(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO)
 C
 C
 C Calculate local solar time:
@@ -258,7 +258,6 @@ C    >                zo(j),zo2(j),zn2(j),zno(j)
 C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
 
-      PyPhitop(:,1) = ENER; PyPhitop(:,2) = PHITOP
       PyZeta = transpose(zeta)
       Pyecalc = ecalc
 

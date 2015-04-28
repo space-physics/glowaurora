@@ -112,7 +112,7 @@ C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      Phitop=Phi0(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO)
+      call Phi0(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO,Phitop)
 C
 C
 C Calculate local solar time:

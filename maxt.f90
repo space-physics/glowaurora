@@ -26,10 +26,9 @@ module MAXT
  use machprec
  public :: phi0
 contains
- Pure Function phi0(EFLUX, EZER, ENER, dE, NBINS,ITAIL, FMONO, EMONO) result(phi)
+ Subroutine phi0(EFLUX, EZER, ENER, dE, NBINS,ITAIL, FMONO, EMONO, phi)
     implicit none
-
-    Real(sp) :: phi(NBINS)
+    Real(sp),Intent(Out) :: phi(NBINS)
 
     Real(sp), Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS), FMONO,EMONO
     Integer,Intent(In):: NBINS,ITAIL
@@ -70,5 +69,5 @@ contains
     End If
     !
 
- END Function phi0
+ END Subroutine phi0
 end module MAXT
