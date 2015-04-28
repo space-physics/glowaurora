@@ -120,6 +120,7 @@ C
 C
       SUBROUTINE GLOW
       use machprec
+      use rcolummod
 C
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
@@ -188,7 +189,7 @@ C
 C Calculate slant path column densities of major species in the
 C direction of the sun:
 C
-        CALL RCOLUM (SZA, ZZ, ZMAJ, ZTN, ZCOL, ZVCD, JMAX, NMAJ)
+        CALL RCOLUM (SZA, ZZ, ZMAJ, ZTN, ZCOL, ZVCD, NMAJ)
 C
 C
 C Call subroutine EPHOTO to calculate the photoelectron production

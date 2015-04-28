@@ -8,6 +8,6 @@
       integer, PARAMETER :: LMAX=123
 !
 ! Parameters for high energy aurora (up to 100 MeV):
-!     PARAMETER (JMAX=170)
-!     PARAMETER (NBINS=343)
-!     PARAMETER (LMAX=123)
+!     integer,PARAMETER :: (JMAX=170)
+!     integer,PARAMETER :: (NBINS=343)
+!     integer,PARAMETER :: (LMAX=123)
