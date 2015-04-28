@@ -119,7 +119,7 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-      use energyGrid,only: EGRID
+      use machprec
 C
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
@@ -150,15 +150,15 @@ C
 C
       DIMENSION ZVCD(NMAJ,JMAX)
 C
-      DATA IFIRST/1/, PI/3.1415926536/
+C      DATA IFIRST/1/, PI/3.1415926536/
 C
 C
 C First call only: set up energy grid:
 C
-      IF (IFIRST .EQ. 1) THEN
-        IFIRST = 0
-        CALL EGRID (ENER, DEL, NBINS)
-      ENDIF
+C      IF (IFIRST .EQ. 1) THEN
+C        IFIRST = 0
+C        CALL EGRID (ENER, DEL, NBINS)
+C      ENDIF
 C
 C
 C Find magnetic dip angle and solar zenith angle (radians):
