@@ -8,7 +8,7 @@ from matplotlib.pyplot import figure, show,subplots,tight_layout
 from pandas import DataFrame
 from datetime import datetime
 from dateutil.parser import parse
-from numpy import hstack,arange,append,array
+from numpy import hstack,arange,append,array,rollaxis
 try:
     import seaborn as sns
 except ImportError as e:
@@ -34,7 +34,8 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
                                              f107a,f107,f107p,ap,phi)
 
 #%% handle the outputs including common blocks
-    zeta=aurora.cglow.zeta; zceta = aurora.cglow.zceta
+    zeta=aurora.cglow.zeta.T #columns 11:20 are identically zero
+
     ver = DataFrame(index=z,
                     data=zeta[:,:11],
                     columns=[3371, 4278, 5200, 5577, 6300,7320,10400,3466,
@@ -52,10 +53,11 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
     phitop = DataFrame(index=phi[:,0],
                        data=phi[:,2],
                        columns=['flux'])
+    zceta = aurora.cglow.zceta.T
 
-    return ver,photIon,isrparam,phitop
+    return ver,photIon,isrparam,phitop,zceta
 
-def plotaurora(phitop,ver,photIon,isr,dtime,glat,glon):
+def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax = figure().gca()
     phitop.plot(ax=ax,logx=True,logy=True)
     ax.set_title('Incident Flux',fontsize='x-large')
@@ -116,7 +118,15 @@ def plotaurora(phitop,ver,photIon,isr,dtime,glat,glon):
     ax.plot(sion,ver.index)
     ax.set_xlabel('e$^-$ impact ioniz. rate',fontsize='large')
     ax.set_title('electron impact ioniz. rates',fontsize='x-large')
-    ax.legend(True)
+    #ax.legend(True)
+#%% constituants of per-wavelength VER
+    zcsum = zceta.sum(axis=-1)
+    assert_allclose(zcsum,ver.values,rtol=1e-6)
+    ax = figure().gca()
+    for zc in rollaxis(zceta,1):
+        ax.plot(ver.index,zc)
+    ax.set_xlabel('emission constituants',fontsize='large')
+    #ax.legend(True)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -140,7 +150,7 @@ if __name__ == '__main__':
 
     (glat,glon) = p.latlon
 
-    ver,photIon,isr,phitop = demoaurora(p.nbins,p.flux,p.e0,iyd,utsec,glat,glon,
+    ver,photIon,isr,phitop,zceta = demoaurora(p.nbins,p.flux,p.e0,iyd,utsec,glat,glon,
                                         p.f107a,p.f107,p.f107p,p.ap)
-    plotaurora(phitop,ver,photIon,isr,dtime,glat,glon)
+    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon)
     show()

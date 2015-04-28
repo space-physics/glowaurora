@@ -556,9 +556,9 @@ C!!!!!!!D-REGION PARAMETER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       X=HME-HDX
       XKK=-DXDX*X/(XDX*ALOG(XDX/NME))
       D1=DXDX/(XDX*XKK*X**(XKK-1.0))
-C
-C SEARCH FOR HMF1 ..................................................
-C
+!
+! SEARCH FOR HMF1 ..................................................
+!
 2726       IF(.not.BOTTO) GOTO 4933
        if(LAYVER) goto 6153
 924       IF(.not.F1REG) GOTO 380
@@ -684,15 +684,15 @@ C---------- CALCULATION OF NEUTRAL TEMPERATURE PARAMETER-------
         ENDIF
       TLBDH=TEXOS-TN120
       TLBDN=TEXNI-TN1NI
-C
-C--------- CALCULATION OF ELECTRON TEMPERATURE PARAMETER--------
-C
+
+!--------- CALCULATION OF ELECTRON TEMPERATURE PARAMETER--------
+
 881   CONTINUE
 
-C !!!!!!!!!! TE(120KM)=TN(120KM) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!! TE(120KM)=TN(120KM) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       ATE(1)=TN120
 
-C !!!!!!!!!! TE-MAXIMUM (JICAMARCA,ARECIBO) !!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!! TE-MAXIMUM (JICAMARCA,ARECIBO) !!!!!!!!!!!!!!!!!!!!
       HMAXD=60.*EXP(-(MLAT/22.41)**2)+210.
       HMAXN=150.
       AHH(2)=HPOL(HOUR,HMAXD,HMAXN,SAX,SUX,1.,1.)
@@ -700,8 +700,8 @@ C !!!!!!!!!! TE-MAXIMUM (JICAMARCA,ARECIBO) !!!!!!!!!!!!!!!!!!!!
       TMAXN=TN(HMAXN,TEXNI,TLBDN,SIGNI)+20
       ATE(2)=HPOL(HOUR,TMAXD,TMAXN,SAX,SUX,1.,1.)
 
-C !!!!!!!!!! TE(300,400KM)=TE-AE-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-C !!!!!!!!!! TE(1400,3000KM)=TE-ISIS !!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!! TE(300,400KM)=TE-AE-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!! TE(1400,3000KM)=TE-ISIS !!!!!!!!!!!!!!!!!!!!!!!!!!!
        DIPLAT=MAGBR
       CALL TEBA(DIPLAT,HOUR,NSESON,TEA)
       ATE(3)=TEA(1)
