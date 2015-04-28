@@ -19,11 +19,15 @@ C   ZNO    Nitric oxide density at Z in cm-3
 C
 C
       SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+      use machprec
+      
+      integer, intent(in) :: IDATE, JMAX
+      real(sp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
+      real(sp),intent(out):: ZNO(JMAX)
+      
+      Real(sp) ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16)
+      
 C
-      DIMENSION Z(JMAX), ZTN(JMAX), ZNO(JMAX)
-      DIMENSION ZG(16), XMLATNO(33), ZMNO(33,16), ZMNOI(16)
-C
-      DATA PI/3.1415926536/
 C
 C
 C Find magnetic latitude:
