@@ -21,13 +21,14 @@ C at sea level, the tropopause, the stratopause, and the mesopause.
 C
       SUBROUTINE RCOLUM (CHI, ZZ, ZMAJ, TN, ZCOL, ZVCD, JMAX, NMAJ)
 C
+      use machprec,only:pi
       PARAMETER (NM=3)
       PARAMETER (NU=4)
 C
       DIMENSION ZZ(JMAX), ZMAJ(NMAJ,JMAX), TN(JMAX), ZCOL(NMAJ,JMAX),
      >          ZVCD(NMAJ,JMAX), ZCG(NM), ZUS(NU), TNUS(NU), ZCUS(NM,NU)
 C
-      DATA PI/3.1415926535/, RE/6.37E8/
+      DATA RE/6.37E8/
       DATA ZUS/0., 1.5E6, 5.E6, 9.E6/, TNUS/288., 217., 271., 187./
       DATA ZCUS/8.00E17, 4.54E24, 1.69E25,
      >          8.00E17, 5.46E23, 2.03E24,
