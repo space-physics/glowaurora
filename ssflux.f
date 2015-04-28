@@ -117,13 +117,13 @@ C
      >                   HEIEW, XUVFAC, WAVE1, WAVE2, SFLUX)
 C
       include 'glow.h'
-      save
 C
       DIMENSION WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >          WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
      >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX), B1(3), B2(3) 
       data epsil/1.0E-6/
       data islast/-1/
+      save islast
 C
 C regression coefficients which reduce to solar min. spectrum:
       DATA B1/1.0, 0.0138, 0.005/, B2/1.0, 0.59425, 0.3811/

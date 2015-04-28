@@ -16,13 +16,19 @@ except ImportError as e:
 #
 from fortrandates import datetime2gtd
 try:
+    from glowgrid import energygrid,maxt
     from aurora import aurora
 except ImportError as e:
     exit('you must compile with f2py first. See README.md  {}'.format(e))
 
-def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
-    z,zeta,ion,ecalc,photI,ImpI,isr,phitop = aurora(iyd,utsec,glat,glon,
-                                             f107a,f107,f107p,ap,1,1000)
+def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
+#%% temporarily use glow grid instead of our own
+    ener,dE = energygrid(nbins)
+    phitop = maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
+    phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
+#%% glow model
+    z,zeta,ion,ecalc,photI,ImpI,isr = aurora(iyd,utsec,glat,glon,
+                                             f107a,f107,f107p,ap,phi)
 
     ver = DataFrame(index=z,
                     data=zeta[:,:10],
@@ -38,8 +44,8 @@ def demoaurora(iyd,utsec,glat,glon,f107a,f107,f107p,ap):
                          data=isr,
                          columns=['ne','Te','Ti'])
 
-    phitop = DataFrame(index=phitop[:,0],
-                       data=phitop[:,1],
+    phitop = DataFrame(index=phi[:,0],
+                       data=phi[:,2],
                        columns=['flux'])
     return ver,photIon,isrparam,phitop
 
@@ -90,6 +96,9 @@ if __name__ == '__main__':
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
     p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',type=str,nargs='?',default=None)
     p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(65,-148))
+    p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190)
+    p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1)
+    p.add_argument('--e0',help='characteristic energy [eV]',type=float,default=1e3)
     p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=150)
     p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float,default=150)
     p.add_argument('--f107',help='F10.7 for sim. day',type=float,default=150)
@@ -104,7 +113,7 @@ if __name__ == '__main__':
 
     (glat,glon) = p.latlon
 
-    ver,photIon,isr,phitop = demoaurora(iyd,utsec,glat,glon,
+    ver,photIon,isr,phitop = demoaurora(p.nbins,p.flux,p.e0,iyd,utsec,glat,glon,
                                         p.f107a,p.f107,p.f107p,p.ap)
     plotaurora(phitop,ver,photIon,isr,dtime,glat,glon)
     show()
