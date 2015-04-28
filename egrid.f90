@@ -8,6 +8,7 @@
 !
 module EnergyGrid
   use machprec
+  private
   public :: EGRID
 contains
   SUBROUTINE EGRID (ENER, DEL,NBINS)

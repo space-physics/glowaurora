@@ -24,6 +24,7 @@
 !
 module MAXT
  use machprec
+ private
  public :: phi0
 contains
  Subroutine phi0(EFLUX, EZER, ENER, dE, NBINS,ITAIL, FMONO, EMONO, phi)
