@@ -23,8 +23,7 @@ module vquartmod
     private
     public :: vquart
 
-    real(dp) :: E, Z
-    DATA E/1.D-38/, Z/0.D0/
+    real(kind=dp) :: E =1.D-38, Z=0.
 contains
     SUBROUTINE VQUART (A, ROOT, NJ)
     implicit none
