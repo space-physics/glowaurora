@@ -20,6 +20,7 @@ C
 C
       SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
       use machprec
+      use snoemmod
       
       integer, intent(in) :: IDATE, JMAX
       real(sp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
