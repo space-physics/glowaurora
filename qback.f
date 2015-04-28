@@ -16,18 +16,22 @@ C H Lyman beta (FLYBT)
 C H Ly alpha (FLYAT)
 C
       SUBROUTINE QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO, JM, NMAJ, NST)
-C
-      DIMENSION ZMAJ(NMAJ,JM), ZNO(JM), ZVCD(NMAJ,JM),
-     +          PHOTOI(NST,NMAJ,JM), PHONO(NST,JM)
-C
-      DATA FIONT/5.0E7/, FLYBT/1.0E7/, FLYAT/1.0E9/
-      DATA SIGIO/1.0E-17/, SIGIO2/2.0E-17/, SIGIN2/2.0E-17/,
-     +     SLBAO2/1.6E-18/, SLBIO2/1.0E-18/, SLAAO2/1.0E-20/,
-     +     SLAINO/2.0E-18/
+      use machprec
+      implicit none
+      real(sp), intent(in) :: ZMAJ(NMAJ,JM),ZNO(JM),ZVCD(NMAJ,JM)
+      !TODO PHOTI and PHONO should be INOUT
+      real(sp),intent(out)::PHOTOI(NST,NMAJ,JM), PHONO(NST,JM)
+
+      real(sp) :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9, SIGIO=1.0E-17,
+     & SIGIO2=2.0E-17, SIGIN2=2.0E-17, SLBAO2=1.6E-18, SLBIO2=1.0E-18,
+     & SLAAO2=1.0E-20, SLAINO=2.0E-18
+     
+      real(sp) taui, taulya,taulyb, fion
+      integer nmaj,nst,j,jm
 C
 C Calculate ionization rates at each altitude:
 C
-      DO 200 J=1,JM
+      DO J=1,JM
         TAUI = 2.*(SIGIO*ZVCD(1,J)+SIGIO2*ZVCD(2,J)+SIGIN2*ZVCD(3,J))
         IF (TAUI .GT. 60.) TAUI = 60.
         TAULYB = 2.*SLBAO2*ZVCD(2,J)
@@ -40,7 +44,6 @@ C
      +                  + FLYBT * EXP(-TAULYB) * ZMAJ(2,J) * SLBIO2
         PHOTOI(1,3,J) = PHOTOI(1,3,J) + FION * ZMAJ(3,J) * SIGIN2
         PHONO(1,J) = PHONO(1,J) + FLYAT * EXP(-TAULYA) * ZNO(J) * SLAINO
-  200 CONTINUE
+      End Do
 C
-      RETURN
-      END
+      END SUBROUTINE QBACK
