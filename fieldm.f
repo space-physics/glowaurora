@@ -16,7 +16,15 @@ C        DIP INCLINATION ANGLE(DEGREE). SMODIP RAWER'S MODFIED DIP.
 C SHEIK,1977.
 C
       SUBROUTINE FIELDM(DLAT,DLONG,ALT,X,Y,Z,F,DIP,DEC,SMODIP)
-      DIMENSION H(144),XI(3),G(144),FEL1(72),FEL2(72)
+      implicit none
+      real,intent(in) :: dlat,dlong,alt
+      real,intent(out):: x,y,z,f,dip,dec,smodip
+      
+      real H(144),XI(3),G(144),FEL1(72),FEL2(72), umr,brh0,cp,ct,d,f1,
+     & rho,rlat,rlong,rq,s,sp,st,x1,xt,xxx,y1,yyy,z1,zzz
+      integer i,ih,ihmax,il,imax,last,m,nmax,j,k
+      
+     
       DATA UMR/.0174532952/
       DATA FEL1/0.0, 0.1506723,0.0101742, -0.0286519, 0.0092606,
      & -0.0130846, 0.0089594, -0.0136808,-0.0001508, -0.0093977,
@@ -72,8 +80,9 @@ C
       IHMAX=NMAX*NMAX+1
       LAST=IHMAX+NMAX+NMAX
       IMAX=NMAX+NMAX-1
-      DO 100 I=IHMAX,LAST
- 100  H(I)=G(I)
+      DO I=IHMAX,LAST
+        H(I)=G(I)
+      End Do
       DO 200 K=1,3,2
       I=IMAX
       IH=IHMAX
@@ -85,12 +94,12 @@ C
       I=I-2
       IF((I-1).LT.0) GOTO 400
       IF((I-1).EQ.0) GOTO 500
-      DO 600 M=3,I,2
-      H(IL+M+1)=G(IL+M+1)+Z1*H(IH+M+1)+X1*(H(IH+M+3)-H(IH+M-1))-
-     &Y1*(H(IH+M+2)+H(IH+M-2))
-      H(IL+M)=G(IL+M)+Z1*H(IH+M)+X1*(H(IH+M+2)-H(IH+M-2))+
-     &Y1*(H(IH+M+3)+H(IH+M-1))
- 600  CONTINUE
+      DO M=3,I,2
+          H(IL+M+1)=G(IL+M+1)+Z1*H(IH+M+1)+X1*(H(IH+M+3)-H(IH+M-1))-
+     &  Y1*(H(IH+M+2)+H(IH+M-2))
+          H(IL+M)=G(IL+M)+Z1*H(IH+M)+X1*(H(IH+M+2)-H(IH+M-2))+
+     &  Y1*(H(IH+M+3)+H(IH+M-1))
+      End Do
  500  H(IL+2)=G(IL+2)+Z1*H(IH+2)+X1*H(IH+4)-Y1*(H(IH+3)+H(IH))
       H(IL+1)=G(IL+1)+Z1*H(IH+1)+Y1*H(IH+4)+X1*(H(IH+3)-H(IH))
  400  H(IL)=G(IL)+Z1*H(IH)+2.0*(X1*H(IH+1)+Y1*H(IH+2))
@@ -113,5 +122,4 @@ C
       DIP=DIP/UMR
       DEC=DEC/UMR
       SMODIP=SMODIP/UMR
-      RETURN
-      END
+      END SUBROUTINE FIELDM

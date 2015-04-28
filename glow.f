@@ -121,6 +121,7 @@ C
       SUBROUTINE GLOW
       use machprec
       use rcolummod
+      use szacalc
 C
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)

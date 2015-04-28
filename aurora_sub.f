@@ -138,30 +138,30 @@ C
 C NOTE: the directory specified in the call to IRI90 must be changed
 C to the one where the ccirnn.asc and ursinn.asc files are.
 C
-      DO IJF=1,12
-        JF(IJF) = .TRUE.
-      END DO
+C      DO IJF=1,12
+C        JF(IJF) = .TRUE.
+C      END DO
 
-      JF(5) = .FALSE.
-      JF(12) = .FALSE.
+C      JF(5) = .FALSE.
+C      JF(12) = .FALSE.
 
-      JMAG = 0
-      RZ12 = -F107A
-      IDAY = IDATE - IDATE/1000*1000
-      MMDD = -IDAY
-      CALL IRI90(JF,JMAG,GLAT,GLONG,RZ12,MMDD,STL,Z,JMAX,
-     >           'iri/',OUTF,OARR)
-      DO J=1,JMAX
-        ZE(J) = OUTF(1,J) / 1.E6
-        IF (ZE(J) .LT. 100.) ZE(J) = 100.
-        ZTI(J) = OUTF(3,J)
-        IF (ZTI(J) .LT. ZTN(J)) ZTI(J) = ZTN(J)
-        ZTE(J) = OUTF(4,J)
-        IF (ZTE(J) .LT. ZTN(J)) ZTE(J) = ZTN(J)
-        ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
-        ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
-        ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
-      END DO
+C      JMAG = 0
+C      RZ12 = -F107A
+C      IDAY = IDATE - IDATE/1000*1000
+C      MMDD = -IDAY
+C      CALL IRI90(JF,JMAG,GLAT,GLONG,RZ12,MMDD,STL,Z,JMAX,
+C     >           'iri/',OUTF,OARR)
+C      DO J=1,JMAX
+C        ZE(J) = OUTF(1,J) / 1.E6
+C        IF (ZE(J) .LT. 100.) ZE(J) = 100.
+C        ZTI(J) = OUTF(3,J)
+C        IF (ZTI(J) .LT. ZTN(J)) ZTI(J) = ZTN(J)
+C        ZTE(J) = OUTF(4,J)
+C        IF (ZTE(J) .LT. ZTN(J)) ZTE(J) = ZTN(J)
+C        ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
+C        ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
+C        ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
+C      END DO
 C
 C
 C Fill altitude array and initialize N(2D):
