@@ -64,7 +64,7 @@ contains
 
     !... eof3 - f107 
 
-    m3 =  alog10(f107) * 6.35777 - 13.8163 
+    m3 =  log10(f107) * 6.35777 - 13.8163 
 
     !... zonal mean distrib. is sum of mean and eofs
 
