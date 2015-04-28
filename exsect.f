@@ -409,9 +409,7 @@ C
 C
   500 CONTINUE
 C
-C
-      RETURN
-      END
+      END SUBROUTINE EXSECT
 C
 C
 C
@@ -420,6 +418,7 @@ C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
       FUNCTION SIGION(I,ML,E,E1,E2,T12)
+      use machprec
 C
       PARAMETER (NMAJ=3)
       PARAMETER (NEI=10)
@@ -430,7 +429,8 @@ C
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
 C
-      DOUBLE PRECISION ABB, ABC, ABD
+      Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
+      Real(sp) sigion
       DATA QQ/1.E-16/
 C
 C
@@ -455,15 +455,13 @@ C
       ABC=(E1-TZ)/GG
       AL2=GG*GG*(ABB*ABB+1.0)
       AL1=GG*GG*(ABC*ABC+1.0)
-      ABD=DATAN(ABB)-DATAN(ABC)
+      ABD=ATAN(ABB)-ATAN(ABC)
       T12=TZ+0.5*GG*(log(AL2)-log(AL1))/ABD
       SIGION=A*GG*ABD
       RETURN
 C
    30 SIGION=0.0
-      RETURN
-C
-      END
+      END function sigion
 C
 C
 C
@@ -480,15 +478,14 @@ C
       IF (ETA .LT. 0.) THEN
         INV = -1
       ELSE
-        DO 30 IV=1,JY
+        DO IV=1,JY
           IF (ETA .LE. ENER(IV)) GOTO 40
-   30   CONTINUE
+        End DO
         IV = JY
    40   INV = IV
       ENDIF
 C
-      RETURN
-      END
+      END function inv
 C
 C
 C
@@ -560,13 +557,13 @@ C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
         ENDIF
    90 CONTINUE
 
-      RETURN
-
-      END
+      END SUBROUTINE HEXC
 
 
 
       FUNCTION TERPOO(X,X1,X2,Y1,Y2)
+      implicit none
+      Real,intent(in) :: x,x1,x2,y1,y2
+      real :: terpoo
       TERPOO = EXP ( log(Y1) + log(X/X1)*log(Y2/Y1)/log(X2/X1) )
-      RETURN
-      END
+      END function terpoo
