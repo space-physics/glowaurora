@@ -24,6 +24,7 @@
 !
 module MAXT
  use machprec
+ implicit none
  private
  public :: phi0
 contains
