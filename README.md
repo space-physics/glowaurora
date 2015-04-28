@@ -2,6 +2,13 @@
 [Stan Solomon's GLOW Auroral model](http://download.hao.ucar.edu/pub/stans/glow/) -- now in Python!
 
 ![Aurora VER demo](http://blogs.bu.edu/mhirsch/files/2015/04/plotglow_panel.png)
+
+Caution:
+--------
+It is currently (0.973) necessary to restart the Python kernel for each simulation run. This is due to the "save" statement in ssflux.f.
+With the refactoring of the code underway to Fortran90, it is hoped this blanket save statement can be eliminated.
+
+For safety's sake, run this program from the command line (Terminal) to ensure you get a fresh import (flushing all variables).
  
 Installation:
 -------------

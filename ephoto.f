@@ -137,75 +137,79 @@ C
       read(1,*)
       read(1,*)
       read(1,*)
-      do 3,l=lmax,1,-1
+      Do l=lmax,1,-1
          read(1,*) aa,bb,(probn2(n,l),n=1,nst),sigin2(l),sigan2(l)
          bso2(l)=0.0
- 3       continue
+      End Do
       close(1)
 C
       open(unit=1,file='ephoto_xo2.dat',status='old')
-      read(1,*)
-      read(1,*)
-      read(1,*)
-      read(1,*)
-      do 4,l=lmax,1,-1
-         read(1,*) aa,bb,(probo2(n,l),n=1,nst),sigio2(l),sigao2(l)
- 4    continue
+          read(1,*)
+          read(1,*)
+          read(1,*)
+          read(1,*)
+          Do l=lmax,1,-1
+             read(1,*) aa,bb,(probo2(n,l),n=1,nst),sigio2(l),sigao2(l)
+          End Do
       close(1)
 C 
       open(unit=1,file='ephoto_xo.dat',status='old')
-      read(1,*)
-      read(1,*)
-      read(1,*)
-      read(1,*)
-      do 5,l=lmax,1,-1
-         read(1,*) aa,bb,(probo(n,l),n=1,nst),sigio(l),sigao(l)
- 5       continue
+          read(1,*)
+          read(1,*)
+          read(1,*)
+          read(1,*)
+          do l=lmax,1,-1
+             read(1,*) aa,bb,(probo(n,l),n=1,nst),sigio(l),sigao(l)
+          End Do
       close(1)
 C
-        DO 10 L=1,LMAX
-        SIGABS(1,L) = SIGAO(L)  * 1.E-18
-        SIGABS(2,L) = SIGAO2(L) * 1.E-18
-        SIGABS(3,L) = SIGAN2(L) * 1.E-18
-        SIGION(1,L) = SIGIO(L)  * 1.E-18
-        SIGION(2,L) = SIGIO2(L) * 1.E-18
-        SIGION(3,L) = SIGIN2(L) * 1.E-18
-   10   CONTINUE
+        DO L=1,LMAX
+            SIGABS(1,L) = SIGAO(L)  * 1.E-18
+            SIGABS(2,L) = SIGAO2(L) * 1.E-18
+            SIGABS(3,L) = SIGAN2(L) * 1.E-18
+            SIGION(1,L) = SIGIO(L)  * 1.E-18
+            SIGION(2,L) = SIGIO2(L) * 1.E-18
+            SIGION(3,L) = SIGIN2(L) * 1.E-18
+        End Do
 C
-        DO 20 L=1,LMAX
-        DO 20 K=1,NST
-        PROB(K,1,L) = PROBO(K,L)
-        PROB(K,2,L) = PROBO2(K,L)
-        PROB(K,3,L) = PROBN2(K,L)
-   20   CONTINUE
+        DO L=1,LMAX
+            DO K=1,NST
+                PROB(K,1,L) = PROBO(K,L)
+                PROB(K,2,L) = PROBO2(K,L)
+                PROB(K,3,L) = PROBN2(K,L)
+            End Do
+        End Do
 C
-        DO 40 L=1,LMAX 
-        DO 40 I=1,NMAJ 
-        DO 40 K=1,NNN(I) 
-        EPSIL1(K,I,L)=12397.7/WAVE1(L)-TPOT(K,I) 
-        EPSIL2(K,I,L)=12397.7/WAVE2(L)-TPOT(K,I) 
-        IF (WAVE1(L) .LE. AUGL(I)) THEN
-          EPSIL1(K,I,L) = EPSIL1(K,I,L) - AUGE(I)
-          EPSIL2(K,I,L) = EPSIL2(K,I,L) - AUGE(I)
-        ENDIF
-   40   CONTINUE 
+        DO L=1,LMAX 
+            DO I=1,NMAJ 
+                DO K=1,NNN(I) 
+                    EPSIL1(K,I,L)=12397.7/WAVE1(L)-TPOT(K,I) 
+                    EPSIL2(K,I,L)=12397.7/WAVE2(L)-TPOT(K,I) 
+                    IF (WAVE1(L) .LE. AUGL(I)) THEN
+                      EPSIL1(K,I,L) = EPSIL1(K,I,L) - AUGE(I)
+                      EPSIL2(K,I,L) = EPSIL2(K,I,L) - AUGE(I)
+                    ENDIF
+                End Do
+            End Do
+        End Do 
 C
       ENDIF
 C
 C
 C Zero arrays:
 C
-      DO 100 J=1,JMAX
-      DO 50 I=1,NMAJ
-      DO 50 K=1,NST
-      PHONO(K,J) = 0.
-      PHOTOI(K,I,J) = 0.
-      PHOTOD(K,I,J) = 0.
-   50 CONTINUE
-      DO 60 M=1,NBINS
-      PESPEC(M,J) = 0.
-   60 CONTINUE
-  100 CONTINUE
+      DO J=1,JMAX
+          DO I=1,NMAJ
+              DO K=1,NST
+                  PHONO(K,J) = 0.
+                  PHOTOI(K,I,J) = 0.
+                  PHOTOD(K,I,J) = 0.
+              End Do
+          End Do
+          DO M=1,NBINS
+            PESPEC(M,J) = 0.
+          End Do
+      End Do
 C
 C
 C Calculate attenuated solar flux at all altitudes and wavelengths:
@@ -271,10 +275,10 @@ C
 C
 C Calculate state-specific ionization rates at all altitudes:
 C
-      DO 220 J=1,JMAX
+      DO J=1,JMAX
         DSPECT(J) = RION(L,I,J)*PROB(K,I,L) 
         PHOTOI(K,I,J) = PHOTOI(K,I,J) + DSPECT(J)
-  220 CONTINUE
+      End Do
 C
 C
 C Find box numbers M1, M2 corresponding to energies E1, E2:
@@ -286,24 +290,24 @@ C
 C Fill the boxes from M1 to M2 at all altitudes:
 C 
       Y = E2 - E1 
-      DO 280 N=M1,M2
-      IF (M1 .EQ. M2) THEN
-        FAC = 1.
-      ELSE
-        IF (N .EQ. M1) THEN
-          FAC = (R1-E1) / Y
-        ELSE
-          IF (N .EQ. M2) THEN
-            FAC = (E2-R2) / Y
+      DO N=M1,M2
+          IF (M1 .EQ. M2) THEN
+            FAC = 1.
           ELSE
-            FAC = DEL(N) / Y
+                IF (N .EQ. M1) THEN
+                  FAC = (R1-E1) / Y
+                ELSE
+                  IF (N .EQ. M2) THEN
+                    FAC = (E2-R2) / Y
+                  ELSE
+                    FAC = DEL(N) / Y
+                  ENDIF
+                ENDIF
           ENDIF
-        ENDIF
-      ENDIF
-        DO 250 J=1,JMAX
-          PESPEC(N,J) = PESPEC(N,J) + DSPECT(J) * FAC
-  250   CONTINUE
-  280 CONTINUE
+          DO J=1,JMAX
+              PESPEC(N,J) = PESPEC(N,J) + DSPECT(J) * FAC
+          End Do
+      End Do
 C
   300 CONTINUE 
 C
@@ -325,29 +329,29 @@ C
 C
   400 CONTINUE 
 C
-C
-      RETURN
-C
-      END
+      END SUBROUTINE EPHOTO
 C
 C
 C
 C
       SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER)
-C
+      implicit none
 C This subroutine finds the box numbers corresponding to
 C energies E1 and E2, and calls them M1 and M2
 C 
 C R1 is the upper edge of the lower box, R2 is the lower edge of the
 C upper box.
 C
+      Integer,Intent(in) :: NBINS
+      Real,Intent(in)    :: DEL(NBINS), ENER(NBINS)
+      Real,Intent(out)   :: E1,E2,R1,R2
+      Integer,Intent(out):: M1,M2
+      
+      Integer I
 C
-      DIMENSION DEL(NBINS), ENER(NBINS)
-C
-      DO 100 I=1,NBINS
-      IF (E1 .LT. ENER(I)+DEL(I)/2.) GOTO 200
-  100 CONTINUE
-C
+      DO I=1,NBINS
+          IF (E1 .LT. ENER(I)+DEL(I)/2.) GOTO 200
+      End Do
       M1 = NBINS+1
       RETURN
 C
@@ -365,6 +369,5 @@ C
   400 M2 = I
       R2 = ENER(I) - DEL(I)/2.
 C
-      RETURN 
 C
-      END
+      END Subroutine BOXNUM
