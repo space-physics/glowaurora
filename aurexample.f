@@ -28,6 +28,7 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
+      use machprec
       use maxt,only : phi0
       use energyGrid,only: EGRID
       
@@ -70,7 +71,6 @@ C
       LOGICAL JF(12)
 C
       DATA SW/25*1./
-      DATA PI/3.1415926536/
       DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
      >            90., 91., 92., 93., 94., 95., 96., 97., 98., 99.,
      >           100.,101.,102.,103.,104.,105.,106.,107.,108.,109.,

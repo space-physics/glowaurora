@@ -14,7 +14,7 @@ C
 C
       SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
 C
-      DATA PI/3.1415926536/
+      use machprec,only:pi
 C
       RLAT = GLAT * PI/180.
       RLONG = GLONG * PI/180.
