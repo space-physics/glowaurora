@@ -27,12 +27,12 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(PyZ,PyZeta,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
+      SUBROUTINE AURORA(Z,PyZeta,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap,PyPhitop)
 
       use machprec
-      
+
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
       PARAMETER (NEX=20)
@@ -45,7 +45,7 @@ C
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, PyPhitop(NBINS,3)
-      Real, Dimension(JMAX),Intent(Out)    :: PyZ,Pyecalc,Pypi,Pysi
+      Real, Dimension(JMAX),Intent(Out)    :: Pyecalc,Pypi,Pysi
       Real,Intent(Out)  :: PyZeta(JMAX,NW)
       Real, Intent(Out)  :: Pyion(JMAX,11)
       Real,Intent(Out)   :: Pyisr(JMAX,3)
@@ -80,20 +80,6 @@ C
       LOGICAL JF(12)
 C
       DATA SW/25*1./
-      DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
-     >            90., 91., 92., 93., 94., 95., 96., 97., 98., 99.,
-     >           100.,101.,102.,103.,104.,105.,106.,107.,108.,109.,
-     >           110.,111.5,113.,114.5,116.,118.,120.,122.,124.,126.,
-     >           128.,130.,132.,134.,136.,138.,140.,142.,144.,146.,
-     >           148.,150.,153.,156.,159.,162.,165.,168.,172.,176.,
-     >           180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,
-     >           237.,244.,252.,260.,268.,276.,284.,292.,300.,309.,
-     >           318.,327.,336.,345.,355.,365.,375.,385.,395.,406.,
-     >           417.,428.,440.,453.,467.,482.,498.,515.,533.,551.,
-     >           570.,590.,610.,630.,650.,670.,690.,710.,730.,750.,
-     >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
-CC  Python connection
-      PyZ = Z
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
       idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong;
       f107a=Pyf107a; f107=Pyf107; f107p=Pyf107p; ap=Pyap
@@ -118,17 +104,6 @@ C      ITAIL = 0
 C      FMONO = 0.
 C      EMONO = 0.
 C
-C
-C Set up energy grid:
-C
-C      CALL EGRID (ENER, DEL, NBINS)
-C
-C
-C Generate auroral electron flux into PHITOP array:
-C
-C      Phitop=MAXT(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO)
-C
-C
 C Calculate local solar time:
 C
       STL = (UT/240.+GLONG) / 15.
@@ -138,23 +113,23 @@ C
 C
 C Call MSIS-2K to get neutral densities and temperature:
 C
-        CALL TSELEC(SW)
+C        CALL TSELEC(SW)
 C
-        DO J=1,JMAX
-          CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
-          ZO(J) = D(2)
-          ZN2(J) = D(3)
-          ZO2(J) = D(4)
-          ZRHO(J) = D(6)
-          ZNS(J) = D(8)
-          ZTN(J) = T(2)
-        END DO
+C        DO J=1,JMAX
+!          CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
+!          ZO(J) = D(2)
+!         ZN2(J) = D(3)
+!         ZO2(J) = D(4)
+!          ZRHO(J) = D(6)
+!          ZNS(J) = D(8)
+!          ZTN(J) = T(2)
+!       END DO
 C
 C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
 C Model (NOEM)
 C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+C      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
 C
 C
 C Call International Reference Ionosphere-1990 subroutine to get
