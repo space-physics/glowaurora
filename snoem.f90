@@ -13,7 +13,7 @@ subroutine snoem(doy, kp, f107, z, mlat, nozm)
 use machprec
 implicit none
 
-real(sp) cosd, sind,x,thet
+real(sp) cosd, sind,thet
 sind(thet) = sin(thet/180.0*pi)
 cosd(thet) = cos(thet*pi/180.0)
 

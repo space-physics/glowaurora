@@ -19,15 +19,14 @@
 module vquartmod
     use machprec
     implicit none
-
+    INCLUDE 'glow.h'
     private
     public :: vquart
 
     real(kind=dp) :: E =1.D-38, Z=0.
 contains
     SUBROUTINE VQUART (A, ROOT, NJ)
-    implicit none
-    INCLUDE 'glow.h'
+    INCLUDE 'glow.h' ! f2py needs this here too
     Real(kind=dp),intent(out) :: ROOT(JMAX)
     Real(kind=dp),intent(in)  :: A(JMAX,5)
     Integer,intent(in)        :: NJ
