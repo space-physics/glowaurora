@@ -119,6 +119,7 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
+      use energyGrid,only: EGRID
 C
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)
