@@ -126,7 +126,7 @@ C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      CALL MAXT (EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO, PHITOP)
+      Phitop=MAXT(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO)
 C
 C
 C Calculate local solar time:

@@ -9,16 +9,18 @@ ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
-FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR)
+FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons
 #FFLAGS = -g $(DBGFLAGS) 
 
 DBGFLAGS = -debug full -traceback
 DBGFLAGS += -check bounds -check format -check output_conversion -check pointers -check uninit
 DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
 
-.SUFFIXES: .o .F .F90 .f
+.SUFFIXES: .o .F .F90 .f90 .f .mod
 
 %.o: %.F90
+	$(FC) $(FFLAGS) -c  -o $@ $<
+%.o: %.f90
 	$(FC) $(FFLAGS) -c  -o $@ $<
 %.o: %.F
 	$(FC) $(FFLAGS) $(REAL8) -c  -o $@ $<
@@ -27,7 +29,7 @@ DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
 #
 # Sources (in order of dependency):
 #
-SOURCES = aurexample.f ephoto.f egrid.f etrans.f exsect.f fieldm.f gchem.f geomag.f glow.f iri90.f maxt.f90 nrlmsise00.f qback.f rcolum.f rout.f snoem.f snoemint.f solzen.f ssflux.f vquart.f
+SOURCES = machprec.f90 egrid.f90 ephoto.f maxt.f90 etrans.f exsect.f fieldm.f gchem.f geomag.f glow.f iri90.f nrlmsise00.f qback.f rcolum.f rout.f snoem.f snoemint.f solzen.f ssflux.f vquart.f aurexample.f 
 
 OBJS := $(addsuffix .o, $(basename $(SOURCES)))
 EXEC = auroraexample

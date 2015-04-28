@@ -28,7 +28,11 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
+      use maxt,only : phi0
+      use energyGrid,only: EGRID
+      
       INCLUDE 'glow.h'
+      
       PARAMETER (NMAJ=3)
       PARAMETER (NEX=20)
       PARAMETER (NW=20)
@@ -108,7 +112,7 @@ C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      CALL MAXT (EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO, PHITOP)
+      Phitop=Phi0(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO)
 C
 C
 C Calculate local solar time:
