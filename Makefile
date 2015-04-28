@@ -9,7 +9,7 @@ ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
-FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons
+FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons -ffpe-trap=underflow -g
 #FFLAGS = -g $(DBGFLAGS) 
 
 DBGFLAGS = -debug full -traceback
