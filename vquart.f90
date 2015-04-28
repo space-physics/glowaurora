@@ -38,9 +38,9 @@ contains
         W2(I) = ( A(I,5)*(A(I,3)*A(I,1)-A(I,2)**2)                          &
                   -A(I,4)*(A(I,4)*A(I,1)-A(I,2)*A(I,3))                     &
                   +A(I,3)*(A(I,4)*A(I,2)-A(I,3)**2)    ) / 4.D0
-        W4(I)= -2.D0*DREAL(  ( (CMPLX(W2(I),Z)                             &
-                         +SQRT(CMPLX(W2(I)**2+4.D0*W1(I)**3+E,Z)))/2.D0  &
-                         +CMPLX(E,Z) )**(1.D0/3.D0)  )
+        W4(I)= -2.D0*RealPart(  ( (CMPLX(W2(I),Z,dp)                           &
+                         +SQRT(CMPLX(W2(I)**2+4.D0*W1(I)**3+E,Z,dp)))/2.D0  &
+                         +CMPLX(E,Z,dp) )**(1.D0/3.D0)  )
         W1(I) = A(I,5)*W4(I) + A(I,4)**2 - A(I,5)*A(I,3) + E
         IF (W1(I) .LE. E) W1(I) = E
         W1(I) = SQRT(W1(I))
@@ -54,7 +54,7 @@ contains
         IF (W5(I) .LE. E) W5(I) = E
         ROOT(I) = (W3(I)+SQRT(W5(I))) / A(I,5)
     End Do
-
-
+    print *,A(1,:)
+    print *,root(1)
     END Subroutine VQUART
 end module Vquartmod
