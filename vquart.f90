@@ -38,9 +38,9 @@ contains
         W2(I) = ( A(I,5)*(A(I,3)*A(I,1)-A(I,2)**2)                          &
                   -A(I,4)*(A(I,4)*A(I,1)-A(I,2)*A(I,3))                     &
                   +A(I,3)*(A(I,4)*A(I,2)-A(I,3)**2)    ) / 4.D0
-        W4(I)= -2.D0*RealPart(  ( (CMPLX(W2(I),Z,dp)                           &
+        W4(I)= -2.D0*Real(  ( (CMPLX(W2(I),Z,dp)                           &
                          +SQRT(CMPLX(W2(I)**2+4.D0*W1(I)**3+E,Z,dp)))/2.D0  &
-                         +CMPLX(E,Z,dp) )**(1.D0/3.D0)  )
+                         +CMPLX(E,Z,dp) )**(1.D0/3.D0), kind=dp)
         W1(I) = A(I,5)*W4(I) + A(I,4)**2 - A(I,5)*A(I,3) + E
         IF (W1(I) .LE. E) W1(I) = E
         W1(I) = SQRT(W1(I))
