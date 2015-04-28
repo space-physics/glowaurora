@@ -8,21 +8,22 @@
 !
 module EnergyGrid
   use machprec
+  Implicit None
   private
   public :: EGRID
 contains
   SUBROUTINE EGRID (ENER, DEL,NBINS)
-      Implicit None
+      
       Integer N
       Integer,Intent(In) :: Nbins
       Real(sp), Intent(Out) :: ENER(Nbins), DEL(Nbins)
 
-
-      DO N=1,NBINS
+      !print*,maxexponent(ener)
+      DO N=1,nbins
         IF (N .LE. 21) THEN
-          ENER(N) = 0.5 * FLOAT(N)
+          ENER(N) = 0.5 * REAL(N)
         ELSE
-          ENER(N) = EXP (0.05 * FLOAT(N+26))
+          ENER(N) = EXP (0.05 * REAL(N+26))
         ENDIF
       End Do
 
@@ -30,6 +31,5 @@ contains
       DEL(2:nbins) = ENER(2:nbins)-ENER(1:nbins-1)
 
       ENER = ENER - DEL/2.0
-
   END Subroutine EGRID
 end module EnergyGrid
