@@ -5,11 +5,12 @@ Michael Hirsch
 """
 from datetime import datetime
 from fortrandates import datetime2gtd
-from numpy import array,tile,roots,log,arange,append,isclose,zeros,float32,asfortranarray
+from numpy import array,tile,roots,log,arange,append,isclose,zeros,float32
 from numpy.testing import assert_allclose
 import sys
 sys.path.append('../msise-00')
 from demo_msis import rungtd1d
+import aurora
 #%% test inputs
 z = arange(80,110+1,1)
 z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
@@ -32,47 +33,42 @@ phi = maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
 assert phi.argmax() == maxind
 assert_allclose(phi[[maxind,maxind+10]],[ 114810.6,97814.438])
 #%% test vquart (quartic root)
-from aurora import vquartmod
 Aquart = tile([-1,0,0,0,1],(jmax,1))
-qroot = vquartmod(Aquart,1)
+qroot = aurora.vquartmod(Aquart,1)
 assert_allclose(qroot[0],roots(Aquart[0,-1]))
 #%% test snoem
-from aurora import snoemmod
-zno,maglat,nozm = snoemmod(iyd,1.75*log(0.4*ap),f107)
+zno,maglat,nozm = aurora.snoemmod(iyd,1.75*log(0.4*ap),f107)
 assert_allclose((nozm[12,15],nozm[-2,-1]),(33547142.,  44171752.))
 #%% test snoemint
-from aurora import snoemint
 densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
-znoint = snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
+znoint = aurora.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
 assert_allclose(znoint[[28,63]], (1.40939280e+08,   4.11383025e+06))
 #%% test fieldm
-from aurora import fieldm
-xdip,ydip,zdip,totfield,dipang,decl,smodip = fieldm(glat,glon%360,z[50])
+xdip,ydip,zdip,totfield,dipang,decl,smodip = aurora.fieldm(glat,glon%360,z[50])
 assert isclose(xdip,0.10698765516281128)
 assert isclose(totfield,0.532055139541626)
 assert isclose(dipang,76.86974334716797)
 #%% test solzen
-from aurora import szacalc
-sza = szacalc(iyd,utsec,glat,glon)
+sza = aurora.szacalc(iyd,utsec,glat,glon)
 assert isclose(sza, 104.98328399658203)
 #%% test ssflux
-from aurora import ssflux
 iscale=1; hlybr=0.; hlya=0.; fexvir=0.; heiew=0.; xuvfac=3.
-wave1,wave2,sflux = ssflux(iscale,f107,f107a,hlybr,fexvir,hlya,heiew,xuvfac)
+wave1,wave2,sflux = aurora.ssflux(iscale,f107,f107a,hlybr,fexvir,hlya,heiew,xuvfac)
 assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 #%% test rcolum
 """ VCD: Vertical Column Density """
-from aurora import rcolummod
-
-zcol,zvcd = rcolummod(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'],nmaj)
+zcol,zvcd = aurora.rcolummod(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'],nmaj)
 assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
-#assert isclose(zvcd[2,5],8.0382351e+25)
+#assert isclose(zvcd[2,5],8.0382351e+25) #TODO changes a bit between python 2 / 3
 print(zvcd[2,5])
 #%% skipping EPHOTO since we care about night time more for now
 
 #%% test qback (nighttime background ionization)
-from aurora import qback
-photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
-phono = zeros((nst,jmax),dtype=float32,order='F')
-photoi,phono = qback(zmaj=densd[['O','O2','N2']].values.T,zno=znoint,zvcd=zvcd,
+#photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
+#phono = zeros((nst,jmax),dtype=float32,order='F')
+photoi,phono = aurora.qback(zmaj=densd[['O','O2','N2']].values.T,zno=znoint,zvcd=zvcd,
                      jm=jmax,nmaj=nmaj,nst=nst)
+#%% electron precipitation
+""" First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others """
+aurora.glow() #no args
+#aurora
