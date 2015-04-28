@@ -27,7 +27,7 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(Z,PyZeta,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
+      SUBROUTINE AURORA(Z,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap,PyPhitop)
 
@@ -46,9 +46,7 @@ C
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, PyPhitop(NBINS,3)
       Real, Dimension(JMAX),Intent(Out)    :: Pyecalc,Pypi,Pysi
-      Real,Intent(Out)  :: PyZeta(JMAX,NW)
-      Real, Intent(Out)  :: Pyion(JMAX,11)
-      Real,Intent(Out)   :: Pyisr(JMAX,3)
+      Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,3)
 
 C
       COMMON /CGLOW/
@@ -233,7 +231,6 @@ C    >                zo(j),zo2(j),zn2(j),zno(j)
 C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
       End Do
 
-      PyZeta = transpose(zeta)
       Pyecalc = ecalc
 
       Pyion(:,1:7) = transpose(zxden(1:7,:))
