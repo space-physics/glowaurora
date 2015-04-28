@@ -6,8 +6,13 @@
 Installation:
 -------------
 ```
-f2py --opt='-fno-align-commons' -m aurora -c aurora_sub.f maxt.f90 glow.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f vquart.f ssflux.f egrid.f snoemint.f snoem.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f
+f2py --opt='-fno-align-commons' -m aurora -c glow.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f vquart.f ssflux.f snoemint.f snoem.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f
 ```
+if you want to use the GLOW gridder, separately and additionally do:
+```
+f2py -m glowgrid -c egrid.f90 maxt.f90
+```
+
 
 Note: If on Windows and using MinGW compiler, add the option ``` --compiler=mingw32 ```
 
