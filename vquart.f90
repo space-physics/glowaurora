@@ -54,7 +54,6 @@ contains
         IF (W5(I) .LE. E) W5(I) = E
         ROOT(I) = (W3(I)+SQRT(W5(I))) / A(I,5)
     End Do
-    print *,A(1,:)
-    print *,root(1)
+ 
     END Subroutine VQUART
 end module Vquartmod
