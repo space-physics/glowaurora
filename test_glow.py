@@ -72,3 +72,9 @@ photoi,phono = aurora.qback(zmaj=densd[['O','O2','N2']].values.T,zno=znoint,zvcd
 """ First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others """
 aurora.glow() #no args
 #aurora
+
+#%% ver and constituants
+zceta = aurora.cglow.zceta.T
+zeta = aurora.cglow.zeta[:,:11].T
+zcsum = zceta.sum(axis=-1)
+assert_allclose(zcsum,zeta,rtol=1e-6)
