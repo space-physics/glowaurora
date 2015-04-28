@@ -8,7 +8,7 @@ from matplotlib.pyplot import figure, show,subplots,tight_layout
 from pandas import DataFrame
 from datetime import datetime
 from dateutil.parser import parse
-from numpy import hstack
+from numpy import hstack,arange,append,array
 try:
     import seaborn as sns
 except ImportError as e:
@@ -27,7 +27,10 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
     phitop = maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
 #%% glow model
-    z,zeta,ion,ecalc,photI,ImpI,isr = aurora(iyd,utsec,glat,glon,
+    z = arange(80,110+1,1)
+    z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
+
+    zeta,ion,ecalc,photI,ImpI,isr = aurora(z,iyd,utsec,glat,glon%360,
                                              f107a,f107,f107p,ap,phi)
 
     ver = DataFrame(index=z,
