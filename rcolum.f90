@@ -130,10 +130,10 @@ contains
   integer i, j
 
   DO I=1,NMAJ
-  ZVCD(I,JMAX) =   ZMAJ(I,JMAX) * (ZZ(JMAX)-ZZ(JMAX-1)) / ALOG(ZMAJ(I,JMAX-1)/ZMAJ(I,JMAX))
+  ZVCD(I,JMAX) =   ZMAJ(I,JMAX) * (ZZ(JMAX)-ZZ(JMAX-1)) / LOG(ZMAJ(I,JMAX-1)/ZMAJ(I,JMAX))
   DO J=JMAX-1,1,-1
   RAT = ZMAJ(I,J+1) / ZMAJ(I,J)
-  ZVCD(I,J) =   ZVCD(I,J+1) + ZMAJ(I,J) * (ZZ(J)-ZZ(J+1)) / ALOG(RAT) * (1.-RAT)
+  ZVCD(I,J) =   ZVCD(I,J+1) + ZMAJ(I,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
   End Do
   End Do
   END

@@ -213,13 +213,13 @@ C
             PE(IJ,IV)=CE(II,IJ)
             PI(IJ,IV)=CI(II,IJ)
           ELSE
-            FAC = ALOG (EX/EC(I,IJ)) / ALOG (EC(II,IJ)/EC(I,IJ))
-            SIGS(IJ,IV) = EXP (ALOG (CC(I,IJ))
-     >                         + ALOG (CC(II,IJ)/CC(I,IJ)) * FAC)
-            PE(IJ,IV) = EXP (ALOG (CE(I,IJ))
-     >                       + ALOG (CE(II,IJ)/CE(I,IJ)) * FAC)
-            PI(IJ,IV) = EXP (ALOG (CI(I,IJ))
-     >                       + ALOG (CI(II,IJ)/CI(I,IJ)) * FAC)
+            FAC = log (EX/EC(I,IJ)) / log (EC(II,IJ)/EC(I,IJ))
+            SIGS(IJ,IV) = EXP (log (CC(I,IJ))
+     >                         + log (CC(II,IJ)/CC(I,IJ)) * FAC)
+            PE(IJ,IV) = EXP (log (CE(I,IJ))
+     >                       + log (CE(II,IJ)/CE(I,IJ)) * FAC)
+            PI(IJ,IV) = EXP (log (CI(I,IJ))
+     >                       + log (CI(II,IJ)/CI(I,IJ)) * FAC)
           ENDIF
    80   CONTINUE
    90 CONTINUE
@@ -240,7 +240,7 @@ C
             SIGEX(K,I,J) = 0.0
           ENDIF
           IF (ENER(J).GT.THI(K,I) .AND. THI(K,I).GT.0.001) THEN
-            AE = AK(K,I)/ENER(J) * ALOG(ENER(J)/AJ(K,I))
+            AE = AK(K,I)/ENER(J) * log(ENER(J)/AJ(K,I))
             GAMMA = GAMS(K,I) * ENER(J) / (ENER(J)+GAMB(K,I))
             T0 = TS(K,I) - (TA(K,I)/(ENER(J)+TB(K,I)))
             SIGIX(K,I,J) = 1.E-16 * AE * GAMMA
@@ -443,7 +443,7 @@ C
       TB1=TB(ML,I)
       GAMS1=GAMS(ML,I)
       GAMB1=GAMB(ML,I)
-      S=QQ*AK1*ALOG(E/AJ1)
+      S=QQ*AK1*log(E/AJ1)
       A=S/E
       TZ=TS1-TA1/(E+TB1)
       GG=(GAMS1*E)/(E+GAMB1)
@@ -456,7 +456,7 @@ C
       AL2=GG*GG*(ABB*ABB+1.0)
       AL1=GG*GG*(ABC*ABC+1.0)
       ABD=DATAN(ABB)-DATAN(ABC)
-      T12=TZ+0.5*GG*(ALOG(AL2)-ALOG(AL1))/ABD
+      T12=TZ+0.5*GG*(log(AL2)-log(AL1))/ABD
       SIGION=A*GG*ABD
       RETURN
 C
@@ -567,6 +567,6 @@ C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
 
 
       FUNCTION TERPOO(X,X1,X2,Y1,Y2)
-      TERPOO = EXP ( ALOG(Y1) + ALOG(X/X1)*ALOG(Y2/Y1)/ALOG(X2/X1) )
+      TERPOO = EXP ( log(Y1) + log(X/X1)*log(Y2/Y1)/log(X2/X1) )
       RETURN
       END
