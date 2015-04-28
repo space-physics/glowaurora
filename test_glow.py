@@ -5,7 +5,7 @@ Michael Hirsch
 """
 from datetime import datetime
 from fortrandates import datetime2gtd
-from numpy import array,tile,roots,log,arange,append
+from numpy import array,tile,roots,log,arange,append,isclose,zeros,float32,asfortranarray
 from numpy.testing import assert_allclose
 import sys
 sys.path.append('../msise-00')
@@ -19,6 +19,7 @@ e0 = 1e3
 maxind = 112
 glat = 65; glon=-148
 ap=4; f107=100; f107a=100
+nmaj=3; nst=6
 dtime = datetime(2013,4,14,8,54,0)
 #
 iyd,utsec = datetime2gtd(dtime)[:2]
@@ -44,3 +45,34 @@ from aurora import snoemint
 densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
 znoint = snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
 assert_allclose(znoint[[28,63]], (1.40939280e+08,   4.11383025e+06))
+#%% test fieldm
+from aurora import fieldm
+xdip,ydip,zdip,totfield,dipang,decl,smodip = fieldm(glat,glon%360,z[50])
+assert isclose(xdip,0.10698765516281128)
+assert isclose(totfield,0.532055139541626)
+assert isclose(dipang,76.86974334716797)
+#%% test solzen
+from aurora import szacalc
+sza = szacalc(iyd,utsec,glat,glon)
+assert isclose(sza, 104.98328399658203)
+#%% test ssflux
+from aurora import ssflux
+iscale=1; hlybr=0.; hlya=0.; fexvir=0.; heiew=0.; xuvfac=3.
+wave1,wave2,sflux = ssflux(iscale,f107,f107a,hlybr,fexvir,hlya,heiew,xuvfac)
+assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
+#%% test rcolum
+""" VCD: Vertical Column Density """
+from aurora import rcolummod
+
+zcol,zvcd = rcolummod(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'],nmaj)
+assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
+#assert isclose(zvcd[2,5],8.0382351e+25)
+print(zvcd[2,5])
+#%% skipping EPHOTO since we care about night time more for now
+
+#%% test qback (nighttime background ionization)
+from aurora import qback
+photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
+phono = zeros((nst,jmax),dtype=float32,order='F')
+photoi,phono = qback(zmaj=densd[['O','O2','N2']].values.T,zno=znoint,zvcd=zvcd,
+                     jm=jmax,nmaj=nmaj,nst=nst)

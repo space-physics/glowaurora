@@ -156,14 +156,14 @@ C*****************************************************************
 C*****************************************************************
 C
        SUBROUTINE IRI90(JF,JMAG,ALATI,ALONG,RZ12,MMDD,DHOUR,
-     &                  ZKM,NZ,DIRECT,OUTF,OARR)
+     &                  ZKM,NZ,drect,OUTF,OARR)
 
       logical, intent(in) :: JF(12)
       integer,intent(in) :: JMAG
       real,intent(out) :: outf(11,nz),oarr(30)
 
       dimension zkm(nz)
-      character*(*) direct
+      character*(*) drect
       character*50 path
       character*10 filename
       INTEGER               EGNR,AGNR,DAYNR,DDO,DO2,SEASON,SEADAY
@@ -409,7 +409,7 @@ C READ CCIR COEFFICIENT SET FOR CHOSEN MONTH....................
 C
 7797    WRITE(filename,104) MONTH+10
 104     FORMAT('ccir',I2,'.asc')
-        call dfp(direct,filename,path)
+        call dfp(drect,filename,path)
         OPEN(IUCCIR,FILE=path,STATUS='OLD',ERR=8448)
         READ(IUCCIR,4689) F2,FM3
 4689    FORMAT(4E15.8)
@@ -420,7 +420,7 @@ C
        if (URSIF2) then
          WRITE(filename,1144) MONTH+10
 1144      FORMAT('ursi',I2,'.asc')
-          call dfp(direct,filename,path)
+          call dfp(drect,filename,path)
           OPEN(IUCCIR,FILE=path,STATUS='OLD',ERR=8448)
           READ(IUCCIR,4689) F2
           CLOSE(IUCCIR)
@@ -1017,27 +1017,27 @@ C
       END
 C
 C
-C Subroutine DFP, Stan Solomon, 3/92, splices filename to directory
+C Subroutine DFP, Stan Solomon, 3/92, splices filename to drectory
 C
-      subroutine dfp(direct,filename,path)
-      character*(*) direct,filename,path
+      subroutine dfp(drect,filename,path)
+      character*(*) drect,filename,path
       character*50 blanks
       data blanks/'                                                  '/
       path=blanks
-      nch=len(direct)
+      nch=len(drect)
       do 10 i=1,nch
-      if (direct(i:i).ne.' ') goto 20
+      if (drect(i:i).ne.' ') goto 20
    10 continue
    20 lb=i
       do 30 i=nch,1,-1
-      if (direct(i:i).ne.' ') goto 40
+      if (drect(i:i).ne.' ') goto 40
    30 continue
    40 le=i
       if (lb.ge.nch .or. le.le.0) then
         path(1:10)=filename(1:10)
       else
         nd=le-lb+1
-        path(1:nd)=direct(lb:le)
+        path(1:nd)=drect(lb:le)
         path(nd+1:nd+10)=filename(1:10)
       endif
       return

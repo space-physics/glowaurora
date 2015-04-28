@@ -24,17 +24,19 @@ module rcolummod
   implicit none
 
   private
-  public :: rcolum, chap,vcd,SPERFC !f2py needs all subr/func public
+  public :: rcolum, chap,vcd !f2py needs all subr/func public
    Real(sp) :: RE=6.37E8
 contains
   SUBROUTINE RCOLUM (CHI, ZZ, ZMAJ, TN, ZCOL, ZVCD, NMAJ)
   include 'glow.h'
+  
   integer,intent(in) :: nmaj
-  real(sp), intent(in) :: chi,zz(jmax)
+  real(sp), intent(in) :: chi,zz(jmax),TN(JMAX)
+  real,intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
+  
   integer,PARAMETER ::NM=3,NU=4
 !
-  real(sp) :: ZMAJ(NMAJ,JMAX), TN(JMAX), ZCOL(NMAJ,JMAX), &
-           ZVCD(NMAJ,JMAX), ZCG(NM),  ZCUS(NM,NU), ghrg,ghz,tng
+  real(sp) :: ZMAJ(NMAJ,JMAX), ZCG(NM),ZCUS(NM,NU), ghrg,ghz,tng
   integer i,j, jg
 !
   Real(sp), dimension(nu) :: ZUS=[0., 1.5E6, 5.E6, 9.E6], TNUS=[288., 217., 271., 187.]
@@ -100,26 +102,23 @@ contains
       integer,intent(in) :: I
       integer, PARAMETER :: NMAJ=3
       Real(sp), dimension(nmaj) :: AM=[16., 32., 28.]
-      real(sp) :: G=978.1, gr,hn,hg,hf,sqhf,sperf,chap 
+      real(sp) :: G=978.1, gr,hn,hg,hf,sqhf,SPERFC,chap 
       GR=G*(RE/(RE+Z))**2 
       HN=1.38E-16*T/(AM(I)*1.662E-24*GR)
       HG=(RE+Z)/HN 
       HF=0.5*HG*(COS(CHI)**2) 
       SQHF=SQRT(HF) 
-      CHAP=SQRT(0.5*PI*HG)*SPERFC(SQHF) 
+      IF (SQHF .LE. 8.) THEN
+       SPERFC = (1.0606963+0.55643831*SQHF) / (1.0619896+1.7245609*SQHF+SQHF**2)
+      ELSE
+       SPERFC=0.56498823/(0.06651874+SQHF) 
+      ENDIF 
+      CHAP=SQRT(0.5*PI*HG)*SPERFC
   END Function Chap
 !
 !
 !
 !
-  real(sp) Pure FUNCTION SPERFC(DUMMY) 
-    Real(sp),intent(in) :: dummy
-    IF (DUMMY .LE. 8.) THEN
-      SPERFC = (1.0606963+0.55643831*DUMMY) / (1.0619896+1.7245609*DUMMY+DUMMY*DUMMY)
-    ELSE
-      SPERFC=0.56498823/(0.06651874+DUMMY) 
-    ENDIF 
-  END function sperfc
 !
 !
   SUBROUTINE VCD(ZZ,ZMAJ,ZVCD,JMAX,NMAJ)
