@@ -52,6 +52,7 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 def plotaurora(phitop,ver,photIon,isr,dtime,glat,glon):
     ax = figure().gca()
     phitop.plot(ax=ax,logx=True,logy=True)
+    ax.set_title('Incident Flux',fontsize='x-large')
     ax.set_xlabel('Beam Energy [eV]',fontsize='large')
     ax.set_ylabel('Flux',fontsize='large')
     ax.tick_params(axis='both',which='major',labelsize='medium')

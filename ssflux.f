@@ -123,7 +123,8 @@ C
      >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX), B1(3), B2(3) 
       data epsil/1.0E-6/
       data islast/-1/
-      save islast
+! this save all var is necessary or the sim gives incorrection photoionization results MH 4/15
+      save 
 C
 C regression coefficients which reduce to solar min. spectrum:
       DATA B1/1.0, 0.0138, 0.005/, B2/1.0, 0.59425, 0.3811/
