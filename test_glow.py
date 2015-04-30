@@ -4,7 +4,7 @@ Registration testing of GLOW
 Michael Hirsch
 """
 from datetime import datetime
-from fortrandates import datetime2gtd
+from fortrandates import datetime2yd,datetime2gtd
 from numpy import array,tile,roots,log,arange,append,isclose
 from numpy.testing import assert_allclose
 import sys
@@ -23,7 +23,7 @@ ap=4; f107=100; f107a=100
 nmaj=3; nst=6
 dtime = datetime(2013,4,14,8,54,0)
 #
-iyd,utsec = datetime2gtd(dtime)[:2]
+yd,utsec = datetime2yd(dtime)[:2]
 #%% test of egrid
 from glowgrid import energygrid,maxt
 ener,dE = energygrid(nbins)
@@ -37,7 +37,8 @@ Aquart = tile([-1,0,0,0,1],(jmax,1))
 qroot = aurora.vquartmod(Aquart,1)
 assert_allclose(qroot[0],roots(Aquart[0,-1]))
 #%% test snoem
-zno,maglat,nozm = aurora.snoemmod(iyd,1.75*log(0.4*ap),f107)
+doy = datetime2gtd(dtime)[0]
+zno,maglat,nozm = aurora.snoemmod.snoem(doy,1.75*log(0.4*ap),f107)
 assert_allclose((nozm[12,15],nozm[-2,-1]),(33547142.,  44171752.))
 #%% test snoemint
 densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
@@ -49,8 +50,8 @@ assert isclose(xdip,0.10698765516281128)
 assert isclose(totfield,0.532055139541626)
 assert isclose(dipang,76.86974334716797)
 #%% test solzen
-sza = aurora.szacalc(iyd,utsec,glat,glon)
-assert isclose(sza, 104.98328399658203)
+sza = aurora.szacalc(yd,utsec,glat,glon)
+assert isclose(sza, 104.68412017822266)
 #%% test ssflux
 iscale=1; hlybr=0.; hlya=0.; fexvir=0.; heiew=0.; xuvfac=3.
 wave1,wave2,sflux = aurora.ssflux(iscale,f107,f107a,hlybr,fexvir,hlya,heiew,xuvfac)
