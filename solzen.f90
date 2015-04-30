@@ -19,10 +19,10 @@ module szacalc
 contains
 SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
   integer,intent(in) :: idate
-  real,intent(in) :: UT,glat,glong
-  real,intent(out):: sza
+  real(sp),intent(in) :: UT,glat,glong
+  real(sp),intent(out):: sza
   
-  real :: sdec,srasn,gst,rlat,rh,cossza,rlong
+  real(sp) :: sdec,srasn,gst,rlat,rh,cossza,rlong
 
   RLAT = GLAT * PI/180.
   RLONG = GLONG * PI/180.
@@ -32,7 +32,7 @@ SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
   SZA = ACOS(COSSZA) * 180./PI
 END SUBROUTINE SOLZEN
 !
-! Subroutine SUNCOR returns the declination SDE! and right ascension
+! Subroutine SUNCOR returns the declination SDEC and right ascension
 ! SRASN of the sun in GEI coordinates, radians, for a given date IDATE
 ! in yyddd format and universal time UT in seconds.  Greenwich Sidereal
 ! Time GST in radians is also returned.  Reference:  C.T. Russell,
@@ -41,10 +41,10 @@ END SUBROUTINE SOLZEN
 SUBROUTINE SUNCOR (IDATE, UT, SDEC, SRASN, GST)
 
   integer,intent(in) :: idate
-  real,intent(in) :: UT
-  real,intent(out):: SDEC,SRASN,GSt
+  real(sp),intent(in) :: UT
+  real(sp),intent(out):: SDEC,SRASN,GST
 
-  real fday,vl,slp,slong,sind,obliq,g,DJ,cosd,T
+  real(sp) fday,vl,slp,slong,sind,obliq,g,DJ,cosd,T
   integer iyr,iday
 !
   FDAY=UT/86400.

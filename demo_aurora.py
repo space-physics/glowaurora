@@ -14,7 +14,7 @@ try:
 except ImportError as e:
     print('Seaborn not installed, falling back to basic Matplotlib plots.  {}'.format(e))
 #
-from fortrandates import datetime2gtd
+from fortrandates import datetime2yd
 try:
     from glowgrid import energygrid,maxt
     import aurora
@@ -32,7 +32,6 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 
     ion,ecalc,photI,ImpI,isr = aurora.aurora(z,iyd,utsec,glat,glon%360,
                                              f107a,f107,f107p,ap,phi)
-
 #%% handle the outputs including common blocks
     zeta=aurora.cglow.zeta.T #columns 11:20 are identically zero
 
@@ -56,7 +55,7 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
     zceta = aurora.cglow.zceta.T
 
     return ver,photIon,isrparam,phitop,zceta
-
+#%% plot
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax = figure().gca()
     phitop.plot(ax=ax,logx=True,logy=True)
@@ -120,8 +119,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_title('electron impact ioniz. rates',fontsize='x-large')
     #ax.legend(True)
 #%% constituants of per-wavelength VER
-    zcsum = zceta.sum(axis=-1)
-    assert_allclose(zcsum,ver.values,rtol=1e-6)
+#    zcsum = zceta.sum(axis=-1)
+
     ax = figure().gca()
     for zc in rollaxis(zceta,1):
         ax.plot(ver.index,zc)
@@ -146,11 +145,14 @@ if __name__ == '__main__':
         dtime = datetime.now()
     else:
         dtime = parse(p.simtime)
-    iyd,utsec = datetime2gtd(dtime)[:2]
+
+    yd,utsec = datetime2yd(dtime)[:2]
 
     (glat,glon) = p.latlon
 
-    ver,photIon,isr,phitop,zceta = demoaurora(p.nbins,p.flux,p.e0,iyd,utsec,glat,glon,
+    ver,photIon,isr,phitop,zceta = demoaurora(p.nbins,p.flux,p.e0,
+                                              yd,utsec,glat,glon,
                                         p.f107a,p.f107,p.f107p,p.ap)
+
     plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon)
     show()
