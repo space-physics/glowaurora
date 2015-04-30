@@ -5,7 +5,7 @@ Michael Hirsch
 """
 from datetime import datetime
 from fortrandates import datetime2gtd
-from numpy import array,tile,roots,log,arange,append,isclose,zeros,float32
+from numpy import array,tile,roots,log,arange,append,isclose
 from numpy.testing import assert_allclose
 import sys
 sys.path.append('../msise-00')
@@ -59,8 +59,7 @@ assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 """ VCD: Vertical Column Density """
 zcol,zvcd = aurora.rcolummod(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'],nmaj)
 assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
-#assert isclose(zvcd[2,5],8.0382351e+25) #TODO changes a bit between python 2 / 3
-print(zvcd[2,5])
+assert isclose(zvcd[2,5],8.04e+25,rtol=1e-2) #TODO changes a bit between python 2 / 3
 #%% skipping EPHOTO since we care about night time more for now
 
 #%% test qback (nighttime background ionization)
@@ -75,6 +74,6 @@ aurora.glow() #no args
 
 #%% ver and constituants
 zceta = aurora.cglow.zceta.T
-zeta = aurora.cglow.zeta[:,:11].T
-zcsum = zceta.sum(axis=-1)
+zeta = aurora.cglow.zeta.T[:,:11]
+zcsum = zceta.sum(axis=-1)[:,:11]
 assert_allclose(zcsum,zeta,rtol=1e-6)
