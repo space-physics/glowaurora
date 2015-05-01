@@ -28,8 +28,6 @@ def demosuncor(dtime,glat,glon,alt_m):
     for d,s,t in zip(yd,utsec,dtime):
         solar['glow'].loc[t] = szacalc.suncor(d,s)
     solar.ix['glow',:,:] = degrees(solar.ix['glow',:,:])
-    #solar.ix['glow',:,'ra'] = degrees(solar.ix['glow',:,'ra'])
-    #solar.ix['glow',:,'gst'] = degrees(solar.ix['glow',:,'gst'])
 #%% solar location with AstroPy
     obs = EarthLocation(lat=glat*u.deg, lon=glon*u.deg, height=alt_m*u.m)
     times = Time(dtime, scale='ut1')
