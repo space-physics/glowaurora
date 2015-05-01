@@ -123,15 +123,13 @@ contains
   integer,intent(in) :: nmaj,JMAX
   real(sp),intent(in) :: zz(:),zmaj(NMAJ,JMAX)
   real(sp),intent(out) :: ZVCD(NMAJ,JMAX)
-  real(sp) rat
+  real(sp) :: rat(nmaj)
   integer i, j
 
-  DO I=1,NMAJ
-  ZVCD(I,JMAX) =   ZMAJ(I,JMAX) * (ZZ(JMAX)-ZZ(JMAX-1)) / LOG(ZMAJ(I,JMAX-1)/ZMAJ(I,JMAX))
+  ZVCD(:,JMAX) =   ZMAJ(:,JMAX) * (ZZ(JMAX)-ZZ(JMAX-1)) / LOG(ZMAJ(:,JMAX-1)/ZMAJ(:,JMAX))
       DO J=JMAX-1,1,-1
-          RAT = ZMAJ(I,J+1) / ZMAJ(I,J)
-          ZVCD(I,J) =   ZVCD(I,J+1) + ZMAJ(I,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
+          RAT = ZMAJ(:,J+1) / ZMAJ(:,J)
+          ZVCD(:,J) =   ZVCD(:,J+1) + ZMAJ(:,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
       End Do
-  End Do
   END Subroutine VCD
 end module rcolummod
