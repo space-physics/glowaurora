@@ -8,7 +8,7 @@
 ! Modified by Stan Solomon, 11/88, 5/91.
 !
 ! Determines positive roots of equations of form:
-! A(I,5)*X**4 + A(I,4)*X**3 + A(I,3)*X**2 + A(I,2)*X + A(I,1) = 0 
+! A(I,5)*X**4 + A(I,4)*X**3 + A(I,3)*X**2 + A(I,2)*X + A(I,1) = 0
 ! It is specifically designed for real quartics with real roots,
 ! only one of which is positive.
 ! Coefficients of quartics supplied in array A(JMAX,5).
@@ -28,8 +28,8 @@ contains
     INCLUDE 'glow.h' ! f2py needs this here
     Real(kind=dp),intent(out) :: ROOT(JMAX)
     Real(kind=dp),intent(in)  :: A(JMAX,5)
-    Integer,intent(in)        :: NJ
-      
+    Integer        :: NJ   !don't say intent(in) so that f2py makes implicit
+
     Integer I
     Real(kind=dp) :: W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
 
@@ -54,6 +54,8 @@ contains
         IF (W5(I) .LE. E) W5(I) = E
         ROOT(I) = (W3(I)+SQRT(W5(I))) / A(I,5)
     End Do
- 
+
+    Print *, 'A(50,:)=',A(50,:)
+    Print *, 'Root(50)=',ROOT(50)
     END Subroutine VQUART
 end module Vquartmod
