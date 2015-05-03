@@ -24,50 +24,44 @@ module rcolummod
   implicit none
 
   private
-   Real(sp),parameter :: RE=6.37E8, G=978.1, kerg=1.38E-16,amug=1.662E-24
-   integer, parameter:: NM=3,NU=4
-   Real(sp),parameter:: ZCUS(NM,NU)=reshape( &
-                                   [8.00E17, 4.54E24, 1.69E25, 8.00E17, &
-                                   5.46E23, 2.03E24, 8.00E17, 3.63E21, &
-                                   1.35E22, 7.80E17, 8.48E18, 3.16E19],&
-                                   [NM,NU])
-   Real(sp), parameter,dimension(nu) :: ZUS=[0., 1.5E6, 5.E6, 9.E6], &
-                                        TNUS=[288., 217., 271., 187.]
-   Real(sp), parameter :: AM(nm)=[16., 32., 28.]
-
-   public :: rcolum, chap,vcd !f2py needs all subr/func public
-
+  public :: rcolum, chap,vcd !f2py needs all subr/func public
+   Real(sp) :: RE=6.37E8
 contains
   SUBROUTINE RCOLUM (CHI, ZZ, ZMAJ, TN, ZCOL, ZVCD, NMAJ)
   include 'glow.h'
+  
   integer,intent(in) :: nmaj
   real(sp), intent(in) :: chi,zz(jmax),TN(JMAX)
   real,intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
-
-
+  
+  integer,PARAMETER ::NM=3,NU=4
 !
-  real(sp) :: ZMAJ(NMAJ,JMAX), ZCG(NM), ghrg,ghz,tng
+  real(sp) :: ZMAJ(NMAJ,JMAX), ZCG(NM),ZCUS(NM,NU), ghrg,ghz,tng
   integer i,j, jg
 !
-
-
+  Real(sp), dimension(nu) :: ZUS=[0., 1.5E6, 5.E6, 9.E6], TNUS=[288., 217., 271., 187.]
+  DATA ZCUS/8.00E17, 4.54E24, 1.69E25, &
+           8.00E17, 5.46E23, 2.03E24,  &
+           8.00E17, 3.63E21, 1.35E22,  &
+           7.80E17, 8.48E18, 3.16E19/  
 !
 !
   CALL VCD (ZZ, ZMAJ, ZVCD, JMAX, NMAJ)
 !
-  IF (CHI .GE. 2.) THEN
-    ZCOL = 1.0E30
+  IF (CHI .GE. 2.) THEN 
+    ZCOL(:,:) = 1.0E30
     RETURN
   ENDIF
 !
   IF (CHI .LE. PI/2.) THEN
+    DO 60 I=1,NMAJ
     DO 60 J=1,JMAX
-    ZCOL(:,J) = ZVCD(:,J) * CHAP(CHI,ZZ(J),TN(J))
+    ZCOL(I,J) = ZVCD(I,J) * CHAP(CHI,ZZ(J),TN(J),I)
 60   CONTINUE
   ELSE
     DO 220 J=1,JMAX
-    GHRG=(RE+ZZ(J))*SIN(CHI)
-    GHZ=GHRG-RE
+    GHRG=(RE+ZZ(J))*SIN(CHI) 
+    GHZ=GHRG-RE 
     IF (GHZ .LE. 0.) THEN
       DO I=1,NMAJ
           ZCOL(I,J) = 1.0E30
@@ -87,35 +81,43 @@ contains
         IF (ZUS(JG) .LT. GHZ .AND. ZUS(JG+1) .GT. GHZ) Exit
       End Do
       TNG = TNUS(JG) + (TNUS(JG+1)-TNUS(JG))*(GHZ-ZUS(JG))/(ZUS(JG+1)-ZUS(JG))
-
-      ZCG = ZCUS(:,JG) * (ZCUS(:,JG+1) / ZCUS(:,JG))**((GHZ-ZUS(JG)) / (ZUS(JG+1)-ZUS(JG)))
-
+      DO I=1,NMAJ
+      ZCG(I) = ZCUS(I,JG) * (ZCUS(I,JG+1) / ZCUS(I,JG))**((GHZ-ZUS(JG)) / (ZUS(JG+1)-ZUS(JG)))
+      End Do
     ENDIF
-
-    ZCOL(:,J) = 2. * ZCG * CHAP(PI/2.,GHZ,TNG) - ZVCD(:,J) * CHAP(CHI,ZZ(J),TN(J))
-
+    DO I=1,NMAJ
+    ZCOL(I,J) = 2. * ZCG(I) * CHAP(PI/2.,GHZ,TNG,I) - ZVCD(I,J) * CHAP(CHI,ZZ(J),TN(J),I)
+    End Do
 220   CONTINUE
   ENDIF
 !
   END SUBROUTINE RCOLUM
-!
-!
-  FUNCTION CHAP (CHI, Z, T)
-      real(sp),intent(in) :: chi,z,t
-      real(sp),allocatable,dimension(:) :: gr,hn,hg,hf,sqhf,SPERFC,chap
 
-      GR=G*(RE/(RE+Z))**2
-      HN=kerg*T/(AM *amug*GR)
-      HG=(RE+Z)/HN
-      HF=0.5*HG*(COS(CHI)**2)
-      SQHF=SQRT(HF)
-      Where(SQHF <= 8.)
+!
+!
+!
+!
+  FUNCTION CHAP (CHI, Z, T, I)
+      real(sp),intent(in) :: chi,z,t
+      integer,intent(in) :: I
+      integer, PARAMETER :: NMAJ=3
+      Real(sp), dimension(nmaj) :: AM=[16., 32., 28.]
+      real(sp) :: G=978.1, gr,hn,hg,hf,sqhf,SPERFC,chap 
+      GR=G*(RE/(RE+Z))**2 
+      HN=1.38E-16*T/(AM(I)*1.662E-24*GR)
+      HG=(RE+Z)/HN 
+      HF=0.5*HG*(COS(CHI)**2) 
+      SQHF=SQRT(HF) 
+      IF (SQHF .LE. 8.) THEN
        SPERFC = (1.0606963+0.55643831*SQHF) / (1.0619896+1.7245609*SQHF+SQHF**2)
-      ELSEWhere
-       SPERFC=0.56498823/(0.06651874+SQHF)
-      END Where
+      ELSE
+       SPERFC=0.56498823/(0.06651874+SQHF) 
+      ENDIF 
       CHAP=SQRT(0.5*PI*HG)*SPERFC
   END Function Chap
+!
+!
+!
 !
 !
 !
@@ -128,10 +130,10 @@ contains
 
   DO I=1,NMAJ
   ZVCD(I,JMAX) =   ZMAJ(I,JMAX) * (ZZ(JMAX)-ZZ(JMAX-1)) / LOG(ZMAJ(I,JMAX-1)/ZMAJ(I,JMAX))
-      DO J=JMAX-1,1,-1
-          RAT = ZMAJ(I,J+1) / ZMAJ(I,J)
-          ZVCD(I,J) =   ZVCD(I,J+1) + ZMAJ(I,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
-      End Do
+  DO J=JMAX-1,1,-1
+  RAT = ZMAJ(I,J+1) / ZMAJ(I,J)
+  ZVCD(I,J) =   ZVCD(I,J+1) + ZMAJ(I,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
   End Do
-  END Subroutine VCD
+  End Do
+  END
 end module rcolummod
