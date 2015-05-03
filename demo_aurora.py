@@ -59,15 +59,10 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax = figure().gca()
     phitop.plot(ax=ax,logx=True,logy=True)
-<<<<<<< HEAD
     ax.set_title('Incident Flux',fontsize='x-large')
     ax.set_xlabel('Beam Energy [eV]',fontsize='large')
     ax.set_ylabel('Flux',fontsize='large')
     ax.tick_params(axis='both',which='major',labelsize='medium')
-=======
-    ax.set_xlabel('Beam Energy [eV]')
-    ax.set_ylabel('Flux')
->>>>>>> parent of f57a2db... plots
 
 
     fg,axs = subplots(1,4,sharey=True)
@@ -103,7 +98,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.legend(isr.columns[1:])
     ax.set_title('Particle Temperature',fontsize='x-large')
 
-<<<<<<< HEAD
+
     for a in axs:
         a.grid(True)
         a.tick_params(axis='both',which='major',labelsize='medium')
@@ -136,8 +131,6 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_xlabel('emission constituants',fontsize='large')
     #ax.legend(True)
 
-=======
->>>>>>> parent of f57a2db... plots
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
