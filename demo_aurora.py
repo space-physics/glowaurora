@@ -16,15 +16,14 @@ except ImportError as e:
 #
 from fortrandates import datetime2yd
 try:
-    from glowgrid import energygrid,maxt
     import aurora
 except ImportError as e:
     exit('you must compile with f2py first. See README.md  {}'.format(e))
 
 def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 #%% temporarily use glow grid instead of our own
-    ener,dE = energygrid(nbins)
-    phitop = maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
+    ener,dE = aurora.energygrid.egrid(nbins)
+    phitop = aurora.maxt.phi0(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
 #%% glow model
     z = arange(80,110+1,1)
