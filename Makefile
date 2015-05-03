@@ -9,9 +9,9 @@ ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
-FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons 
+FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons -ffpe-trap='invalid,zero,overflow' -g -Wall
 #-fdefault-real-8 SEG FAULT
-# -ffpe-trap=precision -g
+# -ffpe-trap=precision,denormal,underflow -g
 #FFLAGS = -g $(DBGFLAGS) 
 
 DBGFLAGS = -debug full -traceback
@@ -31,7 +31,7 @@ DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
 #
 # Sources (in order of dependency):
 #
-SOURCES = machprec.f90 egrid.f90 ephoto.f maxt.f90 rcolum.f90 etrans.f exsect.f fieldm.f vquart.f90 gchem.f geomag.f solzen.f90 glow.f iri90.f nrlmsise00.f qback.f rout.f snoem.f90 snoemint.f ssflux.f aurexample.f 
+SOURCES = cglow.f90 egrid.f90 ephoto.f maxt.f90 rcolum.f90 etrans.f exsect.f fieldm.f vquart.f90 gchem.f geomag.f solzen.f90 qback.f90 glow.f90 iri90.f nrlmsise00.f rout.f snoem.f90 snoemint.f ssflux.f aurexample.f 
 
 OBJS := $(addsuffix .o, $(basename $(SOURCES)))
 EXEC = auroraexample

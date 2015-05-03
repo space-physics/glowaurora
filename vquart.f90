@@ -17,7 +17,7 @@
 !
 !
 module vquartmod
-    use machprec
+    use ccglow
     implicit none
     private
     public :: vquart
@@ -28,7 +28,7 @@ contains
     INCLUDE 'glow.h' ! f2py needs this here
     Real(kind=dp),intent(out) :: ROOT(JMAX)
     Real(kind=dp),intent(in)  :: A(JMAX,5)
-    Integer        :: NJ   !don't say intent(in) so that f2py makes implicit
+    Integer,Intent(in)        :: NJ
 
     Integer I
     Real(kind=dp) :: W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
@@ -55,7 +55,5 @@ contains
         ROOT(I) = (W3(I)+SQRT(W5(I))) / A(I,5)
     End Do
 
-    Print *, 'A(50,:)=',A(50,:)
-    Print *, 'Root(50)=',ROOT(50)
     END Subroutine VQUART
 end module Vquartmod

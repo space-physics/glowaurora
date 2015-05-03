@@ -12,7 +12,7 @@
 ! in degrees.
 
 module szacalc
-  use machprec
+  use ccglow
   implicit none
   private
   public :: SOLZEN,suncor
@@ -21,7 +21,7 @@ SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
   integer,intent(in) :: idate
   real(sp),intent(in) :: UT,glat,glong
   real(sp),intent(out):: sza
-  
+
   real(sp) :: sdec,srasn,gst,rlat,rh,cossza,rlong
 
   RLAT = GLAT * PI/180.

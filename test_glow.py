@@ -3,13 +3,13 @@
 Registration testing of GLOW
 Michael Hirsch
 """
+from __future__ import division,absolute_import
 from datetime import datetime
 from fortrandates import datetime2yd,datetime2gtd
 from numpy import array,tile,roots,log,arange,append,isclose
 from numpy.testing import assert_allclose
-import sys
-sys.path.append('../msise-00')
-from demo_msis import rungtd1d
+#
+from msise00.demo_msis import rungtd1d
 import aurora
 #%% test inputs
 z = arange(80,110+1,1)
@@ -35,7 +35,7 @@ assert_allclose(phi[[maxind,maxind+10]],[ 114810.6,97814.438])
 #%% test vquart (quartic root)
 Aquart = tile([-1,0,0,0,1],(jmax,1))
 qroot = aurora.vquartmod(Aquart,1)
-assert_allclose(qroot[0],roots(Aquart[0,-1]))
+assert_allclose(qroot[0],roots(Aquart[0,:][::-1]))
 #%% test snoem
 doy = datetime2gtd(dtime)[0]
 zno,maglat,nozm = aurora.snoemmod.snoem(doy,1.75*log(0.4*ap),f107)

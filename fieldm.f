@@ -19,12 +19,12 @@ C
       implicit none
       real,intent(in) :: dlat,dlong,alt
       real,intent(out):: x,y,z,f,dip,dec,smodip
-      
+
       real H(144),XI(3),G(144),FEL1(72),FEL2(72), umr,brh0,cp,ct,d,f1,
      & rho,rlat,rlong,rq,s,sp,st,x1,xt,xxx,y1,yyy,z1,zzz
-      integer i,ih,ihmax,il,imax,last,m,nmax,j,k
-      
-     
+      integer i,ih,ihmax,il,imax,last,m,nmax,k
+
+
       DATA UMR/.0174532952/
       DATA FEL1/0.0, 0.1506723,0.0101742, -0.0286519, 0.0092606,
      & -0.0130846, 0.0089594, -0.0136808,-0.0001508, -0.0093977,

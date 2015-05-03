@@ -23,39 +23,40 @@
 !     MAXT   Hemispherical flux in cm-2 s-1 eV-1
 !
 module MAXT
- use machprec
+ use ccglow
  implicit none
  private
  public :: phi0
 contains
  Subroutine phi0(EFLUX, EZER, ENER, dE, NBINS,ITAIL, FMONO, EMONO, phi)
-    implicit none
-    Real(sp),Intent(Out) :: phi(NBINS)
 
+    Real(sp),Intent(Out) :: phi(NBINS)
     Real(sp), Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS), FMONO,EMONO
     Integer,Intent(In):: NBINS,ITAIL
 
-    Real(sp) :: B,TE, PHIMAX, ERAT
+    Real(sp) :: B,TE, PHIMAX, ERAT(NBINS)
     Integer :: K
 
     !
     TE = 0.
     !
     IF (EZER < 500.) THEN
-    B = 0.8*EZER
+        B = 0.8*EZER
     ELSE
-    B = 0.1*EZER + 350.
+        B = 0.1*EZER + 350.
     ENDIF
     !
     PHIMAX = EXP(-1.)
     !
-    DO K=1,NBINS
-        ERAT = ENER(K) / EZER
-        IF (ERAT > 60.) ERAT = 60.
-        phi(K) = ERAT * EXP(-ERAT)
-        IF (ITAIL > 0) then
-          phi(K) = phi(K) + 0.4*PHIMAX*(EZER/ENER(K))*EXP(-ENER(K)/B)
-        End If
+
+    ERAT = ENER / EZER
+    Where (ERAT > 60.) ERAT = 60.
+    phi = ERAT * EXP(-ERAT)
+    IF (ITAIL > 0) then
+          phi = phi + 0.4*PHIMAX*(EZER/ENER)*EXP(-ENER/B)
+    End If
+
+    DO K=1,NBINS !iterative non-vectorized
         TE = TE + phi(K) * dE(K) * ENER(K) * 1.6022E-12
     End Do
     !

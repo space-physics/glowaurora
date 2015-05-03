@@ -31,16 +31,13 @@ C
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap,PyPhitop)
 
-      use machprec
+      use ccglow
+      use maxt,only : phi0
+      use energyGrid,only: EGRID
+      use glowmod,only : glow
+      use snoemintmod
 
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
+      integer,PARAMETER :: NEX=20, NW=20, NC=10, NF=4
 
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
@@ -116,18 +113,18 @@ C
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
-         ZN2(J) = D(3)
-         ZO2(J) = D(4)
+          ZN2(J) = D(3)
+          ZO2(J) = D(4)
           ZRHO(J) = D(6)
-         ZNS(J) = D(8)
+          ZNS(J) = D(8)
           ZTN(J) = T(2)
-       END DO
+        END DO
 C
 C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
 C Model (NOEM)
 C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
 C
 C
 C Call International Reference Ionosphere-1990 subroutine to get
@@ -158,7 +155,7 @@ C
         IF (ZTE(J) .LT. ZTN(J)) ZTE(J) = ZTN(J)
         ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
         ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
-       ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
+        ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
       END DO
 C
 C

@@ -28,19 +28,14 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
-      use machprec
+      use ccglow
       use maxt,only : phi0
       use energyGrid,only: EGRID
-      
-      INCLUDE 'glow.h'
-      
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
+      use glowmod,only : glow
+      use snoemintmod
+
+      integer,PARAMETER :: NEX=20, NW=20, NC=10, NF=4
+
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -87,7 +82,9 @@ C
 C
 C Obtain input parameters:
 C
+      open(unit=5,file='aurexample.in',status='old')
       read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
+      close(5)
 C
 C
 C Set other parameters and switches:
@@ -125,7 +122,7 @@ C
 C Call MSIS-2K to get neutral densities and temperature:
 C
         CALL TSELEC(SW)
-C
+
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
@@ -140,7 +137,7 @@ C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
 C Model (NOEM)
 C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
 C
 C
 C Call International Reference Ionosphere-1990 subroutine to get
@@ -216,7 +213,7 @@ C
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
 C
-C Output photoionization, electron impact ionization, 
+C Output photoionization, electron impact ionization,
 C electron density, and ion densities:
 C
       write (6,690)

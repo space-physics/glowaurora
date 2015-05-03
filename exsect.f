@@ -50,12 +50,9 @@ C NEI    number of slots for excited and ionized states
 C
 C
       SUBROUTINE EXSECT (ENER, DEL)
+      use ccglow
 C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
-C
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
@@ -205,20 +202,20 @@ C
           SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**0.8
           IF(IJ.EQ.1) SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**2
           PE(IJ,IV) = CE(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
-          PI(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
+          PIN(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
           GOTO 80
    60     I=II-1
           IF (I .LE. 0) THEN
             SIGS(IJ,IV)=CC(II,IJ)
             PE(IJ,IV)=CE(II,IJ)
-            PI(IJ,IV)=CI(II,IJ)
+            PIN(IJ,IV)=CI(II,IJ)
           ELSE
             FAC = log (EX/EC(I,IJ)) / log (EC(II,IJ)/EC(I,IJ))
             SIGS(IJ,IV) = EXP (log (CC(I,IJ))
      >                         + log (CC(II,IJ)/CC(I,IJ)) * FAC)
             PE(IJ,IV) = EXP (log (CE(I,IJ))
      >                       + log (CE(II,IJ)/CE(I,IJ)) * FAC)
-            PI(IJ,IV) = EXP (log (CI(I,IJ))
+            PIN(IJ,IV) = EXP (log (CI(I,IJ))
      >                       + log (CI(II,IJ)/CI(I,IJ)) * FAC)
           ENDIF
    80   CONTINUE
@@ -364,7 +361,9 @@ C
         E1 = ENER(II) - DEL(II) / 2.
         E2 = E1 + DEL(II)
         IF (E2 .GT. TMAX) E2 = TMAX
-        IF(E1 .LE. E2)SIGI(II)=SIGION(I,ML,ETJ,E1,E2,T12(II))/RATIO(JY)
+        IF(E1 .LE. E2) Then
+          SIGI(II) = SIGION(I,ML,ETJ,E1,E2,T12(II)) / RATIO(JY)
+        End If
   220   CONTINUE
       ENDIF
 C
@@ -415,13 +414,10 @@ C
 C
 C
 C Function SIGION calculates ionization cross section for species I,
-C state ML, primary energy E, secondary energy from E1 to E2 
+C state ML, primary energy E, secondary energy from E1 to E2
 C
       FUNCTION SIGION(I,ML,E,E1,E2,T12)
-      use machprec
-C
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
+      use ccglow
 C
       COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
@@ -430,9 +426,10 @@ C
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
 C
       Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
+C     > QQ,GG,TZ,A,T12,AL1,AL2,S
       Real(sp) sigion
       DATA QQ/1.E-16/
-C
+
 C
       IF (E .LE. THI(ML,I)) GOTO 30
 C
@@ -470,10 +467,11 @@ C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
       FUNCTION INV (ETA, JY, ENER)
-C
-      INCLUDE 'glow.h'
-C
-      DIMENSION ENER(NBINS)
+      use ccglow
+      implicit none
+
+      Real(sp) :: ENER(NBINS), ETA
+      Integer :: JY,INV,IV
 C
       IF (ETA .LT. 0.) THEN
         INV = -1
@@ -508,13 +506,14 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 
       SUBROUTINE HEXC(ENER,SIGIX,RATIO)
+        use ccglow
+        implicit none
 
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
+      Real(sp),intent(in) :: ENER(NBINS)
+      Real(sp),intent(out):: SIGIX(NEI,NMAJ,NBINS), RATIO(NBINS)
+      Real(sp) :: TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13), TERPOO
+      Integer :: I,K,KG
 
-      DIMENSION ENER(NBINS), SIGIX(NEI,NMAJ,NBINS), RATIO(NBINS)
-      DIMENSION TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
       DATA EGR/1.E4,      2.E4,      5.E4,      1.E5,      2.E5,
      >         3.E5,      5.E5,      1.E6,      2.E6,      5.E6,
      >         1.E7,      1.E8,      1.E9/
@@ -550,7 +549,7 @@ C Calculate ratio (=1 < 10 keV):
 
       DO 90 K = 1,NBINS
         IF (ENER(K) .GE. EGR(1)) THEN
-          RATIO(K) = TOTX(K)/TOTNEW(K) 
+          RATIO(K) = TOTX(K)/TOTNEW(K)
 C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
         ELSE
           RATIO(K) = 1.

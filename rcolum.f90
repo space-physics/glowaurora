@@ -20,11 +20,10 @@
 ! at sea level, the tropopause, the stratopause, and the mesopause.
 !
 module rcolummod
-  use machprec
+  use ccglow
   implicit none
 
   private
-   Real(sp),parameter :: RE=6.37E8, G=978.1, kerg=1.38E-16,amug=1.662E-24
    integer, parameter:: NM=3,NU=4
    Real(sp),parameter:: ZCUS(NM,NU)=reshape( &
                                    [8.00E17, 4.54E24, 1.69E25, 8.00E17, &
@@ -61,9 +60,9 @@ contains
   ENDIF
 !
   IF (CHI .LE. PI/2.) THEN
-    DO 60 J=1,JMAX
-    ZCOL(:,J) = ZVCD(:,J) * CHAP(CHI,ZZ(J),TN(J))
-60   CONTINUE
+    DO J=1,JMAX
+     ZCOL(:,J) = ZVCD(:,J) * CHAP(CHI,ZZ(J),TN(J))
+    End Do
   ELSE
     DO 220 J=1,JMAX
     GHRG=(RE+ZZ(J))*SIN(CHI)
@@ -124,12 +123,12 @@ contains
   real(sp),intent(in) :: zz(:),zmaj(NMAJ,JMAX)
   real(sp),intent(out) :: ZVCD(NMAJ,JMAX)
   real(sp) :: rat(nmaj)
-  integer i, j
+  integer j
 
   ZVCD(:,JMAX) =   ZMAJ(:,JMAX) * (ZZ(JMAX)-ZZ(JMAX-1)) / LOG(ZMAJ(:,JMAX-1)/ZMAJ(:,JMAX))
-      DO J=JMAX-1,1,-1
-          RAT = ZMAJ(:,J+1) / ZMAJ(:,J)
-          ZVCD(:,J) =   ZVCD(:,J+1) + ZMAJ(:,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
-      End Do
+  DO J=JMAX-1,1,-1 ! iterative non-vectorize
+      RAT = ZMAJ(:,J+1) / ZMAJ(:,J)
+      ZVCD(:,J) =   ZVCD(:,J+1) + ZMAJ(:,J) * (ZZ(J)-ZZ(J+1)) / LOG(RAT) * (1.-RAT)
+  End Do
   END Subroutine VCD
 end module rcolummod

@@ -70,16 +70,14 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE EPHOTO
-C
-C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
+      use ccglow
+
       PARAMETER (NEX=20)
       PARAMETER (NW=20)
       PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
       PARAMETER (NF=4)
+
+      Real(sp) :: R1,R2, E1, E2
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -152,7 +150,7 @@ C
              read(1,*) aa,bb,(probo2(n,l),n=1,nst),sigio2(l),sigao2(l)
           End Do
       close(1)
-C 
+C
       open(unit=1,file='ephoto_xo.dat',status='old')
           read(1,*)
           read(1,*)
@@ -180,18 +178,18 @@ C
             End Do
         End Do
 C
-        DO L=1,LMAX 
-            DO I=1,NMAJ 
-                DO K=1,NNN(I) 
-                    EPSIL1(K,I,L)=12397.7/WAVE1(L)-TPOT(K,I) 
-                    EPSIL2(K,I,L)=12397.7/WAVE2(L)-TPOT(K,I) 
+        DO L=1,LMAX
+            DO I=1,NMAJ
+                DO K=1,NNN(I)
+                    EPSIL1(K,I,L)=12397.7/WAVE1(L)-TPOT(K,I)
+                    EPSIL2(K,I,L)=12397.7/WAVE2(L)-TPOT(K,I)
                     IF (WAVE1(L) .LE. AUGL(I)) THEN
                       EPSIL1(K,I,L) = EPSIL1(K,I,L) - AUGE(I)
                       EPSIL2(K,I,L) = EPSIL2(K,I,L) - AUGE(I)
                     ENDIF
                 End Do
             End Do
-        End Do 
+        End Do
 C
       ENDIF
 C
@@ -214,14 +212,14 @@ C
 C
 C Calculate attenuated solar flux at all altitudes and wavelengths:
 C
-      DO 200 L=1,LMAX 
+      DO 200 L=1,LMAX
       DO 200 J=1,JMAX
-      TAU(L)=0. 
-      DO 150 I=1,NMAJ 
-      TAU(L)=TAU(L)+SIGABS(I,L)*ZCOL(I,J) 
+      TAU(L)=0.
+      DO 150 I=1,NMAJ
+      TAU(L)=TAU(L)+SIGABS(I,L)*ZCOL(I,J)
   150 CONTINUE
       IF (TAU(L) .LT. 20.) THEN
-        FLUX(L,J)=SFLUX(L)*EXP(-TAU(L)) 
+        FLUX(L,J)=SFLUX(L)*EXP(-TAU(L))
       ELSE
         FLUX(L,J) = 0.0
       ENDIF
@@ -253,7 +251,7 @@ C
 C
 C Loop over species:
 C
-      DO 350 I=1,NMAJ 
+      DO 350 I=1,NMAJ
 C
 C
 C Calculate total ionization rates for all species and altitudes:
@@ -265,31 +263,31 @@ C
 C
 C Loop over states:
 C
-      DO 300 K=1,NNN(I) 
+      DO 300 K=1,NNN(I)
 C
-      E1= EPSIL1(K,I,L) 
-      E2= EPSIL2(K,I,L) 
-      IF (E2 .LT. 0.) GO TO 300 
-      IF (E1 .LT. 0.) E1=0. 
+      E1= EPSIL1(K,I,L)
+      E2= EPSIL2(K,I,L)
+      IF (E2 .LT. 0.) GO TO 300
+      IF (E1 .LT. 0.) E1=0.
 C
 C
 C Calculate state-specific ionization rates at all altitudes:
 C
       DO J=1,JMAX
-        DSPECT(J) = RION(L,I,J)*PROB(K,I,L) 
+        DSPECT(J) = RION(L,I,J)*PROB(K,I,L)
         PHOTOI(K,I,J) = PHOTOI(K,I,J) + DSPECT(J)
       End Do
 C
 C
 C Find box numbers M1, M2 corresponding to energies E1, E2:
 C
-      CALL BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER) 
+      CALL BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER)
       IF (M1 .GT. NBINS) GOTO 300
 C
 C
 C Fill the boxes from M1 to M2 at all altitudes:
-C 
-      Y = E2 - E1 
+C
+      Y = E2 - E1
       DO N=M1,M2
           IF (M1 .EQ. M2) THEN
             FAC = 1.
@@ -309,7 +307,7 @@ C
           End Do
       End Do
 C
-  300 CONTINUE 
+  300 CONTINUE
 C
 C
 C Generate Auger electrons if energy is sufficient:
@@ -317,36 +315,36 @@ C
       IF (WAVE1(L) .LE. AUGL(I)) THEN
         E1 = AUGE(I)
         E2 = AUGE(I)
-        CALL BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER) 
+        CALL BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER)
         IF (M1.GT.NBINS .OR. M2.GT.NBINS) GOTO 350
         DO 330 J=1,JMAX
           PESPEC(M1,J) = PESPEC(M1,J) + RION(L,I,J)
   330   CONTINUE
       ENDIF
-C     
+C
 C
   350 CONTINUE
 C
-  400 CONTINUE 
+  400 CONTINUE
 C
       END SUBROUTINE EPHOTO
 C
 C
 C
 C
-      SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER)
+      SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER)
+      use ccglow
       implicit none
 C This subroutine finds the box numbers corresponding to
 C energies E1 and E2, and calls them M1 and M2
-C 
+C
 C R1 is the upper edge of the lower box, R2 is the lower edge of the
 C upper box.
 C
-      Integer,Intent(in) :: NBINS
-      Real,Intent(in)    :: DEL(NBINS), ENER(NBINS)
-      Real,Intent(out)   :: E1,E2,R1,R2
+      Real(sp),Intent(in)    :: DEL(NBINS), ENER(NBINS)
+      Real(sp),Intent(out)   :: E1,E2,R1,R2
       Integer,Intent(out):: M1,M2
-      
+
       Integer I
 C
       DO I=1,NBINS

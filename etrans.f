@@ -63,14 +63,11 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE ETRANS
-C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
+        use ccglow
+
       PARAMETER (NEX=20)
       PARAMETER (NW=20)
       PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
       PARAMETER (NF=4)
 C
       COMMON /CGLOW/
@@ -91,7 +88,7 @@ C
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
 C
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
@@ -342,11 +339,11 @@ C
         DO 980 N = 1, NMAJ
           DO 975 I=1,JMAX
             PRODUA(I) = PRODUA(I)
-     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PI(N,J)*PHIDWN(I)
-     >                  + (1. - PI(N,J))*SIGA(N,K,J)*PHIUP(I))
+     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIN(N,J)*PHIDWN(I)
+     >                  + (1. - PIN(N,J))*SIGA(N,K,J)*PHIUP(I))
             PRODDA(I) = PRODDA(I)
-     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PI(N,J)*PHIUP(I)
-     >                  + (1. - PI(N,J))*SIGA(N,K,J)*PHIDWN(I))
+     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIN(N,J)*PHIUP(I)
+     >                  + (1. - PIN(N,J))*SIGA(N,K,J)*PHIDWN(I))
   975     CONTINUE
   980   CONTINUE
         DO 985 I=1,JMAX
