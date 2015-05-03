@@ -29,6 +29,7 @@ module MAXT
  public :: phi0
 contains
  Subroutine phi0(EFLUX, EZER, ENER, dE, NBINS,ITAIL, FMONO, EMONO, phi)
+    implicit none
     Real(sp),Intent(Out) :: phi(NBINS)
 
     Real(sp), Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS), FMONO,EMONO

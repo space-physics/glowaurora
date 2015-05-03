@@ -4,7 +4,7 @@ Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 bostonmicrowave.com
 """
-from matplotlib.pyplot import figure, show,subplots
+from matplotlib.pyplot import figure, show,subplots,tight_layout
 from pandas import DataFrame
 from datetime import datetime
 from dateutil.parser import parse
@@ -59,32 +59,26 @@ def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax = figure().gca()
     phitop.plot(ax=ax,logx=True,logy=True)
-<<<<<<< HEAD
     ax.set_title('Incident Flux',fontsize='x-large')
     ax.set_xlabel('Beam Energy [eV]',fontsize='large')
     ax.set_ylabel('Flux',fontsize='large')
     ax.tick_params(axis='both',which='major',labelsize='medium')
-=======
-    ax.set_xlabel('Beam Energy [eV]')
-    ax.set_ylabel('Flux')
->>>>>>> parent of f57a2db... plots
 
 
-    fg,axs = subplots(1,4,sharey=True)
-    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='xx-large')
+    fg,axs = subplots(1,4,sharey=True, figsize=(15,8))
+    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='x-large')
+    tight_layout(pad=3.2, w_pad=0.3)
 
     ax = axs[0]
     ax.plot(ver.values,ver.index)
     ax.set_xlabel('VER',fontsize='large')
     ax.set_ylabel('altitude [km]',fontsize='large')
-    ax.grid(True)
     ax.legend(ver.columns)
     ax.set_title('Volume emission rate',fontsize='x-large')
 
     ax = axs[1]
     ax.plot(photIon[['photoIoniz','eImpactIoniz']],photIon.index)
-    ax.set_xlabel('ionization')
-    ax.grid(True)
+    ax.set_xlabel('ionization',fontsize='large')
     ax.legend(photIon.columns[:2])
     ax.set_title('Photo and e$^-$ impact ionization',fontsize='x-large')
 
@@ -92,18 +86,15 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.semilogx(photIon[['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
                     'nO','nO2','nN2','nNO']], photIon.index)
     ax.set_xlabel('Density',fontsize='large')
-    ax.grid(True)
     ax.legend(photIon.columns[2:])
     ax.set_title('Electron and Ion Densities',fontsize='x-large')
 
     ax = axs[3]
     ax.semilogx(isr[['Te','Ti']], isr.index)
     ax.set_xlabel('Temperature [K]',fontsize='large')
-    ax.grid(True)
     ax.legend(isr.columns[1:])
     ax.set_title('Particle Temperature',fontsize='x-large')
 
-<<<<<<< HEAD
     for a in axs:
         a.grid(True)
         a.tick_params(axis='both',which='major',labelsize='medium')
@@ -136,8 +127,6 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_xlabel('emission constituants',fontsize='large')
     #ax.legend(True)
 
-=======
->>>>>>> parent of f57a2db... plots
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
