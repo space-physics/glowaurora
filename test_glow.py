@@ -34,8 +34,8 @@ assert phi.argmax() == maxind
 assert_allclose(phi[[maxind,maxind+10]],[ 114810.6,97814.438])
 #%% test vquart (quartic root)
 Aquart = tile([-1,0,0,0,1],(jmax,1))
-qroot = aurora.vquartmod(Aquart,1)
-assert_allclose(qroot[0],roots(Aquart[0,-1]))
+qroot = aurora.vquartmod.vquart(Aquart,1)
+assert_allclose(qroot[0],roots(Aquart[0,:][::-1]))
 #%% test snoem
 doy = datetime2gtd(dtime)[0]
 zno,maglat,nozm = aurora.snoemmod.snoem(doy,1.75*log(0.4*ap),f107)
