@@ -7,9 +7,8 @@ from datetime import datetime
 from fortrandates import datetime2yd,datetime2gtd
 from numpy import array,tile,roots,log,arange,append,isclose
 from numpy.testing import assert_allclose
-import sys
-sys.path.append('../msise-00')
-from demo_msis import rungtd1d
+#
+from msise00.demo_msis import rungtd1d
 import aurora
 #%% test inputs
 z = arange(80,110+1,1)
@@ -25,8 +24,7 @@ dtime = datetime(2013,4,14,8,54,0)
 #
 yd,utsec = datetime2yd(dtime)[:2]
 #%% test of egrid
-from glowgrid import energygrid,maxt
-ener,dE = energygrid(nbins)
+ener,dE = aurora.energygrid.egrid(nbins)
 assert_allclose(ener[[maxind,maxind+10,-1]],[1017.7124,1677.9241,47825.418])
 #%% test of maxt
 phi = maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
