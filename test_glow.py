@@ -31,11 +31,14 @@ phi = aurora.maxt.phi0(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
 assert phi.argmax() == maxind
 assert_allclose(phi[[maxind,maxind+10]],[ 114810.6,97814.438])
 #%% test vquart (quartic root)
-Aquart = tile([-1,0,0,0,1],(jmax,1))
-qroot = aurora.vquartmod.vquart(Aquart,1)
+Aquart = array([[-1,0,0,0,1],
+                [-1,0,0,1,1]])
+nq = Aquart.shape[0]
+Aquart = tile(Aquart,(jmax//nq,1))
+qroot = aurora.vquartmod.vquart(Aquart, nq)
 try:
-    assert_allclose(qroot[0],
-                    real(roots(Aquart[0,:][::-1])[-1]))
+    assert_allclose(qroot[:nq],
+                    [1,0.8191725133961643])
 except AssertionError as e:
     print('this mismatch is in discussion with S. Solomon.   {}'.format(e))
 #%% test snoem
