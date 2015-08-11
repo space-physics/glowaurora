@@ -4,23 +4,19 @@ Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 bostonmicrowave.com
 """
-from matplotlib.pyplot import figure, show,subplots,tight_layout
+from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
-from datetime import datetime
-from dateutil.parser import parse
 from numpy import hstack,arange,append,array,rollaxis
+import sys,os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 try:
-    import seaborn as sns
-except ImportError as e:
-    print('Seaborn not installed, falling back to basic Matplotlib plots.  {}'.format(e))
+    import seaborn
+except:
+    pass
 #
-from fortrandates import datetime2yd
-try:
-    import aurora
-except ImportError as e:
-    exit('you must compile with f2py first. See README.md  {}'.format(e))
+import aurora
 
-def demoaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
+def glowaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 #%% temporarily use glow grid instead of our own
     ener,dE = aurora.energygrid.egrid(nbins)
     phitop = aurora.maxt.phi0(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
@@ -125,33 +121,3 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
         ax.plot(ver.index,zc)
     ax.set_xlabel('emission constituants',fontsize='large')
     #ax.legend(True)
-
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
-    p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',type=str,nargs='?',default=None)
-    p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(65,-148))
-    p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190)
-    p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1)
-    p.add_argument('--e0',help='characteristic energy [eV]',type=float,default=1e3)
-    p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=150)
-    p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float,default=150)
-    p.add_argument('--f107',help='F10.7 for sim. day',type=float,default=150)
-    p.add_argument('--ap',help='daily ap',type=float,default=4)
-    p = p.parse_args()
-
-    if p.simtime is None:
-        dtime = datetime.now()
-    else:
-        dtime = parse(p.simtime)
-
-    yd,utsec = datetime2yd(dtime)[:2]
-
-    (glat,glon) = p.latlon
-
-    ver,photIon,isr,phitop,zceta = demoaurora(p.nbins,p.flux,p.e0,
-                                              yd,utsec,glat,glon,
-                                        p.f107a,p.f107,p.f107p,p.ap)
-
-    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon)
-    show()

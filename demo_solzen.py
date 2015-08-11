@@ -1,12 +1,12 @@
 from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel
-from matplotlib.pyplot import figure,show,subplots
+from matplotlib.pyplot import figure,show
 # Some features may require AstroPy 1.0+
 import astropy.units as u
 from astropy.coordinates import get_sun, EarthLocation, AltAz
 from astropy.time import Time
 #
-from fortrandates import datetime2yd
+from gridaurora.fortrandates import datetime2yd
 from aurora import szacalc
 #%% demo the solar zenith angle calclation vs AstroPy
 def demosolzen(dtime,glat,glon):

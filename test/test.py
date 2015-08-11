@@ -4,11 +4,11 @@ Registration testing of GLOW
 Michael Hirsch
 """
 from datetime import datetime
-from fortrandates import datetime2yd,datetime2gtd
 from numpy import array,tile,roots,log,arange,append,isclose,real
 from numpy.testing import assert_allclose
 #
-from msise00.demo_msis import rungtd1d
+from gridaurora.fortrandates import datetime2yd,datetime2gtd
+from msise00.runmsis import rungtd1d
 import aurora
 #%% test inputs
 z = arange(80,110+1,1)
