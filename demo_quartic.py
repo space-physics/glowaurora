@@ -42,4 +42,7 @@ def runquartic(pin):
 
 
 if __name__ == '__main__':
-    r,i,f = runquartic(array([1,2,3,4]))
+    pin = array([1,0,0,1])
+    r,i,f = runquartic(pin)
+
+    print(r[:pin.size],i[:pin.size])
