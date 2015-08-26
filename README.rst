@@ -13,14 +13,14 @@ glow-aurora
 
 
 Caution
---------
+=======
 It is currently (0.973) necessary to restart the Python kernel for each simulation run. This is due to the "save" statement in ssflux.f.
 With the refactoring of the code underway to Fortran90, it is hoped this blanket save statement can be eliminated.
 
 For safety's sake, run this program from the command line (Terminal) to ensure you get a fresh import (flushing all variables).
 
 Installation
--------------
+============
 from Terminal::
 
   git clone --depth 1 https://github.com/scienceopen/glow-aurora
@@ -29,7 +29,7 @@ from Terminal::
 
 
 Demo
-----
+====
 from Terminal::
 
   python demo_aurora.py
@@ -38,7 +38,7 @@ will show modeled VER vs. altitude for the input parameter set.
 
 
 Papers
-------
+======
 (Thanks to Stephen Kaeppler to pointing these out)
 
 http://download.hao.ucar.edu/pub/stans/papers/BaileyJGR2002.pdf
@@ -46,28 +46,28 @@ http://download.hao.ucar.edu/pub/stans/papers/BaileyJGR2002.pdf
 http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user)
-----------------------------------------------
+=============================================
 Download the latest source code from Stan Solomon
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------
 from Terminal::
 
   wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
 Download Stan's copy of IRI files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 from Terminal::
 
   wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
 
 compile the Fortran code by itself
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------
 from Terminal::
 
   make
 
 Fortran self-test
-~~~~~~~~~~~~~~~~~~
+-----------------
 after compiling, from Terminal::
 
   ./auroraexample < aurexample.in > aurtest.out
