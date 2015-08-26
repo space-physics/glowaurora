@@ -85,4 +85,4 @@ original Fortran code in directory ``fortrancode/`` as obtained from http://down
 Agreement contained in the file glowlicense.txt."
 
 
-Python code and modifications to original Fortran code:  Affero GPLv3+
+Python code and modifications to original Fortran code:  GNU Affero GPLv3+
