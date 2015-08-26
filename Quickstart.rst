@@ -31,8 +31,8 @@ High-energy aurora example
 1. change the name of hexexample.driver to hexexample.f
 2. edit the glow.h file
 
-    a)  comment out the standard parameters
-    b)  comment in the high-energy parameters
+     a)  comment out the standard parameters
+     b)  comment in the high-energy parameters
 
 3. re-compile all subroutines, link, and::
 
