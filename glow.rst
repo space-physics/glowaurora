@@ -311,16 +311,9 @@ common block CXSECT if necessary; just include a copy of this common block
 
 Bibliography
 ------------
-
-.. [nagy] Nagy, A. F., and P. M. Banks, Photoelectron fluxes in the ionosphere, J. Geophys. Res., 75, 6260, 1970.
-
-.. [solo6300] Solomon, S. C., P. B. Hays, and V. J. Abreu, The auroral 6300A emission: Observations and modeling, J. Geophys. Res., 93, 9867, 1988.
-
-Solomon, S. C., and V. J. Abreu, The 630 nm dayglow, J. Geophys. Res., 94,
-   6817, 1989.
-Solomon, S. C., Auroral particle transport using Monte Carlo and hybrid
-   methods, J. Geophys. Res., 106, 107, 2001.
-Solomon, S. C., S. M. Bailey, and T. N. Woods, Effect of solar soft X-rays
-   on the lower atmosphere, Geophys. Res. Lett., 28, 2149, 2001.
-Bailey, S. M., C. A. Barth, and S. C. Solomon, A model of nitric oxide in the
-   lower thermosphere, J. Geophys. Res., 107, 1205, 2002.
+.. [1] Nagy, A. F., and P. M. Banks, Photoelectron fluxes in the ionosphere, J. Geophys. Res., 75, 6260, 1970.
+.. [2] Solomon, S. C., P. B. Hays, and V. J. Abreu, The auroral 6300A emission: Observations and modeling, J. Geophys. Res., 93, 9867, 1988.
+.. [3] Solomon, S. C., and V. J. Abreu, The 630 nm dayglow, J. Geophys. Res., 94, 6817, 1989.
+.. [4] Solomon, S. C., Auroral particle transport using Monte Carlo and hybrid  methods, J. Geophys. Res., 106, 107, 2001.
+.. [5] Solomon, S. C., S. M. Bailey, and T. N. Woods, Effect of solar soft X-rays on the lower atmosphere, Geophys. Res. Lett., 28, 2149, 2001.
+.. [6] Bailey, S. M., C. A. Barth, and S. C. Solomon, A model of nitric oxide in the lower thermosphere, J. Geophys. Res., 107, 1205, 2002.
