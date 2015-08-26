@@ -75,3 +75,14 @@ after compiling, from Terminal::
 observe that aurtest.out is almost exactly equal to aurexample.out, to the least digit of precision.
 
 On Windows, consider `factors like <https://scivision.co/f2py-running-fortran-code-in-python-on-windows/>`_
+
+Licensing
+=========
+
+original Fortran code in directory ``fortrancode/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/:
+
+"This software is part of the GLOW model.  Use is governed by the Open Source Academic Research License 
+Agreement contained in the file glowlicense.txt."
+
+
+Python code and modifications to original Fortran code:  GPLv3+
