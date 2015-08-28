@@ -7,6 +7,11 @@ glow-aurora
 =============
 `Stan Solomon's  GLOW Auroral model <http://download.hao.ucar.edu/pub/stans/glow/>`_ -- now in Python!
 
+:Fortran author: Stan Solomon
+:Python API author: Michael Hirsch
+
+.. contents::
+
 .. image:: demo_out.png
 
 .. image:: demo_in.png
