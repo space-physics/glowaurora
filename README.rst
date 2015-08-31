@@ -30,7 +30,7 @@ from Terminal::
 
   git clone --depth 1 https://github.com/scienceopen/glow-aurora
   conda install --file requirements.txt
-  python setup.py install
+  python setup.py develop
 
 
 Demo
@@ -86,7 +86,7 @@ Licensing
 
 original Fortran code in directory ``fortrancode/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/:
 
-"This software is part of the GLOW model.  Use is governed by the Open Source Academic Research License 
+"This software is part of the GLOW model.  Use is governed by the Open Source Academic Research License
 Agreement contained in the file glowlicense.txt."
 
 
