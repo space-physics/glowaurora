@@ -7,7 +7,7 @@ from datetime import datetime
 from numpy import array,tile,roots,log,arange,append,isclose,real
 from numpy.testing import assert_allclose
 #
-from gridaurora.fortrandates import datetime2yd,datetime2gtd
+from histutils.fortrandates import datetime2yd,datetime2gtd
 from msise00.runmsis import rungtd1d
 import aurora
 #%% test inputs
