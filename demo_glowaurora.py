@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil.parser import parse
 from matplotlib.pyplot import show
 #
-from gridaurora.fortrandates import datetime2yd
+from histutils.fortrandates import datetime2yd
 from glowaurora.runglow import glowaurora,plotaurora
 
 if __name__ == '__main__':

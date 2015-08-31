@@ -6,8 +6,8 @@ import astropy.units as u
 from astropy.coordinates import get_sun, EarthLocation, AltAz
 from astropy.time import Time
 #
-from gridaurora.fortrandates import datetime2yd
-from aurora import szacalc
+from histutils.fortrandates import datetime2yd
+from aurora import szacalc #compile fortran code
 #%% demo the solar zenith angle calclation vs AstroPy
 def demosolzen(dtime,glat,glon):
 #%% SZA with glow

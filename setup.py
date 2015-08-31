@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from setuptools import setup as Setup
+import setuptools
 from numpy.distutils.core import setup,Extension
 from os.path import join
 from glob import glob
@@ -27,12 +27,6 @@ ext=[Extension(name='aurora',
                #library_dirs=[root])]
 
 #%% install
-Setup(	  install_requires=['gridaurora','msise00','pymap3d',
-                         'numpy','pandas','astropy'],
-       dependency_links = ['https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
-                          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
-                          'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d'
-                            ],)
 setup(name='glowaurora',
       version='0.1',
 	  description='Python wrapper for Stan Solomon GLOW auroral model',
@@ -44,5 +38,12 @@ setup(name='glowaurora',
       package_data={'': fortdata},
       include_package_data=True,
       ext_modules=ext,
-      data_files=[('',fortdata) ]
+      data_files=[('',fortdata) ],
+      # leave gridaurora in for now as we may use ztanh grid
+	  install_requires=['gridaurora','msise00','pymap3d',
+                         'numpy','pandas','astropy'],
+      dependency_links = ['https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
+                          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
+                          'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d'
+                            ],
       )
