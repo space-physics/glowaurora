@@ -36,9 +36,9 @@ Installation
 
 Demo
 ====
-from Terminal::
+.. code:: bash
 
-  python demo_aurora.py
+  $ python demo_aurora.py
 
 will show modeled VER vs. altitude for the input parameter set.
 
@@ -53,24 +53,25 @@ http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user)
 =============================================
-Download the latest source code from Stan Solomon
+Download the GLOW v0.973 source code from Stan Solomon
 -------------------------------------------------
-from Terminal::
+.. code:: bash
 
-  wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
+  $ wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
 Download Stan's copy of IRI files
 ---------------------------------
-from Terminal::
+.. code:: bash
 
   wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
 
 compile the Fortran code by itself
 ----------------------------------
-from Terminal::
+.. code:: bash
 
-  make
+  $ cd fortrancode    
+  $ make
 
 Fortran self-test
 -----------------
