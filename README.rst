@@ -12,10 +12,11 @@ glow-aurora
 
 .. contents::
 
-.. image:: demo_out.png
+.. image:: examples/demo_out.png
+   :alt: vertical profiles of VER
 
-.. image:: demo_in.png
-
+.. image:: examples/demo_in.png
+   :alt: diff num flux input
 
 Caution
 =======
@@ -26,11 +27,11 @@ For safety's sake, run this program from the command line (Terminal) to ensure y
 
 Installation
 ============
-from Terminal::
+.. code:: bash
 
-  git clone --depth 1 https://github.com/scienceopen/glow-aurora
-  conda install --file requirements.txt
-  python setup.py develop
+  $ git clone --depth 1 https://github.com/scienceopen/glow-aurora
+  $ conda install --file requirements.txt
+  $ python setup.py develop
 
 
 Demo
