@@ -46,7 +46,7 @@
 
 !... eof2 - declination
 
-      theta0 = 360. * float(doy - 1) / 365.
+      theta0 = 360. * real(doy - 1) / 365.
 
       dec = 0.006918
      $    - 0.399912 * cosd(theta0)   + 0.070257 * sind(theta0)

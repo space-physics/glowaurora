@@ -50,9 +50,13 @@ C NEI    number of slots for excited and ionized states
 C
 C
       SUBROUTINE EXSECT (ENER, DEL)
-C
       use cglow,only: nmaj,nei,nbins
-C
+
+! Args:
+      real,intent(in) :: ENER(NBINS),DEL(NBINS)
+! Local:
+      real :: AE
+
       COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
@@ -64,11 +68,12 @@ C
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
 C
-      DIMENSION ENER(NBINS), DEL(NBINS), SIGI(NBINS), T12(NBINS),
-     >          RATIO(NBINS), NNN(NMAJ), NINN(NMAJ), NUM(NMAJ),
-     >          EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ)
+      DIMENSION SIGI(NBINS), T12(NBINS),
+     > RATIO(NBINS), EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ)
 C
-      DATA QQN/6.51E-14/, NNN/8,7,8/, NINN/3,7,6/, NUM/31,28,28/
+      real,parameter :: QQN=6.51E-14
+      integer,parameter :: NNN(NMAJ)=[8,7,8], NINN(NMAJ)=[3,7,6], 
+     >                     NUM(NMAJ)=[31,28,28]
 C
       DATA WW  /1.96, 4.17, 9.29, 9.53,10.76,10.97,12.07,12.54, 0.,0.,
      >          0.98, 1.64, 4.50, 8.44, 9.90,13.50, 0.25, 0.00, 0.,0.,
@@ -416,9 +421,9 @@ C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
       real FUNCTION SIGION(I,ML,E,E1,E2,T12)
-      use cglow,only: nei,nmaj,dp,sp
+      use cglow,only: nei,nmaj,dp
       implicit none
-      real(kind=sp) :: ww, ao, omeg,anu,bb,auto,thi,ak,aj,TS,TA,
+      real :: ww, ao, omeg,anu,bb,auto,thi,ak,aj,TS,TA,
      >              TB,GAMS,GAMB
 !
 ! Args:
@@ -428,7 +433,7 @@ C
       real,intent(inout) :: E2
 ! Local:
       Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
-      Real(kind=sp) qq,S,A,TZ,GG,TTL,AL2,AL1,TTL1
+      Real qq,S,A,TZ,GG,TTL,AL2,AL1,TTL1
       COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
@@ -538,38 +543,37 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 C Calculate total low-energy cross section for N2:
 
-      DO K = 1,NBINS
+      DO 20 K = 1,NBINS
         TOTX(K) = 0.
-        DO I = 1,NEI
+        DO 20 I = 1,NEI
           TOTX(K) = TOTX(K) + SIGIX(I,3,K)
-        End Do
-      End Do
+   20 CONTINUE
 
 
 C Calculate high-energy cross section for N2, using tabulated values:
 
-      DO K=1,NBINS
+      DO 70 K=1,NBINS
         IF (ENER(K) .GE. EGR(1)) THEN
-        DO KG=1,12
+        DO 60 KG=1,12
           IF (ENER(K) .GE. EGR(KG) .AND. ENER(K) .LT. EGR(KG+1))
      >    TOTNEW(K)=TERPOO(ENER(K),EGR(KG),EGR(KG+1),SGR(KG),SGR(KG+1))
-        End Do
+   60   CONTINUE
         ELSE
           TOTNEW(K)=TOTX(K)
         ENDIF
-      End Do
+   70 CONTINUE
 
 
 C Calculate ratio (=1 < 10 keV):
 
-      DO K = 1,NBINS
+      DO 90 K = 1,NBINS
         IF (ENER(K) .GE. EGR(1)) THEN
           RATIO(K) = TOTX(K)/TOTNEW(K) 
 C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
         ELSE
           RATIO(K) = 1.
         ENDIF
-      End DO
+   90 CONTINUE
 
       END SUBROUTINE HEXC
 

@@ -28,7 +28,7 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
-      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax
+      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -236,7 +236,7 @@ C
   795 format (' VCB:',11f7.0)
 C
 C
-C     CALL ROUT('rt.out',13,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 C
       STOP
       END PROGRAM AURORA
