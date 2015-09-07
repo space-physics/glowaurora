@@ -133,14 +133,14 @@ C
       IFIRST = 0
 C
       open(unit=1,file='ephoto_xn2.dat',status='old')
-      read(1,*)
-      read(1,*)
-      read(1,*)
-      read(1,*)
-      Do l=lmax,1,-1
-         read(1,*) aa,bb,(probn2(n,l),n=1,nst),sigin2(l),sigan2(l)
-         bso2(l)=0.0
-      End Do
+          read(1,*)
+          read(1,*)
+          read(1,*)
+          read(1,*)
+          Do l=lmax,1,-1
+              read(1,*) aa,bb,(probn2(n,l),n=1,nst),sigin2(l),sigan2(l)
+              bso2(l)=0.0
+          End Do
       close(1)
 C
       open(unit=1,file='ephoto_xo2.dat',status='old')
@@ -217,9 +217,9 @@ C
       DO 200 L=1,LMAX 
       DO 200 J=1,JMAX
       TAU(L)=0. 
-      DO 150 I=1,NMAJ 
-      TAU(L)=TAU(L)+SIGABS(I,L)*ZCOL(I,J) 
-  150 CONTINUE
+      DO I=1,NMAJ 
+      	TAU(L)=TAU(L)+SIGABS(I,L)*ZCOL(I,J) 
+      End Do
       IF (TAU(L) .LT. 20.) THEN
         FLUX(L,J)=SFLUX(L)*EXP(-TAU(L)) 
       ELSE
@@ -258,9 +258,9 @@ C
 C
 C Calculate total ionization rates for all species and altitudes:
 C
-      DO 320 J=1,JMAX
+      DO J=1,JMAX
         RION(L,I,J)=ZMAJ(I,J)*SIGION(I,L)*FLUX(L,J)
-  320 CONTINUE
+      End Do
 C
 C
 C Loop over states:
@@ -319,16 +319,16 @@ C
         E2 = AUGE(I)
         CALL BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER) 
         IF (M1.GT.NBINS .OR. M2.GT.NBINS) GOTO 350
-        DO 330 J=1,JMAX
+        DO J=1,JMAX
           PESPEC(M1,J) = PESPEC(M1,J) + RION(L,I,J)
-  330   CONTINUE
+        End Do
       ENDIF
 C     
 C
   350 CONTINUE
 C
-  400 CONTINUE 
-C
+  400 CONTINUE
+
       END SUBROUTINE EPHOTO
 C
 C
@@ -358,10 +358,9 @@ C
   200 M1 = I
       R1 = ENER(I) + DEL(I)/2.
 C
-      DO 300 I=1,NBINS
-      IF (E2 .LT. ENER(I)+DEL(I)/2.) GOTO 400
-  300 CONTINUE
-C
+      DO I=1,NBINS
+      	IF (E2 .LT. ENER(I)+DEL(I)/2.) GOTO 400
+      End Do
       M2 = NBINS
       R2 = E2 - DEL(NBINS)
       RETURN
