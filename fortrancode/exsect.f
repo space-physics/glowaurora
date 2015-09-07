@@ -429,8 +429,8 @@ C
 ! Args:
       integer,intent(in) :: i,ml
       real,intent(in) :: E,E1
-      real,intent(out) :: T12
-      real,intent(inout) :: E2
+      real,intent(out) :: T12 ! yes this is out
+      real,intent(inout) :: E2 ! the out value isn't actually used, but needed to allow internal modification
 ! Local:
       Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
       Real qq,S,A,TZ,GG,TTL,AL2,AL1,TTL1
@@ -579,9 +579,8 @@ C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
 
 
 
-      Real FUNCTION TERPOO(X,X1,X2,Y1,Y2)
+      pure real FUNCTION TERPOO(X,X1,X2,Y1,Y2)
       implicit none
-!
 ! Args:
       real,intent(in) :: x,x1,x2,y1,y2
 
