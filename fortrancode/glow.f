@@ -119,7 +119,7 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax
+      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax,pi
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -141,15 +141,15 @@ C
 C
       DIMENSION ZVCD(NMAJ,JMAX)
 C
-C      DATA IFIRST/1/, PI/3.1415926536/
+      Integer :: IFIRST=1
 C
 C
 C First call only: set up energy grid:
 C
-C      IF (IFIRST .EQ. 1) THEN
-C        IFIRST = 0
-C        CALL EGRID (ENER, DEL, NBINS)
-C      ENDIF
+      IF (IFIRST .EQ. 1) THEN
+        IFIRST = 0
+        CALL EGRID (ENER, DEL, NBINS)
+      ENDIF
 C
 C
 C Find magnetic dip angle and solar zenith angle (radians):
@@ -169,17 +169,17 @@ C
 C
 C Pack major species density array:
 C
-      DO J=1,JMAX
+      DO 100 J=1,JMAX
         ZMAJ(1,J) = ZO(J)
         ZMAJ(2,J) = ZO2(J)
         ZMAJ(3,J) = ZN2(J)
-      End Do
+  100 CONTINUE
 C
 C
 C Calculate slant path column densities of major species in the
 C direction of the sun:
 C
-        CALL RCOLUM (SZA, ZZ, ZMAJ, ZTN, ZCOL, ZVCD, NMAJ)
+        CALL RCOLUM (SZA, ZZ, ZMAJ, ZTN, ZCOL, ZVCD)
 C
 C
 C Call subroutine EPHOTO to calculate the photoelectron production

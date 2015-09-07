@@ -487,9 +487,9 @@ C
       IF (ETA .LT. 0.) THEN
         INV = -1
       ELSE
-        DO IV=1,JY
+        DO 30 IV=1,JY
           IF (ETA .LE. ENER(IV)) GOTO 40
-        End DO
+   30   CONTINUE
         IV = JY
    40   INV = IV
       ENDIF
