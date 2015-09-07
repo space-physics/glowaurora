@@ -121,8 +121,7 @@ C
       SUBROUTINE GLOW
       use machprec,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax
       use rcolummod
-      use szacalc
-C
+
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
