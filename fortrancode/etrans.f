@@ -20,7 +20,7 @@ C COMMON /CXPARS/: see subroutine EXSECT
 C PSI    first term of parabolic d.e., = 1
 C ALPHA  second term "; cm-1
 C BETA   third term  "; cm-2
-C GAMMA  forth term  "; cm-4 s-1 eV-1
+C GAMA  forth term  "; cm-4 s-1 eV-1
 C DELZ   altitude increments; cm
 C DEL2   sum of altitude increment and next higher increment; cm
 C DELA   average of "
@@ -102,7 +102,7 @@ C
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
 C
-      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMMA(JMAX), PSI(JMAX),
+      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
      >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
      >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
 C
@@ -140,7 +140,7 @@ C
       PSI(1)   = 1.
       ALPHA(1) = 0.
       BETA(1) = 0.
-      GAMMA(1) = 0.
+      GAMA(1) = 0.
       PHIOUT = 0.0
 C
       DO 300 I = 1, JMAX
@@ -266,7 +266,7 @@ C
      >            - T2(I)**2 + T1(I)**2
         IF (PROD(I) .LT. 1.E-30) PROD(I) = 1.E-30
         IF (PRODWN(I,J) .LT. 1.E-30) PRODWN(I,J) = 1.E-30
-        GAMMA(I) = (PROD(I)/2.0)
+        GAMA(I) = (PROD(I)/2.0)
      >             * (-T1(I) - T2(I) - ALPHA(I)
      >                - (PROD(I+1) - PROD(I-1))/PROD(I)/DEL2(I))
      >             + PRODWN(I,J)
@@ -280,13 +280,13 @@ C
         BETA(2) = 1.E-20
         IERR = 2
       ENDIF
-      PHIDWN(2) = GAMMA(2) / BETA(2)
+      PHIDWN(2) = GAMA(2) / BETA(2)
       DEN(1) = PHIDWN(2)
       FLUXJ = PHIINF(J)
       CALL IMPIT(FLUXJ)
-      DO 890 I = 1, JMAX
+      DO I = 1, JMAX
         PHIDWN(I) = DEN(I)
-  890 CONTINUE
+      End Do
 C
 C
 C Apply lower boundary condition: PHIUP=PHIDWN.  Should be nearly zero.
@@ -405,45 +405,45 @@ C Bottom of Energy loop
 C
 C
 C
-      DO 1250 I = 1, JMAX
+      DO I = 1, JMAX
         EHEAT(I) = EHEAT(I) / RMUSIN
- 1250 CONTINUE
+      End Do
 C
 C
 C Calculate energy deposited as a function of altitude
 C and total energy deposition:
 C
       EDEP = 0.
-      DO 1270 IM=1,JMAX
+      DO IM=1,JMAX
         TEZ(IM) = EHEAT(IM)
-        DO 1260 II=1,NMAJ
+        DO II=1,NMAJ
           TEZ(IM) = TEZ(IM) + SION(II,IM)*POTION(II)
-          DO 1260 IQ=1,NEI
+          DO  IQ=1,NEI
             TEZ(IM) = TEZ(IM) + AGLW(IQ,II,IM)*WW(IQ,II)
- 1260   CONTINUE
+          End Do
+        End Do
         EDEP = EDEP + TEZ(IM) * DELA(IM)
- 1270 CONTINUE
+      End DO
 C
 C
 C Calculate energy input, output, and fractional conservation:
 C
       EPE = 0.0
       EPHI = 0.0
-      DO 1440 I = 2, JMAX
+      DO I = 2, JMAX
         APROD = SQRT(EPROD(I)*EPROD(I - 1))
         EPE = EPE + APROD * DELZ(I)
- 1440 CONTINUE
-      DO 1450 JJ = 1, NBINS
+      End DO
+      DO JJ = 1, NBINS
         EPHI = EPHI + PHIINF(JJ) * ENER(JJ) * DEL(JJ) / RMUSIN
- 1450 CONTINUE
+      End Do
       EIN = EPHI + EPE
       PHIOUT = PHIOUT / RMUSIN
       EOUT = EDEP + PHIOUT
       EFRAC = (EOUT - EIN) / EIN
 C
 C
-      RETURN
-      END
+      END SUBROUTINE ETRANS
 C
 C
 C
@@ -452,32 +452,38 @@ C Subroutine IMPIT solves parabolic differential equation by implicit
 C Crank-Nicholson method
 C
       SUBROUTINE IMPIT(FLUXJ)
+      Implicit None
       INCLUDE 'glow.h'
-      REAL K, L
+      Real, Intent(In) :: FLUXJ
+      REAL K, L, A, B, C, D, alpha, beta, gama, psi, delz, del2, dela,
+     > delp,delm,dels,den,fac,dem
+      Integer i,i1,jk,kk
       DIMENSION K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX)
-      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMMA(JMAX), PSI(JMAX),
+      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
      >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
      >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
 C
       I1 = JMAX - 1
-      DO 10 I = 1, I1
+      DO I = 1, I1
         A(I) = PSI(I) / DELP(I) + ALPHA(I) / DEL2(I)
         B(I) = -2. * PSI(I) / DELS(I) + BETA(I)
         C(I) = PSI(I) / DELM(I) - ALPHA(I) / DEL2(I)
-        D(I) = GAMMA(I)
-   10 CONTINUE
+        D(I) = GAMA(I)
+      End Do
+
       K(2) = (D(2) - C(2)*DEN(1)) / B(2)
       L(2) = A(2) / B(2)
-      DO 20 I = 3, I1
+      DO I = 3, I1
         DEM = B(I) - C(I) * L(I-1)
         K(I) = (D(I) - C(I)*K(I-1)) / DEM
         L(I) = A(I) / DEM
-   20 CONTINUE
+      End Do
+
       DEN(I1) = (K(I1) - L(I1)*FLUXJ) / (1. + L(I1)*FAC)
       DEN(JMAX) = DEN(I1)
-      DO 30 KK = 1, JMAX-3
+      DO KK = 1, JMAX-3
         JK = I1 - KK
         DEN(JK) = K(JK) - L(JK) * DEN(JK + 1)
-   30 CONTINUE
-      RETURN
-      END
+      End Do
+      
+      END Subroutine IMPIT
