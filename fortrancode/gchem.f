@@ -187,7 +187,7 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE GCHEM
-      use machprec, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex
+      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex
 C
       integer,PARAMETER :: NR=50
 C

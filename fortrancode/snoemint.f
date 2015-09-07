@@ -19,14 +19,14 @@ C   ZNO    Nitric oxide density at Z in cm-3
 C
 C
       SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
-      use machprec,only: jmax,sp
+      use cglow,only: jmax
       implicit none
       
       integer, intent(in) :: IDATE
-      real(kind=sp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
-      real(kind=sp),intent(out):: ZNO(JMAX)
+      real,intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
+      real,intent(out):: ZNO(JMAX)
       
-      Real(kind=sp) ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
+      Real ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
      & xmlat,xmlong
       integer iday,h,j,klat1,klat2,kz1,kz2
       

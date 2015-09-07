@@ -72,7 +72,7 @@ C
       SUBROUTINE EPHOTO
 C
 C
-      use machprec
+      use cglow
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
