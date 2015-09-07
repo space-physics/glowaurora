@@ -120,7 +120,6 @@ C
 C
       SUBROUTINE GLOW
       use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax
-      use rcolummod
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
