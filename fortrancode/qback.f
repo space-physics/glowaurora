@@ -18,22 +18,21 @@ C
       SUBROUTINE QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO)
       use cglow,only: nmaj,jmax,nst
       implicit none
-      real, intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),Z
-     &                             VCD(NMAJ,jmax)
-      !TODO PHOTI and PHONO should be INOUT
-      real,intent(out)::PHOTOI(NST,NMAJ,jmax), PHONO(NST,jmax)
-
-      real :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9, 
+!Args:
+      real, intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),ZVCD(NMAJ,jmax)
+      !PHOTI and PHONO should be INOUT
+      real,intent(inout)::PHOTOI(NST,NMAJ,jmax), PHONO(NST,jmax)
+!Local:
+      real,parameter :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9, 
      & SIGIO=1.0E-17,
      & SIGIO2=2.0E-17, SIGIN2=2.0E-17, SLBAO2=1.6E-18, SLBIO2=1.0E-18,
      & SLAAO2=1.0E-20, SLAINO=2.0E-18
-     
       real taui, taulya,taulyb, fion
       integer j
 C
 C Calculate ionization rates at each altitude:
 C
-      DO J=1,jmax
+      DO 200 J=1,JMAX
         TAUI = 2.*(SIGIO*ZVCD(1,J)+SIGIO2*ZVCD(2,J)+SIGIN2*ZVCD(3,J))
         IF (TAUI .GT. 60.) TAUI = 60.
         TAULYB = 2.*SLBAO2*ZVCD(2,J)
@@ -46,6 +45,6 @@ C
      +                  + FLYBT * EXP(-TAULYB) * ZMAJ(2,J) * SLBIO2
         PHOTOI(1,3,J) = PHOTOI(1,3,J) + FION * ZMAJ(3,J) * SIGIN2
         PHONO(1,J) = PHONO(1,J) + FLYAT * EXP(-TAULYA) * ZNO(J) * SLAINO
-      End Do
+  200 CONTINUE
 C
       END SUBROUTINE QBACK
