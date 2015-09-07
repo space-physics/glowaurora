@@ -69,13 +69,13 @@ C
      >       '    N        Ne       O+      1356  ',
      >       '   1304     1027      989     LBH')
 C
-      do j=1,jmax
+      do 700,j=1,jmax
         write(lun,600) z(j),ztn(j),zti(j),zte(j),
      >               zo(j),zo2(j),zn2(j),zhe(j),
      >               zns(j),ecalc(j),zxden(3,j),e1356(j),
      >               e1304(j),e1027(j),e989(j),elbh(j)
  600    format(0p,f6.1,3f6.0,1p,12e9.2)
-      End Do
+ 700  continue
 C
       close(lun)
 
