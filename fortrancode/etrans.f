@@ -63,17 +63,18 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE ETRANS
-C
       use cglow, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
-C
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+      implicit none
+
+      integer :: IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+     & IIMAXX(NBINS)
+      real ::  UT, GLAT, GLONG, 
+     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -82,40 +83,57 @@ C
      >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
-     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW),
+     &    SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
-     >                IIMAXX(NBINS)
-C
-      COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+     &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
-     >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
-C
-      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
+     >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ),
+     &    ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
      >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
      >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
-C
-      DIMENSION PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
+
+      real ::    PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
      >          PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
      >          PHIUP(JMAX), PHIDWN(JMAX), TSIGNE(JMAX), TAUE(JMAX),
      >          SECION(JMAX), SECP(NMAJ,JMAX), R1(JMAX), EXPT2(JMAX),
      >          PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS), POTION(NMAJ)
-C
-      DATA IFIRST/1/, AVMU/0.5/, POTION/16.,16.,18./
-C
-C
+
+      real :: APROD,DAG,EDEP,EET,ein,eout,epe,ephi,et,fluxj,phiout,
+     &     rmusin, sindip
+      integer :: i,ib,ibb,ii,im,iq,iv,j,jj,jjj4,k,kk,ll,n
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
+
+
+      COMMON /CXSECT/ SIGS, PE, PI, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+
+      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
+     >                TS, TA, TB, GAMS, GAMB
+
+      COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI,DELZ, DEL2, DELA, DELP,
+     >                DELM, DELS, DEN, FAC
+
+      integer :: IFIRST=1
+      real,parameter :: AVMU=0.5
+      POTION=[16.,16.,18.]
+
       IERR = 0
       FAC = 0.
       SINDIP = SIN(DIP)
       RMUSIN = 1. / SINDIP / AVMU
-C
-C
+
 C First call only:  calculate cross-sectons:
-C
+
       IF (IFIRST .EQ. 1) THEN
         CALL EXSECT (ENER, DEL)
         IFIRST = 0
@@ -448,14 +466,13 @@ C
       Implicit None
 
       Real, Intent(In) :: FLUXJ
-      REAL K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX), 
-     > alpha, beta, gama, psi, delz, del2, dela,
-     > delp,delm,dels,den,fac,dem
+      REAL K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX),fac,dem
+      real,dimension(jmax) :: alpha, beta, gama, psi, delz, del2, dela,
+     > delp,delm,dels,den
       Integer i,i1,jk,kk
 
-      COMMON /CIMPIT/ ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
-     >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
-     >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
+      COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI, DELZ, DEL2, DELA, DELP,
+     >                DELM, DELS, DEN, FAC
 C
       I1 = JMAX - 1
       DO 10 I = 1, I1

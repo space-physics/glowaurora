@@ -71,15 +71,16 @@ C
 C
       SUBROUTINE EPHOTO
       use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,lmax,nbins
+      implicit none
 
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+      integer :: idate, iscale,ierr,i,j,jlocal,k,kchem,l,m,m1,m2,n
+      real ::  UT, GLAT, GLONG, 
+     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -89,8 +90,8 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      DIMENSION DSPECT(JMAX), FLUX(LMAX,JMAX),
+
+      real :: DSPECT(JMAX), FLUX(LMAX,JMAX),
      >          SIGION(NMAJ,LMAX), SIGABS(NMAJ,LMAX),
      >          TPOT(NST,NMAJ), PROB(NST,NMAJ,LMAX),
      >          EPSIL1(NST,NMAJ,LMAX), EPSIL2(NST,NMAJ,LMAX),
@@ -98,22 +99,30 @@ C
      >          SIGIO(LMAX), SIGIO2(LMAX), SIGIN2(LMAX),
      >          PROBO(NST,LMAX), PROBO2(NST,LMAX), PROBN2(NST,LMAX),
      >          BSO2(LMAX), AUGE(NMAJ), AUGL(NMAJ), TAU(LMAX),
-     >          RION(LMAX,NMAJ,JMAX)
-C
+     >          RION(LMAX,NMAJ,JMAX),  aa, bb, e1, e2, fac,r1,r2,y
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
+ 
       SAVE SIGION, SIGABS, PROB, EPSIL1, EPSIL2
-C
+
       real    :: SIGNO=2.0E-18 
       integer :: NNN(NMAJ)=[5,4,6], IFIRST=1
-C
+
       DATA TPOT/13.61, 16.93, 18.63, 28.50, 40.00,  0.00,
      >          12.07, 16.10, 18.20, 20.00,  0.00,  0.00,
      >          15.60, 16.70, 18.80, 30.00, 34.80, 25.00/
-C
+
       DATA BSO2/12*0.,.01,.03,7*.10,8*.07,5*.03,5*.01,84*0./
-C
+
       DATA AUGE/500., 500., 360./, AUGL/24., 24., 33./
-C
-C
+
+
 C NB - absorption and ionization cross sections are multiplied by 1.E-18
 C on first call.
 C
@@ -123,7 +132,7 @@ C calculate energy losses:
 C
       IF (IFIRST .EQ. 1) THEN
       IFIRST = 0
-C
+
       open(unit=1,file='ephoto_xn2.dat',status='old')
       read(1,*)
       read(1,*)

@@ -28,7 +28,10 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
-      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+
+      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+
+      real :: Z(JMAX)
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -53,7 +56,7 @@ C
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
 C
-      DIMENSION Z(JMAX), D(8), T(2), SW(25),
+      DIMENSION D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
 C
       LOGICAL JF(12)
@@ -113,7 +116,7 @@ C
 C Call MSIS-2K to get neutral densities and temperature:
 C
         CALL TSELEC(SW)
-C
+
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
@@ -140,7 +143,9 @@ C
       DO IJF=1,12
         JF(IJF) = .TRUE.
       END DO
+
       JF(5) = .FALSE.
+      JF(12) = .FALSE. !no disk output for iri90
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
@@ -197,6 +202,7 @@ C Output section:
 C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
+
       write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
   444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
      >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
@@ -204,7 +210,7 @@ C
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
 C
-C Output photoionization, electron impact ionization, 
+C Output photoionization, electron impact ionization,
 C electron density, and ion densities:
 C
       write (6,690)
