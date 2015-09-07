@@ -28,7 +28,7 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
-      use machprec
+      use cglow
       use maxt,only : phi0
       use energyGrid,only: EGRID
 

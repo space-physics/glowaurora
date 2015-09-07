@@ -16,19 +16,19 @@ C H Lyman beta (FLYBT)
 C H Ly alpha (FLYAT)
 C
       SUBROUTINE QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO)
-      use machprec,only: nmaj,jmax,nst,sp
+      use cglow,only: nmaj,jmax,nst
       implicit none
-      real(kind=sp), intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),Z
+      real, intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),Z
      &                             VCD(NMAJ,jmax)
       !TODO PHOTI and PHONO should be INOUT
-      real(kind=sp),intent(out)::PHOTOI(NST,NMAJ,jmax), PHONO(NST,jmax)
+      real,intent(out)::PHOTOI(NST,NMAJ,jmax), PHONO(NST,jmax)
 
-      real(kind=sp) :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9, 
+      real :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9, 
      & SIGIO=1.0E-17,
      & SIGIO2=2.0E-17, SIGIN2=2.0E-17, SLBAO2=1.6E-18, SLBIO2=1.0E-18,
      & SLAAO2=1.0E-20, SLAINO=2.0E-18
      
-      real(kind=sp) taui, taulya,taulyb, fion
+      real taui, taulya,taulyb, fion
       integer j
 C
 C Calculate ionization rates at each altitude:

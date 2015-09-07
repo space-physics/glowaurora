@@ -20,7 +20,7 @@
 ! at sea level, the tropopause, the stratopause, and the mesopause.
 !
 module rcolummod
-  use machprec
+  use cglow
   implicit none
 
   private
@@ -98,7 +98,7 @@ contains
 !
 !
   real FUNCTION CHAP (CHI, Z, T, I)
-      use machprec,only: nmaj,sp
+      use cglow,only: nmaj,sp
       real(kind=sp),intent(in) :: chi,z,t
       integer,intent(in) :: I
       real(kind=sp), dimension(nmaj) :: AM=[16., 32., 28.]

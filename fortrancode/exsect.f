@@ -51,7 +51,7 @@ C
 C
       SUBROUTINE EXSECT (ENER, DEL)
 C
-      use machprec,only: nmaj,nei,nbins
+      use cglow,only: nmaj,nei,nbins
 C
       COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
@@ -416,7 +416,7 @@ C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
       real FUNCTION SIGION(I,ML,E,E1,E2,T12)
-      use machprec,only: nei,nmaj,dp,sp
+      use cglow,only: nei,nmaj,dp,sp
       implicit none
       real(kind=sp) :: ww, ao, omeg,anu,bb,auto,thi,ak,aj,TS,TA,
      >              TB,GAMS,GAMB
@@ -475,7 +475,7 @@ C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
       integer FUNCTION INV (ETA, JY, ENER)
-      use machprec,only: nbins
+      use cglow,only: nbins
       implicit none
 !
 ! Args:
@@ -517,7 +517,7 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 
       SUBROUTINE HEXC(ENER,SIGIX,RATIO)
-      use machprec,only: nmaj,nei,nbins
+      use cglow,only: nmaj,nei,nbins
       implicit none
 !
 ! Args:

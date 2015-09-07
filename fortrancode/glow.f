@@ -119,7 +119,7 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-      use machprec,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax
+      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax
       use rcolummod
 
       COMMON /CGLOW/
