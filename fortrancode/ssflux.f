@@ -116,7 +116,7 @@
       SUBROUTINE SSFLUX (ISCALE, F107, F107A, HLYBR, FEXVIR, HLYA,
      >                   HEIEW, XUVFAC, WAVE1, WAVE2, SFLUX)
 !
-      include 'glow.h'
+      use machprec
 !
       integer,intent(in) :: iscale
       real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC

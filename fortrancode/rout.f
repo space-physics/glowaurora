@@ -11,15 +11,7 @@ C Reduced cascade contribution to 1356, SCS, 9/03
 C Included radiative recombination in 1356 SCS, 9/03
 C
       SUBROUTINE ROUT(ROFILE,LUN,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
-
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
+      use machprec
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -77,14 +69,14 @@ C
      >       '    N        Ne       O+      1356  ',
      >       '   1304     1027      989     LBH')
 C
-      do 700,j=1,jmax
+      do j=1,jmax
         write(lun,600) z(j),ztn(j),zti(j),zte(j),
      >               zo(j),zo2(j),zn2(j),zhe(j),
      >               zns(j),ecalc(j),zxden(3,j),e1356(j),
      >               e1304(j),e1027(j),e989(j),elbh(j)
  600    format(0p,f6.1,3f6.0,1p,12e9.2)
- 700  continue
+      End Do
 C
       close(lun)
-      return
-      end
+
+      End Subroutine Rout

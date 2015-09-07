@@ -72,15 +72,8 @@ C
       SUBROUTINE EPHOTO
 C
 C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
-C
+      use machprec
+
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
