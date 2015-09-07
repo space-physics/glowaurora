@@ -1,4 +1,4 @@
-MODULE machprec
+MODULE cglow
     implicit none
     public
 ! This replaces glow.h:
@@ -33,4 +33,4 @@ MODULE machprec
 !     integer,PARAMETER :: (JMAX=170)
 !     integer,PARAMETER :: (NBINS=343)
 !     integer,PARAMETER :: (LMAX=123)
-END MODULE machprec
+END MODULE cglow
