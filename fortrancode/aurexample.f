@@ -28,11 +28,8 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
-      use cglow
-      use maxt,only : phi0
-      use energyGrid,only: EGRID
+      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax
 
-C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -98,12 +95,12 @@ C
 C
 C Set up energy grid:
 C
-      CALL EGRID (ENER, DEL, NBINS)
+      CALL EGRID (ENER, DEL)
 C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      call Phi0(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO,Phitop)
+      CALL MAXT (EF, EC, ENER, DEL, ITAIL, FMONO, EMONO, PHITOP)
 C
 C
 C Calculate local solar time:

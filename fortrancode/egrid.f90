@@ -6,17 +6,13 @@
 ! Academic Research License Agreement contained in the file glowlicense.txt.
 ! For more information see the file glow.txt.
 !
-module EnergyGrid
-  use cglow
-  Implicit None
-  private
-  public :: EGRID
-contains
-  SUBROUTINE EGRID (ENER, DEL,NBINS)
-      
+    
+      SUBROUTINE EGRID (ENER, DEL)
+      use cglow,only: nbins
+      implicit none
+
       Integer N
-      Integer,Intent(In) :: Nbins
-      Real(sp), Intent(Out) :: ENER(Nbins), DEL(Nbins)
+      Real, Intent(Out) :: ENER(Nbins), DEL(Nbins)
 
       !print*,maxexponent(ener)
       DO N=1,nbins
@@ -32,4 +28,3 @@ contains
 
       ENER = ENER - DEL/2.0
   END Subroutine EGRID
-end module EnergyGrid

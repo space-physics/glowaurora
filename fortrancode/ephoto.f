@@ -72,7 +72,7 @@ C
       SUBROUTINE EPHOTO
 C
 C
-      use cglow
+      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,lmax,nbins
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -156,53 +156,49 @@ C
           End Do
       close(1)
 C
-        DO L=1,LMAX
-            SIGABS(1,L) = SIGAO(L)  * 1.E-18
-            SIGABS(2,L) = SIGAO2(L) * 1.E-18
-            SIGABS(3,L) = SIGAN2(L) * 1.E-18
-            SIGION(1,L) = SIGIO(L)  * 1.E-18
-            SIGION(2,L) = SIGIO2(L) * 1.E-18
-            SIGION(3,L) = SIGIN2(L) * 1.E-18
-        End Do
+        DO 10 L=1,LMAX
+        SIGABS(1,L) = SIGAO(L)  * 1.E-18
+        SIGABS(2,L) = SIGAO2(L) * 1.E-18
+        SIGABS(3,L) = SIGAN2(L) * 1.E-18
+        SIGION(1,L) = SIGIO(L)  * 1.E-18
+        SIGION(2,L) = SIGIO2(L) * 1.E-18
+        SIGION(3,L) = SIGIN2(L) * 1.E-18
+   10   CONTINUE
 C
-        DO L=1,LMAX
-            DO K=1,NST
-                PROB(K,1,L) = PROBO(K,L)
-                PROB(K,2,L) = PROBO2(K,L)
-                PROB(K,3,L) = PROBN2(K,L)
-            End Do
-        End Do
+        DO 20 L=1,LMAX
+        DO 20 K=1,NST
+        PROB(K,1,L) = PROBO(K,L)
+        PROB(K,2,L) = PROBO2(K,L)
+        PROB(K,3,L) = PROBN2(K,L)
+   20   CONTINUE
 C
-        DO L=1,LMAX 
-            DO I=1,NMAJ 
-                DO K=1,NNN(I) 
-                    EPSIL1(K,I,L)=12397.7/WAVE1(L)-TPOT(K,I) 
-                    EPSIL2(K,I,L)=12397.7/WAVE2(L)-TPOT(K,I) 
-                    IF (WAVE1(L) .LE. AUGL(I)) THEN
-                      EPSIL1(K,I,L) = EPSIL1(K,I,L) - AUGE(I)
-                      EPSIL2(K,I,L) = EPSIL2(K,I,L) - AUGE(I)
-                    ENDIF
-                End Do
-            End Do
-        End Do 
+        DO 40 L=1,LMAX 
+        DO 40 I=1,NMAJ 
+        DO 40 K=1,NNN(I) 
+        EPSIL1(K,I,L)=12397.7/WAVE1(L)-TPOT(K,I) 
+        EPSIL2(K,I,L)=12397.7/WAVE2(L)-TPOT(K,I) 
+        IF (WAVE1(L) .LE. AUGL(I)) THEN
+          EPSIL1(K,I,L) = EPSIL1(K,I,L) - AUGE(I)
+          EPSIL2(K,I,L) = EPSIL2(K,I,L) - AUGE(I)
+        ENDIF
+   40   CONTINUE 
 C
       ENDIF
 C
 C
 C Zero arrays:
 C
-      DO J=1,JMAX
-          DO I=1,NMAJ
-              DO K=1,NST
-                  PHONO(K,J) = 0.
-                  PHOTOI(K,I,J) = 0.
-                  PHOTOD(K,I,J) = 0.
-              End Do
-          End Do
-          DO M=1,NBINS
-            PESPEC(M,J) = 0.
-          End Do
-      End Do
+      DO 100 J=1,JMAX
+      DO 50 I=1,NMAJ
+      DO 50 K=1,NST
+      PHONO(K,J) = 0.
+      PHOTOI(K,I,J) = 0.
+      PHOTOD(K,I,J) = 0.
+   50 CONTINUE
+      DO 60 M=1,NBINS
+      PESPEC(M,J) = 0.
+   60 CONTINUE
+  100 CONTINUE
 C
 C
 C Calculate attenuated solar flux at all altitudes and wavelengths:
@@ -210,9 +206,9 @@ C
       DO 200 L=1,LMAX 
       DO 200 J=1,JMAX
       TAU(L)=0. 
-      DO I=1,NMAJ 
-      	TAU(L)=TAU(L)+SIGABS(I,L)*ZCOL(I,J) 
-      End Do
+      DO 150 I=1,NMAJ 
+      TAU(L)=TAU(L)+SIGABS(I,L)*ZCOL(I,J) 
+  150 CONTINUE
       IF (TAU(L) .LT. 20.) THEN
         FLUX(L,J)=SFLUX(L)*EXP(-TAU(L)) 
       ELSE
@@ -251,9 +247,9 @@ C
 C
 C Calculate total ionization rates for all species and altitudes:
 C
-      DO J=1,JMAX
+      DO 320 J=1,JMAX
         RION(L,I,J)=ZMAJ(I,J)*SIGION(I,L)*FLUX(L,J)
-      End Do
+  320 CONTINUE
 C
 C
 C Loop over states:
@@ -268,10 +264,10 @@ C
 C
 C Calculate state-specific ionization rates at all altitudes:
 C
-      DO J=1,JMAX
+      DO 220 J=1,JMAX
         DSPECT(J) = RION(L,I,J)*PROB(K,I,L) 
         PHOTOI(K,I,J) = PHOTOI(K,I,J) + DSPECT(J)
-      End Do
+  220 CONTINUE
 C
 C
 C Find box numbers M1, M2 corresponding to energies E1, E2:
@@ -312,9 +308,9 @@ C
         E2 = AUGE(I)
         CALL BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER) 
         IF (M1.GT.NBINS .OR. M2.GT.NBINS) GOTO 350
-        DO J=1,JMAX
+        DO 330 J=1,JMAX
           PESPEC(M1,J) = PESPEC(M1,J) + RION(L,I,J)
-        End Do
+  330   CONTINUE
       ENDIF
 C     
 C
@@ -341,25 +337,26 @@ C
       Integer,Intent(out):: M1,M2
       
       Integer I
-C
-      DO I=1,NBINS
-          IF (E1 .LT. ENER(I)+DEL(I)/2.) GOTO 200
-      End Do
+
+      DO 100 I=1,NBINS
+      IF (E1 .LT. ENER(I)+DEL(I)/2.) GOTO 200
+  100 CONTINUE
+
       M1 = NBINS+1
       RETURN
 C
   200 M1 = I
       R1 = ENER(I) + DEL(I)/2.
 C
-      DO I=1,NBINS
-      	IF (E2 .LT. ENER(I)+DEL(I)/2.) GOTO 400
-      End Do
+      DO 300 I=1,NBINS
+      IF (E2 .LT. ENER(I)+DEL(I)/2.) GOTO 400
+  300 CONTINUE
+
       M2 = NBINS
       R2 = E2 - DEL(NBINS)
       RETURN
 C
   400 M2 = I
       R2 = ENER(I) - DEL(I)/2.
-C
-C
+
       END Subroutine BOXNUM
