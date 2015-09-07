@@ -28,7 +28,7 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      use machprec
+      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -134,7 +134,7 @@ C
       IDAY = IDATE - IDATE/1000*1000
       MMDD = -IDAY
       CALL IRI90(JF,JMAG,GLAT,GLONG,RZ12,MMDD,STL,Z,JMAX,
-     >           '/home/stans/mod/iri/',OUTF,OARR)
+     >           'iri/',OUTF,OARR)
       DO J=1,JMAX
         ZE(J) = OUTF(1,J) / 1.E6
         IF (ZE(J) .LT. 100.) ZE(J) = 100.
@@ -253,7 +253,7 @@ C
 
 C
 C
-C     CALL ROUT('rt.out',13,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 C
       STOP
       END

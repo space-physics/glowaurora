@@ -70,8 +70,6 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE EPHOTO
-C
-C
       use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,lmax,nbins
 
       COMMON /CGLOW/
@@ -92,7 +90,7 @@ C
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
 C
-      DIMENSION DSPECT(JMAX), FLUX(LMAX,JMAX), NNN(NMAJ),
+      DIMENSION DSPECT(JMAX), FLUX(LMAX,JMAX),
      >          SIGION(NMAJ,LMAX), SIGABS(NMAJ,LMAX),
      >          TPOT(NST,NMAJ), PROB(NST,NMAJ,LMAX),
      >          EPSIL1(NST,NMAJ,LMAX), EPSIL2(NST,NMAJ,LMAX),
@@ -104,7 +102,8 @@ C
 C
       SAVE SIGION, SIGABS, PROB, EPSIL1, EPSIL2
 C
-      DATA SIGNO/2.0 E-18/, NNN/5,4,6/, IFIRST/1/
+      real    :: SIGNO=2.0E-18 
+      integer :: NNN(NMAJ)=[5,4,6], IFIRST=1
 C
       DATA TPOT/13.61, 16.93, 18.63, 28.50, 40.00,  0.00,
      >          12.07, 16.10, 18.20, 20.00,  0.00,  0.00,
@@ -126,34 +125,34 @@ C
       IFIRST = 0
 C
       open(unit=1,file='ephoto_xn2.dat',status='old')
-          read(1,*)
-          read(1,*)
-          read(1,*)
-          read(1,*)
-          Do l=lmax,1,-1
-              read(1,*) aa,bb,(probn2(n,l),n=1,nst),sigin2(l),sigan2(l)
-              bso2(l)=0.0
-          End Do
+      read(1,*)
+      read(1,*)
+      read(1,*)
+      read(1,*)
+      do 3,l=lmax,1,-1
+         read(1,*) aa,bb,(probn2(n,l),n=1,nst),sigin2(l),sigan2(l)
+         bso2(l)=0.0
+ 3       continue
       close(1)
 C
       open(unit=1,file='ephoto_xo2.dat',status='old')
-          read(1,*)
-          read(1,*)
-          read(1,*)
-          read(1,*)
-          Do l=lmax,1,-1
-             read(1,*) aa,bb,(probo2(n,l),n=1,nst),sigio2(l),sigao2(l)
-          End Do
+      read(1,*)
+      read(1,*)
+      read(1,*)
+      read(1,*)
+      do 4,l=lmax,1,-1
+         read(1,*) aa,bb,(probo2(n,l),n=1,nst),sigio2(l),sigao2(l)
+ 4    continue
       close(1)
 C 
       open(unit=1,file='ephoto_xo.dat',status='old')
-          read(1,*)
-          read(1,*)
-          read(1,*)
-          read(1,*)
-          do l=lmax,1,-1
-             read(1,*) aa,bb,(probo(n,l),n=1,nst),sigio(l),sigao(l)
-          End Do
+      read(1,*)
+      read(1,*)
+      read(1,*)
+      read(1,*)
+      do 5,l=lmax,1,-1
+         read(1,*) aa,bb,(probo(n,l),n=1,nst),sigio(l),sigao(l)
+ 5       continue
       close(1)
 C
         DO 10 L=1,LMAX
@@ -272,31 +271,31 @@ C
 C
 C Find box numbers M1, M2 corresponding to energies E1, E2:
 C
-      CALL BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER) 
+      CALL BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER) 
       IF (M1 .GT. NBINS) GOTO 300
 C
 C
 C Fill the boxes from M1 to M2 at all altitudes:
 C 
       Y = E2 - E1 
-      DO N=M1,M2
-          IF (M1 .EQ. M2) THEN
-            FAC = 1.
+      DO 280 N=M1,M2
+      IF (M1 .EQ. M2) THEN
+        FAC = 1.
+      ELSE
+        IF (N .EQ. M1) THEN
+          FAC = (R1-E1) / Y
+        ELSE
+          IF (N .EQ. M2) THEN
+            FAC = (E2-R2) / Y
           ELSE
-                IF (N .EQ. M1) THEN
-                  FAC = (R1-E1) / Y
-                ELSE
-                  IF (N .EQ. M2) THEN
-                    FAC = (E2-R2) / Y
-                  ELSE
-                    FAC = DEL(N) / Y
-                  ENDIF
-                ENDIF
+            FAC = DEL(N) / Y
           ENDIF
-          DO J=1,JMAX
-              PESPEC(N,J) = PESPEC(N,J) + DSPECT(J) * FAC
-          End Do
-      End Do
+        ENDIF
+      ENDIF
+        DO 250 J=1,JMAX
+          PESPEC(N,J) = PESPEC(N,J) + DSPECT(J) * FAC
+  250   CONTINUE
+  280 CONTINUE
 C
   300 CONTINUE 
 C
@@ -306,7 +305,7 @@ C
       IF (WAVE1(L) .LE. AUGL(I)) THEN
         E1 = AUGE(I)
         E2 = AUGE(I)
-        CALL BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER) 
+        CALL BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER) 
         IF (M1.GT.NBINS .OR. M2.GT.NBINS) GOTO 350
         DO 330 J=1,JMAX
           PESPEC(M1,J) = PESPEC(M1,J) + RION(L,I,J)
@@ -323,7 +322,8 @@ C
 C
 C
 C
-      SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, NBINS, DEL, ENER)
+      SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER)
+      use cglow,only: nbins
       implicit none
 C This subroutine finds the box numbers corresponding to
 C energies E1 and E2, and calls them M1 and M2
@@ -331,7 +331,6 @@ C
 C R1 is the upper edge of the lower box, R2 is the lower edge of the
 C upper box.
 C
-      Integer,Intent(in) :: NBINS
       Real,Intent(in)    :: DEL(NBINS), ENER(NBINS)
       Real,Intent(out)   :: E1,E2,R1,R2
       Integer,Intent(out):: M1,M2

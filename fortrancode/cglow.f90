@@ -22,7 +22,10 @@ MODULE cglow
 
   integer, parameter :: dp = kind(1.0D0)
   integer, parameter :: sp = kind(1.0)
-  real(sp), parameter:: pi = 4*ATAN(1.)
+  real, parameter    :: pi = 4*ATAN(1.)
+
+  real, parameter    :: Re = 6.371e8  !radius of earh in centimeters
+  real, parameter    :: G  = 978.1    !gravitational constant dynes
 
 ! Standard parameters for photoelectron or aurora runs (up to 50 keV):
       integer, PARAMETER :: JMAX=120

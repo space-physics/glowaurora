@@ -31,7 +31,7 @@ DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
 #
 # Sources (in order of dependency):
 #
-SOURCES = cglow.f90 egrid.f90 ephoto.f maxt.f90 rcolum.f90 etrans.f exsect.f fieldm.f vquart.f gchem.f geomag.f solzen.f90 glow.f iri90.f nrlmsise00.f qback.f rout.f snoem.f snoemint.f ssflux.f aurexample.f 
+SOURCES = cglow.f90 egrid.f ephoto.f maxt.f rcolum.f etrans.f exsect.f fieldm.f vquart.f gchem.f geomag.f solzen.f glow.f iri90.f nrlmsise00.f qback.f rout.f snoem.f snoemint.f ssflux.f aurexample.f 
 
 OBJS := $(addsuffix .o, $(basename $(SOURCES)))
 EXEC = auroraexample
