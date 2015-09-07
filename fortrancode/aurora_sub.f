@@ -31,13 +31,13 @@ C
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap,PyPhitop)
 
-      use machprec
+      use cglow,only: nbins,jmax,nmaj
 
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
-     &                  Pyf107p, Pyap, PyPhitop(NBINS,3)
+     &                  Pyf107p, Pyap, PyPhitop(NBINS,nmaj)
       Real, Dimension(JMAX),Intent(Out)    :: Pyecalc,Pypi,Pysi
-      Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,3)
+      Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj)
 
 C
       COMMON /CGLOW/
@@ -241,6 +241,6 @@ C      write (6,795)  (vcb(iw),iw=1,10)
 C  795 format (' VCB:',11f7.0)
 C
 C
-C     CALL ROUT('rt.out',13,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 C
       END SUBROUTINE AURORA

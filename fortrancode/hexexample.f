@@ -28,7 +28,7 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      use machprec
+      use cglow,only: jmax,nmaj,nex,nw,nc,nst,nei,nf,nbins,lmax
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -77,7 +77,6 @@ C
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
 C
       DATA SW/25*1./
-      DATA PI/3.1415926536/
 C
 C
 C Obtain input parameters:
@@ -102,7 +101,7 @@ C
 C
 C Set up energy grid:
 C
-      CALL EGRID (ENER, DEL, NBINS)
+      CALL EGRID (ENER, DEL)
 C
 C
 C Generate auroral electron flux into PHITOP array:

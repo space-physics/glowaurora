@@ -4,9 +4,9 @@ from numpy.distutils.core import setup,Extension
 from os.path import join
 from glob import glob
 
-fortranfiles=['machprec.f90','egrid.f90','maxt.f90','glow.f',
-              'vquart.f90','gchem.f','ephoto.f','solzen.f90','rcolum.f90',
-              'etrans.f','exsect.f','ssflux.f','snoem.f90','snoemint.f',
+fortranfiles=['cglow.f90','egrid.f','maxt.f','glow.f',
+              'vquart.f','gchem.f','ephoto.f','solzen.f','rcolum.f',
+              'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
               'geomag.f','nrlmsise00.f','qback.f','fieldm.f','iri90.f',
               'aurora_sub.f']
 

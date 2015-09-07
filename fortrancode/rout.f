@@ -10,17 +10,28 @@ C Replaced 834 with LBH, SCS, 2/03
 C Reduced cascade contribution to 1356, SCS, 9/03
 C Included radiative recombination in 1356 SCS, 9/03
 C
-      SUBROUTINE ROUT(ROFILE,LUN,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+      SUBROUTINE ROUT(ROFILE,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
       use cglow,only: nst,nf,jmax,nmaj,nw,nc,nbins,lmax,nei,nex
-C
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+      implicit none
+
+      character(len=*),intent(in) :: rofile
+      real,intent(in) :: ef,ez,FRACO,FRACO2,FRACN2
+      integer,intent(in) :: ITAIL
+
+      integer,parameter :: LUN=13
+
+      real :: z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
+     >          e1027(jmax), e989(jmax), elbh(jmax)
+
+
+      integer :: IDATE, ISCALE, JLOCAL, KCHEM, IERR,j
+      real ::  UT, GLAT, GLONG, 
+     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -30,11 +41,18 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      dimension z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
-     >          e1027(jmax), e989(jmax), elbh(jmax)
-      character*40 rofile
-C
+
+
+      COMMON /CGLOW/
+     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
+
+
       do 50 j=1,jmax
       z(j)=zz(j)/1.e5
       zhe(j)=0.
