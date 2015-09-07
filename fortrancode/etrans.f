@@ -64,14 +64,7 @@ C
 C
       SUBROUTINE ETRANS
 C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
+      use machprec, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -452,8 +445,9 @@ C Subroutine IMPIT solves parabolic differential equation by implicit
 C Crank-Nicholson method
 C
       SUBROUTINE IMPIT(FLUXJ)
+      use machprec
       Implicit None
-      INCLUDE 'glow.h'
+
       Real, Intent(In) :: FLUXJ
       REAL K, L, A, B, C, D, alpha, beta, gama, psi, delz, del2, dela,
      > delp,delm,dels,den,fac,dem

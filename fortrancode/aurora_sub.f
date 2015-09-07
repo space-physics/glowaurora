@@ -33,15 +33,6 @@ C
 
       use machprec
 
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
-
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, PyPhitop(NBINS,3)
@@ -127,7 +118,7 @@ C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
 C Model (NOEM)
 C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
 C
 C
 C Call International Reference Ionosphere-1990 subroutine to get

@@ -51,9 +51,7 @@ C
 C
       SUBROUTINE EXSECT (ENER, DEL)
 C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
+      use machprec,only: nmaj,nei,nbins
 C
       COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
@@ -417,20 +415,27 @@ C
 C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
-      FUNCTION SIGION(I,ML,E,E1,E2,T12)
-      use machprec
-C
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
-C
+      real FUNCTION SIGION(I,ML,E,E1,E2,T12)
+      use machprec,only: nei,nmaj,dp,sp
+      implicit none
+      real(kind=sp) :: ww, ao, omeg,anu,bb,auto,thi,ak,aj,TS,TA,
+     >              TB,GAMS,GAMB
+!
+! Args:
+      integer,intent(in) :: i,ml
+      real,intent(in) :: E,E1
+      real,intent(out) :: T12
+      real,intent(inout) :: E2
+! Local:
+      Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
+      Real(kind=sp) qq,S,A,TZ,GG,TTL,AL2,AL1,TTL1
       COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
-C
-      Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
-      Real(sp) sigion
+
+
       DATA QQ/1.E-16/
 C
 C
@@ -469,12 +474,16 @@ C
 C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
-      FUNCTION INV (ETA, JY, ENER)
-C
-      INCLUDE 'glow.h'
-C
-      DIMENSION ENER(NBINS)
-C
+      integer FUNCTION INV (ETA, JY, ENER)
+      use machprec,only: nbins
+      implicit none
+!
+! Args:
+      real,intent(in) :: ETA,ENER(NBINS)
+      integer,intent(in) :: JY
+! Local:
+      integer :: iv
+      
       IF (ETA .LT. 0.) THEN
         INV = -1
       ELSE
@@ -508,13 +517,17 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 
       SUBROUTINE HEXC(ENER,SIGIX,RATIO)
-
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
-
-      DIMENSION ENER(NBINS), SIGIX(NEI,NMAJ,NBINS), RATIO(NBINS)
-      DIMENSION TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
+      use machprec,only: nmaj,nei,nbins
+      implicit none
+!
+! Args:
+      real,intent(in) :: ENER(NBINS),SIGIX(NEI,NMAJ,NBINS)
+      real,intent(out) :: RATIO(NBINS)
+!
+! Local:
+      real ::  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
+      integer :: k,i,kg
+      real,external :: TERPOO
       DATA EGR/1.E4,      2.E4,      5.E4,      1.E5,      2.E5,
      >         3.E5,      5.E5,      1.E6,      2.E6,      5.E6,
      >         1.E7,      1.E8,      1.E9/
@@ -525,45 +538,48 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 C Calculate total low-energy cross section for N2:
 
-      DO 20 K = 1,NBINS
+      DO K = 1,NBINS
         TOTX(K) = 0.
-        DO 20 I = 1,NEI
+        DO I = 1,NEI
           TOTX(K) = TOTX(K) + SIGIX(I,3,K)
-   20 CONTINUE
+        End Do
+      End Do
 
 
 C Calculate high-energy cross section for N2, using tabulated values:
 
-      DO 70 K=1,NBINS
+      DO K=1,NBINS
         IF (ENER(K) .GE. EGR(1)) THEN
-        DO 60 KG=1,12
+        DO KG=1,12
           IF (ENER(K) .GE. EGR(KG) .AND. ENER(K) .LT. EGR(KG+1))
      >    TOTNEW(K)=TERPOO(ENER(K),EGR(KG),EGR(KG+1),SGR(KG),SGR(KG+1))
-   60   CONTINUE
+        End Do
         ELSE
           TOTNEW(K)=TOTX(K)
         ENDIF
-   70 CONTINUE
+      End Do
 
 
 C Calculate ratio (=1 < 10 keV):
 
-      DO 90 K = 1,NBINS
+      DO K = 1,NBINS
         IF (ENER(K) .GE. EGR(1)) THEN
           RATIO(K) = TOTX(K)/TOTNEW(K) 
 C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
         ELSE
           RATIO(K) = 1.
         ENDIF
-   90 CONTINUE
+      End DO
 
       END SUBROUTINE HEXC
 
 
 
-      FUNCTION TERPOO(X,X1,X2,Y1,Y2)
+      Real FUNCTION TERPOO(X,X1,X2,Y1,Y2)
       implicit none
-      Real,intent(in) :: x,x1,x2,y1,y2
-      real :: terpoo
+!
+! Args:
+      real,intent(in) :: x,x1,x2,y1,y2
+
       TERPOO = EXP ( log(Y1) + log(X/X1)*log(Y2/Y1)/log(X2/X1) )
       END function terpoo

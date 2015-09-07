@@ -18,16 +18,16 @@ C Output:
 C   ZNO    Nitric oxide density at Z in cm-3
 C
 C
-      SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
-      use machprec
+      SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
+      use machprec,only: jmax,sp
       use snoemmod
       implicit none
       
-      integer, intent(in) :: IDATE, JMAX
-      real(sp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
-      real(sp),intent(out):: ZNO(JMAX)
+      integer, intent(in) :: IDATE
+      real(kind=sp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
+      real(kind=sp),intent(out):: ZNO(JMAX)
       
-      Real(sp) ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
+      Real(kind=sp) ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
      & xmlat,xmlong
       integer iday,h,j,klat1,klat2,kz1,kz2
       

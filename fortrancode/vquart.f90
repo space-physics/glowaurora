@@ -17,7 +17,7 @@
 !
 !
 module vquartmod
-    use machprec
+    use machprec,only: jmax,dp
     implicit none
     private
     public :: vquart
@@ -25,7 +25,7 @@ module vquartmod
     real(kind=dp) :: E =1.D-38, Z=0.
 contains
     SUBROUTINE VQUART (A, ROOT, NJ)
-    INCLUDE 'glow.h' ! f2py needs this here
+
     Real(kind=dp),intent(out) :: ROOT(JMAX)
     Real(kind=dp),intent(in)  :: A(JMAX,5)
     Integer,intent(in)        :: NJ

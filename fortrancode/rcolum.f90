@@ -25,21 +25,21 @@ module rcolummod
 
   private
   public :: rcolum, chap,vcd !f2py needs all subr/func public
-   Real(sp) :: RE=6.37E8
+   Real(kind=sp) :: RE=6.37E8
 contains
   SUBROUTINE RCOLUM (CHI, ZZ, ZMAJ, TN, ZCOL, ZVCD, NMAJ)
-  include 'glow.h'
   
   integer,intent(in) :: nmaj
-  real(sp), intent(in) :: chi,zz(jmax),TN(JMAX)
+  real(kind=sp), intent(in) :: chi,zz(jmax),TN(JMAX)
   real,intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
   
   integer,PARAMETER ::NM=3,NU=4
 !
-  real(sp) :: ZMAJ(NMAJ,JMAX), ZCG(NM),ZCUS(NM,NU), ghrg,ghz,tng
+  real(kind=sp) :: ZMAJ(NMAJ,JMAX), ZCG(NM),ZCUS(NM,NU), ghrg,ghz,tng
   integer i,j, jg
 !
-  Real(sp), dimension(nu) :: ZUS=[0., 1.5E6, 5.E6, 9.E6], TNUS=[288., 217., 271., 187.]
+  Real(kind=sp), dimension(nu) :: ZUS=[0., 1.5E6, 5.E6, 9.E6], & 
+                                  TNUS=[288., 217., 271., 187.]
   DATA ZCUS/8.00E17, 4.54E24, 1.69E25, &
            8.00E17, 5.46E23, 2.03E24,  &
            8.00E17, 3.63E21, 1.35E22,  &
@@ -82,11 +82,11 @@ contains
       End Do
       TNG = TNUS(JG) + (TNUS(JG+1)-TNUS(JG))*(GHZ-ZUS(JG))/(ZUS(JG+1)-ZUS(JG))
       DO I=1,NMAJ
-      ZCG(I) = ZCUS(I,JG) * (ZCUS(I,JG+1) / ZCUS(I,JG))**((GHZ-ZUS(JG)) / (ZUS(JG+1)-ZUS(JG)))
+        ZCG(I) = ZCUS(I,JG) * (ZCUS(I,JG+1) / ZCUS(I,JG))**((GHZ-ZUS(JG)) / (ZUS(JG+1)-ZUS(JG)))
       End Do
     ENDIF
     DO I=1,NMAJ
-    ZCOL(I,J) = 2. * ZCG(I) * CHAP(PI/2.,GHZ,TNG,I) - ZVCD(I,J) * CHAP(CHI,ZZ(J),TN(J),I)
+     ZCOL(I,J) = 2. * ZCG(I) * CHAP(PI/2.,GHZ,TNG,I) - ZVCD(I,J) * CHAP(CHI,ZZ(J),TN(J),I)
     End Do
 220   CONTINUE
   ENDIF
@@ -97,12 +97,12 @@ contains
 !
 !
 !
-  FUNCTION CHAP (CHI, Z, T, I)
-      real(sp),intent(in) :: chi,z,t
+  real FUNCTION CHAP (CHI, Z, T, I)
+      use machprec,only: nmaj,sp
+      real(kind=sp),intent(in) :: chi,z,t
       integer,intent(in) :: I
-      integer, PARAMETER :: NMAJ=3
-      Real(sp), dimension(nmaj) :: AM=[16., 32., 28.]
-      real(sp) :: G=978.1, gr,hn,hg,hf,sqhf,SPERFC,chap 
+      real(kind=sp), dimension(nmaj) :: AM=[16., 32., 28.]
+      real(kind=sp) :: G=978.1, gr,hn,hg,hf,sqhf,SPERFC 
       GR=G*(RE/(RE+Z))**2 
       HN=1.38E-16*T/(AM(I)*1.662E-24*GR)
       HG=(RE+Z)/HN 
