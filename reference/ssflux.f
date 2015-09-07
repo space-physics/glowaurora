@@ -136,7 +136,7 @@ C Hinteregger contrast ratio method:
 C
       IF (iscale .eq. 0) then
         if (islast .ne. iscale) then
-          open(unit=1,file='ssflux_hint.dat',status='old',readonly)
+          open(unit=1,file='ssflux_hint.dat',status='old')
           read(1,*)
           do l=lmax,1,-1
             read(1,*) waves(l),wavel(l),rflux(l),scale1(l),scale2(l)
@@ -168,7 +168,7 @@ C EUVAC Method:
 C
       IF (iscale .eq. 1) then
         if (islast .ne. iscale) then
-          open(unit=1,file='ssflux_euvac.dat',status='old',readonly)
+          open(unit=1,file='ssflux_euvac.dat',status='old')
           read(1,*)
           do l=lmax,1,-1
             read(1,*) waves(l),wavel(l),rflux(l),a(l)
@@ -190,7 +190,7 @@ C User-supplied data:
 C
       if (iscale .eq. 2) then
         if (islast .ne. iscale) then
-          open(unit=1,file='ssflux_user.dat',status='old',readonly)
+          open(unit=1,file='ssflux_user.dat',status='old')
           read(1,*)
           do l=lmax,1,-1
             read(1,*) waves(l),wavel(l),uflux(l)

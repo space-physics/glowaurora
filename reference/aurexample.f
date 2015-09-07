@@ -153,7 +153,7 @@ C
       IDAY = IDATE - IDATE/1000*1000
       MMDD = -IDAY
       CALL IRI90(JF,JMAG,GLAT,GLONG,RZ12,MMDD,STL,Z,JMAX,
-     >           '/home/stans/mod/iri/',OUTF,OARR)
+     >           'iri/',OUTF,OARR)
       DO J=1,JMAX
         ZE(J) = OUTF(1,J) / 1.E6
         IF (ZE(J) .LT. 100.) ZE(J) = 100.
