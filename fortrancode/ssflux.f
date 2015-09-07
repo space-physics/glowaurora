@@ -115,29 +115,32 @@
 !
       SUBROUTINE SSFLUX (ISCALE, F107, F107A, HLYBR, FEXVIR, HLYA,
      >                   HEIEW, XUVFAC, WAVE1, WAVE2, SFLUX)
-!
-      use machprec
-!
-      integer,intent(in) :: iscale
-      real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC
-      real,intent(out),dimension(Lmax)   :: wave1,wave2,sflux
-      
-      DIMENSION WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
-     >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX), B1(3), B2(3) 
-      data epsil/1.0E-6/
-      data islast/-1/
+      use machprec,only: lmax
+      implicit none
 ! this save all var is necessary or the sim gives incorrection photoionization results MH 4/15
-      save 
-!
+      save
+! Args:
+      integer,intent(in) :: iscale
+      real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC,heiew
+      real,intent(out),dimension(Lmax)   :: wave1,wave2,sflux
+! Local:
+      real :: WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
+     >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX),p107,r1,r2
+      integer :: l
+      real,parameter :: epsil=1.0E-6
+      integer :: islast=-1
+
+
 ! regression coefficients which reduce to solar min. spectrum:
-      DATA B1/1.0, 0.0138, 0.005/, B2/1.0, 0.59425, 0.3811/
-!
+      real,parameter :: B1(3)=[1.0, 0.0138, 0.005]
+      real,parameter :: B2(3)=[1.0, 0.59425, 0.3811]
+
 ! 'best fit' regression coefficients, commented out, for reference:
 !     DATA B1/1.31, 0.01106, 0.00492/, B2/-6.618, 0.66159, 0.38319/
-!
-!
+
+
 ! Hinteregger contrast ratio method:
-!
+
       IF (iscale .eq. 0) then
         if (islast .ne. iscale) then
           open(unit=1,file='ssflux_hint.dat',status='old')
@@ -147,7 +150,7 @@
           enddo
           close(unit=1)
          endif
-!
+
         IF (HLYBR .GT. EPSIL) THEN
           R1 = HLYBR
         ELSE
@@ -158,7 +161,7 @@
         ELSE
           R2 =  B2(1) + B2(2)*(F107A-71.5) + B2(3)*(F107-F107A+3.9)
         ENDIF
-!
+
         do l=1,lmax
           SFLUX(L) = RFLUX(L) + (R1-1.)*SCALE1(L) + (R2-1.)*SCALE2(L)
           IF (SFLUX(L) .LT. 0.0) SFLUX(L) = 0.0
@@ -167,9 +170,9 @@
      >        SFLUX(L)=SFLUX(L)*XUVFAC
         enddo
       endif
-!
+
 ! EUVAC Method:
-!
+
       IF (iscale .eq. 1) then
         if (islast .ne. iscale) then
           open(unit=1,file='ssflux_euvac.dat',status='old')
@@ -179,7 +182,7 @@
           enddo
           close(unit=1)
         endif
-!
+
       P107 = (F107+F107A)/2.
         do l=1,lmax
           SFLUX(L) = RFLUX(L) * (1. + A(L)*(P107-80.))
@@ -189,9 +192,9 @@
      >        SFLUX(L)=SFLUX(L)*XUVFAC
         enddo
       ENDIF
-!
+
 ! User-supplied data:
-!
+
       if (iscale .eq. 2) then
         if (islast .ne. iscale) then
           open(unit=1,file='ssflux_user.dat',status='old')
@@ -205,17 +208,17 @@
           sflux(l)=uflux(l)
         enddo
       endif
-!
+
 ! Fill wavelength arrays, substitute in H Lyman-alpha if provided:
-!
+
       do l=1,lmax
         WAVE1(L) = WAVEL(L)
         WAVE2(L) = WAVES(L)
-       IF(HLYA.GT.EPSIL.AND.WAVEL(L).LT.1221..AND.WAVES(L).GT.1209.)Then
-         SFLUX(L) = HLYA
-       EndIf
+        IF (HLYA .GT. EPSIL .AND.
+     >      WAVEL(L).LT.1221. .AND. WAVES(L).GT.1209.)
+     >      SFLUX(L) = HLYA
       enddo
-!
+
       islast=iscale
-!
-      end SUBROUTINE SSFLUX
+
+      End SUBROUTINE SSFLUX
