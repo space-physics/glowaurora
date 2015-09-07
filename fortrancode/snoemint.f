@@ -20,7 +20,6 @@ C
 C
       SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
       use machprec,only: jmax,sp
-      use snoemmod
       implicit none
       
       integer, intent(in) :: IDATE
@@ -31,11 +30,9 @@ C
      & xmlat,xmlong
       integer iday,h,j,klat1,klat2,kz1,kz2
       
-C
-C
-C
+
 C Find magnetic latitude:
-C
+
       CALL GEOMAG(0,GLONG,GLAT,XMLONG,XMLAT)
 C
 C
@@ -71,6 +68,4 @@ C
         ENDIF
         IF (Z(J) .GT. 150.) ZNO(J)=EXP(ZMNOI(1)+(150.-Z(J))/H)
       END DO
-C
-      RETURN
-      END
+      END SUBROUTINE SNOEMINT
