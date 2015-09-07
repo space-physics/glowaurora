@@ -119,18 +119,9 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-      use machprec
+      use machprec,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax
       use rcolummod
       use szacalc
-C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -231,7 +222,7 @@ C
 C
 C Add background ionization to photoionization:
 C
-      CALL QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO, JMAX, NMAJ, NST)
+      CALL QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO)
 C
 C
 C Call subroutine ETRANS to calculate photoelectron and auroral
