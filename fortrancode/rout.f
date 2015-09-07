@@ -11,7 +11,7 @@ C Reduced cascade contribution to 1356, SCS, 9/03
 C Included radiative recombination in 1356 SCS, 9/03
 C
       SUBROUTINE ROUT(ROFILE,LUN,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
-      use machprec
+      use cglow,only: nst,nf,jmax,nmaj,nw,nc,nbins,lmax,nei,nex
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,

@@ -23,7 +23,7 @@
 !     MAXT   Hemispherical flux in cm-2 s-1 eV-1
 !
 module MAXT
- use machprec
+ use cglow
  implicit none
  private
  public :: phi0

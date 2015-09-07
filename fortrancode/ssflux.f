@@ -115,10 +115,9 @@
 !
       SUBROUTINE SSFLUX (ISCALE, F107, F107A, HLYBR, FEXVIR, HLYA,
      >                   HEIEW, XUVFAC, WAVE1, WAVE2, SFLUX)
-      use machprec,only: lmax
+      use cglow,only: lmax
       implicit none
-! this save all var is necessary or the sim gives incorrection photoionization results MH 4/15
-      save
+!      save
 ! Args:
       integer,intent(in) :: iscale
       real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC,heiew

@@ -13,14 +13,14 @@
 
 
       SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
-      use machprec,only: pi,sp
+      use cglow,only: pi
       implicit none
 ! Args:
       integer,intent(in) :: idate
-      real(kind=sp),intent(in) :: UT,glat,glong
-      real(kind=sp),intent(out):: sza
+      real,intent(in) :: UT,glat,glong
+      real,intent(out):: sza
 ! Local:  
-      real(kind=sp) :: sdec,srasn,gst,rlat,rh,cossza,rlong
+      real :: sdec,srasn,gst,rlat,rh,cossza,rlong
 
       RLAT = GLAT * PI/180.
       RLONG = GLONG * PI/180.
@@ -37,14 +37,14 @@
 ! Geophysical Coordinate Transforms.
 !
       SUBROUTINE SUNCOR (IDATE, UT, SDEC, SRASN, GST)
-      use machprec,only: pi,sp
+      use cglow,only: pi
       implicit none
 ! Args:
       integer,intent(in) :: idate
-      real(sp),intent(in) :: UT
-      real(sp),intent(out):: SDEC,SRASN,GST
+      real,intent(in) :: UT
+      real,intent(out):: SDEC,SRASN,GST
 ! Local:
-      real(sp) fday,vl,slp,slong,sind,obliq,g,DJ,cosd,T
+      real fday,vl,slp,slong,sind,obliq,g,DJ,cosd,T
       integer iyr,iday
 
       FDAY=UT/86400.

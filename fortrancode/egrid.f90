@@ -7,7 +7,7 @@
 ! For more information see the file glow.txt.
 !
 module EnergyGrid
-  use machprec
+  use cglow
   Implicit None
   private
   public :: EGRID

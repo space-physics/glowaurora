@@ -64,7 +64,7 @@ C
 C
       SUBROUTINE ETRANS
 C
-      use machprec, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
+      use cglow, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -445,7 +445,7 @@ C Subroutine IMPIT solves parabolic differential equation by implicit
 C Crank-Nicholson method
 C
       SUBROUTINE IMPIT(FLUXJ)
-      use machprec
+      use cglow,only: jmax
       Implicit None
 
       Real, Intent(In) :: FLUXJ

@@ -19,7 +19,7 @@ C W1, W2, W3, W4, W5 are working arrays.
 C
 C
       SUBROUTINE VQUART (A, ROOT, NJ)
-      use machprec,only: jmax,dp
+      use cglow,only: jmax,dp
       implicit none
 ! Args
       Real(kind=dp),intent(out) :: ROOT(JMAX)
