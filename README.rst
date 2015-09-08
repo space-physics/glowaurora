@@ -83,6 +83,13 @@ observe that aurtest.out is almost exactly equal to aurexample.out, to the least
 
 On Windows, consider `factors like <https://scivision.co/f2py-running-fortran-code-in-python-on-windows/>`_
 
+old version
+-----------
+.. code:: bash
+
+    git checkout 61aee5e4d2530208afbcb49b6a586ceae51bc7c6
+
+
 Licensing
 =========
 
