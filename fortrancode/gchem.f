@@ -187,18 +187,18 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE GCHEM
-      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex
-C
+      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex,RE,dp
+
       integer,PARAMETER :: NR=50
-C
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+
+      integer :: idate,iscale,jlocal,kchem,ierr
+      real ::  UT, GLAT, GLONG, 
+     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -208,10 +208,16 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), E(JMAX),
      >    DEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      REAL KZ, L
-C
-      DIMENSION A(NR), B(NR), BZ(NR,JMAX), G(NR,JMAX), KZ(NR,JMAX),
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, E, DEN, ZETA, ZCETA, VCB
+
+      real A(NR), B(NR), BZ(NR,JMAX), G(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
      >          P(NEX,JMAX), L(NEX,JMAX),
@@ -220,10 +226,9 @@ C
      >          VV(JMAX), WW(JMAX), XX(JMAX),
      >          AA(JMAX), BB(JMAX), CC(JMAX), DD(JMAX), EE(JMAX),
      >          FF(JMAX), GG(JMAX), HH(JMAX)
+
+      real(kind=dp) :: COEF(JMAX,5), ROOT(JMAX)
 C
-      DOUBLE PRECISION COEF(JMAX,5), ROOT(JMAX)
-C
-      DATA RE/6.37E8/
       DATA A / 1.07E-5, 0.00585, 0.00185, 0.04500, 1.06000,
      >         9.70E-5, 0.04790, 0.17120, 0.00100, 0.77000,
      >         0.00540, 0.07900, 38*0.0 /
@@ -818,7 +823,5 @@ C
       DO 600 IW=1,NW
         VCB(IW) = VCB(IW) / 1.E6
   600 CONTINUE
-C
-C
-      RETURN
-      END
+
+      END SUBROUTINE GCHEM
