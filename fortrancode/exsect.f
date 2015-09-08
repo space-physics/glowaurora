@@ -51,26 +51,33 @@ C
 C
       SUBROUTINE EXSECT (ENER, DEL)
       use cglow,only: nmaj,nei,nbins
+      implicit none
 
 ! Args:
       real,intent(in) :: ENER(NBINS),DEL(NBINS)
 ! Local:
-      real :: AE
-
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+      integer :: IIMAXX(NBINS),inv
+      real :: AE,sigion
+      real :: SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
-     >                IIMAXX(NBINS)
-C
-      COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+     &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
-C
-      DIMENSION SIGI(NBINS), T12(NBINS),
-     > RATIO(NBINS), EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ)
-C
+
+      real SIGI(NBINS), T12(NBINS),
+     > RATIO(NBINS), EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ),
+     > detj,e1,e2,eta,etj,ex,fac,ff,gama,sigg,t0,tmax,tmt,wag,we,wth1
+      integer i,i1,i2,i3,ibz,ie,iee,ii,ij,itmax,iv,j,jy,k,kk,kuk,kuk1,
+     > ml
+
+      COMMON /CXSECT/ SIGS, PE, PI, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+
+      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
+     >                TS, TA, TB, GAMS, GAMB
+
       real,parameter :: QQN=6.51E-14
       integer,parameter :: NNN(NMAJ)=[8,7,8], NINN(NMAJ)=[3,7,6], 
      >                     NUM(NMAJ)=[31,28,28]
@@ -244,11 +251,11 @@ C
           ENDIF
           IF (ENER(J).GT.THI(K,I) .AND. THI(K,I).GT.0.001) THEN
             AE = AK(K,I)/ENER(J) * log(ENER(J)/AJ(K,I))
-            GAMMA = GAMS(K,I) * ENER(J) / (ENER(J)+GAMB(K,I))
+            GAMA = GAMS(K,I) * ENER(J) / (ENER(J)+GAMB(K,I))
             T0 = TS(K,I) - (TA(K,I)/(ENER(J)+TB(K,I)))
-            SIGIX(K,I,J) = 1.E-16 * AE * GAMMA
-     >                    * ( ATAN(((ENER(J)-THI(K,I))/2.-T0)/GAMMA)
-     >                       +ATAN(T0/GAMMA) )
+            SIGIX(K,I,J) = 1.E-16 * AE * GAMA
+     >                    * ( ATAN(((ENER(J)-THI(K,I))/2.-T0)/GAMA)
+     >                       +ATAN(T0/GAMA) )
             IF (SIGIX(K,I,J) .LT. 1.E-30) SIGIX(K,I,J) = 0.0
           ELSE
             SIGIX(K,I,J) = 0.0
@@ -430,10 +437,11 @@ C
       integer,intent(in) :: i,ml
       real,intent(in) :: E,E1
       real,intent(out) :: T12 ! yes this is out
-      real,intent(inout) :: E2 ! the out value isn't actually used, but needed to allow internal modification
+! the out value isn't actually used, but needed to allow internal modif.
+      real,intent(inout) :: E2 
 ! Local:
       Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
-      Real qq,S,A,TZ,GG,TTL,AL2,AL1,TTL1
+      Real S,A,TZ,GG,TTL,AL2,AL1,TTL1
       COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
@@ -441,7 +449,7 @@ C
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
 
 
-      DATA QQ/1.E-16/
+      real,parameter:: QQ=1.E-16
 C
 C
       IF (E .LE. THI(ML,I)) GOTO 30
@@ -479,7 +487,7 @@ C
 C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
-      integer FUNCTION INV (ETA, JY, ENER)
+      pure integer FUNCTION INV (ETA, JY, ENER)
       use cglow,only: nbins
       implicit none
 !
