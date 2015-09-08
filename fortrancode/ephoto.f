@@ -70,11 +70,13 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE EPHOTO
-      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,lmax,nbins
+!      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,lmax,nbins
       implicit none
+      include 'cglow.h'
 
-      integer :: idate, iscale,ierr,i,j,jlocal,k,kchem,l,m,m1,m2,n
-      real ::  UT, GLAT, GLONG, 
+      integer idate, iscale,ierr,i,j,jlocal,k,kchem,l,m,m1,m2,n,
+     &   NNN(NMAJ)
+      real  UT, GLAT, GLONG, 
      >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -91,7 +93,7 @@ C
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
 
-      real :: DSPECT(JMAX), FLUX(LMAX,JMAX),
+      real DSPECT(JMAX), FLUX(LMAX,JMAX),
      >          SIGION(NMAJ,LMAX), SIGABS(NMAJ,LMAX),
      >          TPOT(NST,NMAJ), PROB(NST,NMAJ,LMAX),
      >          EPSIL1(NST,NMAJ,LMAX), EPSIL2(NST,NMAJ,LMAX),
@@ -112,9 +114,11 @@ C
       SAVE SIGION, SIGABS, PROB, EPSIL1, EPSIL2
 
       real,parameter :: SIGNO=2.0E-18 
-      integer,parameter :: NNN(NMAJ)=[5,4,6]
+ 
       integer :: IFIRST=1
 
+      DATA NNN/5,4,6/
+      
       DATA TPOT/13.61, 16.93, 18.63, 28.50, 40.00,  0.00,
      >          12.07, 16.10, 18.20, 20.00,  0.00,  0.00,
      >          15.60, 16.70, 18.80, 30.00, 34.80, 25.00/
@@ -333,8 +337,9 @@ C
 C
 C
       SUBROUTINE BOXNUM (E1, E2, M1, M2, R1, R2, DEL, ENER)
-      use cglow,only: nbins
+!      use cglow,only: nbins
       implicit none
+      include 'cglow.h'
 C This subroutine finds the box numbers corresponding to
 C energies E1 and E2, and calls them M1 and M2
 C 

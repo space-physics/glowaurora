@@ -115,24 +115,26 @@
 !
       SUBROUTINE SSFLUX (ISCALE, F107, F107A, HLYBR, FEXVIR, HLYA,
      >                   HEIEW, XUVFAC, WAVE1, WAVE2, SFLUX)
-      use cglow,only: lmax
+!      use cglow,only: lmax
       implicit none
+      include 'cglow.h'
 !      save
 ! Args:
       integer,intent(in) :: iscale
       real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC,heiew
       real,intent(out),dimension(Lmax)   :: wave1,wave2,sflux
 ! Local:
-      real :: WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
+      real WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
      >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX),p107,r1,r2
-      integer :: l
+      integer l
       real,parameter :: epsil=1.0E-6
       integer :: islast=-1
 
 
 ! regression coefficients which reduce to solar min. spectrum:
-      real,parameter :: B1(3)=[1.0, 0.0138, 0.005]
-      real,parameter :: B2(3)=[1.0, 0.59425, 0.3811]
+      real,parameter :: B1(NMAJ),B2(NMAJ) 
+      DATA B1/1.0, 0.0138, 0.005/
+      DATA B2/1.0, 0.59425, 0.3811/
 
 ! 'best fit' regression coefficients, commented out, for reference:
 !     DATA B1/1.31, 0.01106, 0.00492/, B2/-6.618, 0.66159, 0.38319/

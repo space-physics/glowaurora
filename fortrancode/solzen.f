@@ -13,14 +13,15 @@
 
 
       SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
-      use cglow,only: pi
+!      use cglow,only: pi
       implicit none
+      include 'cglow.h'
 ! Args:
       integer,intent(in) :: idate
       real,intent(in) :: UT,glat,glong
       real,intent(out):: sza
 ! Local:  
-      real :: sdec,srasn,gst,rlat,rh,cossza,rlong
+      real sdec,srasn,gst,rlat,rh,cossza,rlong
 
       RLAT = GLAT * PI/180.
       RLONG = GLONG * PI/180.
@@ -37,14 +38,15 @@
 ! Geophysical Coordinate Transforms.
 !
       SUBROUTINE SUNCOR (IDATE, UT, SDEC, SRASN, GST)
-      use cglow,only: pi
+!      use cglow,only: pi
       implicit none
+      include 'cglow.h'
 ! Args:
       integer,intent(in) :: idate
       real,intent(in) :: UT
       real,intent(out):: SDEC,SRASN,GST
 ! Local:
-      real fday,vl,slp,slong,sind,obliq,g,DJ,cosd,T
+      real fday,vl,slp,slong,sind,obliq,GG,DJ,cosd,T
       integer iyr,iday
 
       FDAY=UT/86400.
@@ -62,8 +64,8 @@
       T=DJ/36525.
       VL= MOD(279.696678+.9856473354*DJ,360.)
       GST=MOD(279.696678+.9856473354*DJ+360.*FDAY+180.,360.) * PI/180.
-      G=  MOD(358.475845+.985600267*DJ,360.) * PI/180.
-      SLONG=VL+(1.91946-.004789*T)*SIN(G)+.020094*SIN(2.*G)
+      GG=  MOD(358.475845+.985600267*DJ,360.) * PI/180.
+      SLONG=VL+(1.91946-.004789*T)*SIN(GG)+.020094*SIN(2.*GG)
       OBLIQ=(23.45229-0.0130125*T) *PI/180.
       SLP=(SLONG-.005686) * PI/180.
       SIND=SIN(OBLIQ)*SIN(SLP)

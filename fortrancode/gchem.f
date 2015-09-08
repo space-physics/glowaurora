@@ -187,12 +187,14 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE GCHEM
-      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex,RE,dp
+!      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex,RE,dp
+      implicit none
+      include 'cglow.h'
 
       integer,PARAMETER :: NR=50
 
-      integer :: idate,iscale,jlocal,kchem,ierr
-      real ::  UT, GLAT, GLONG, 
+      integer idate,iscale,jlocal,kchem,ierr
+      real  UT, GLAT, GLONG, 
      >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -217,7 +219,7 @@ C
      >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, E, DEN, ZETA, ZCETA, VCB
 
-      real A(NR), B(NR), BZ(NR,JMAX), G(NR,JMAX), KZ(NR,JMAX),
+      real A(NR), B(NR), BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
      >          P(NEX,JMAX), L(NEX,JMAX),
@@ -225,8 +227,10 @@ C
      >          QQ(JMAX), RR(JMAX), SS(JMAX), TT(JMAX), UU(JMAX),
      >          VV(JMAX), WW(JMAX), XX(JMAX),
      >          AA(JMAX), BB(JMAX), CC(JMAX), DD(JMAX), EE(JMAX),
-     >          FF(JMAX), GG(JMAX), HH(JMAX)
+     >          FF(JMAX), GG(JMAX), HH(JMAX),dz,gh
 
+      integer i,ic,iter,iw,ix,j200,n    
+    
       real(kind=dp) :: COEF(JMAX,5), ROOT(JMAX)
 C
       DATA A / 1.07E-5, 0.00585, 0.00185, 0.04500, 1.06000,
@@ -267,14 +271,14 @@ C Assign g-factors at altitudes which are sunlit:
 C
       DO 40 I=1,JMAX
       DO 40 N=1,NR
-      G(N,I) = 0.0
+      GF(N,I) = 0.0
    40 CONTINUE
 C
       DO 50 I=1,JMAX
       GH = (RE+ZZ(I)) * SIN(SZA)
       IF (SZA .LT. 1.6 .OR. GH .GT. RE) THEN
-        G(1,I) = 0.041
-        G(2,I) = 0.013
+        GF(1,I) = 0.041
+        GF(2,I) = 0.013
       ENDIF
    50 CONTINUE
 C
@@ -716,7 +720,7 @@ C
 C
       ZCETA(1,2,I) = B(38) * B(36) * RN2EI(I)
       ZCETA(2,2,I) = B(38) * PHOTOI(3,3,I)
-      ZCETA(3,2,I) = G(2,I) * DEN(5,I)
+      ZCETA(3,2,I) = GF(2,I) * DEN(5,I)
 C
       ZCETA(1,3,I) = A(1) * B(27) * PHOTOD(1,3,I) / L(10,I)
       ZCETA(2,3,I) = A(1) * B(27) * PHOTOI(6,3,I) / L(10,I)

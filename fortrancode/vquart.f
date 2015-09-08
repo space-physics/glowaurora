@@ -19,16 +19,18 @@ C W1, W2, W3, W4, W5 are working arrays.
 C
 C
       SUBROUTINE VQUART (A, ROOT, NJ)
-      use cglow,only: jmax,dp
+!      use cglow,only: jmax,dp
       implicit none
+      include 'cglow.h'
 ! Args
       Real(kind=dp),intent(out) :: ROOT(JMAX)
       Real(kind=dp),intent(in)  :: A(JMAX,5)
       Integer,intent(in)        :: NJ
 ! Local
       Integer I
-      Real(kind=dp) :: W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
-      real(kind=dp) :: E =1.D-38, Z=0.
+      Real(kind=dp) W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
+      
+      real(kind=dp) :: E=1.D-38, Z=0.
 
       DO 200 I=1,NJ
         W1(I)=-(A(I,5)*A(I,1)-4.D0*A(I,4)*A(I,2)+3.D0*A(I,3)**2) / 12.D0

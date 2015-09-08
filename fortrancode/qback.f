@@ -16,8 +16,9 @@ C H Lyman beta (FLYBT)
 C H Ly alpha (FLYAT)
 C
       SUBROUTINE QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO)
-      use cglow,only: nmaj,jmax,nst
+!      use cglow,only: nmaj,jmax,nst
       implicit none
+      include 'cglow.h'
 !Args:
       real, intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),ZVCD(NMAJ,jmax)
       !PHOTI and PHONO should be INOUT
