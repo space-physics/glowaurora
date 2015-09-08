@@ -111,8 +111,9 @@ C
  
       SAVE SIGION, SIGABS, PROB, EPSIL1, EPSIL2
 
-      real    :: SIGNO=2.0E-18 
-      integer :: NNN(NMAJ)=[5,4,6], IFIRST=1
+      real,parameter :: SIGNO=2.0E-18 
+      integer,parameter :: NNN(NMAJ)=[5,4,6]
+      integer :: IFIRST=1
 
       DATA TPOT/13.61, 16.93, 18.63, 28.50, 40.00,  0.00,
      >          12.07, 16.10, 18.20, 20.00,  0.00,  0.00,
