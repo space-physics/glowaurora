@@ -12,9 +12,16 @@ C AND REVERSE FOR ART=1. ALL ANGLES IN DEGREE.
 C LATITUDE:-90 TO 90. LONGITUDE:0 TO 360 EAST.
 C
       SUBROUTINE GEOMAG(ART,LONG,LATI,MLONG,MLAT)
-      INTEGER ART
-      REAL MLONG,MLAT,LONG,LATI
-      DATA FAKTOR/.0174532952/
+      implicit none
+
+      INTEGER,intent(in) :: ART
+      REAL,intent(inout)  :: LONG,LATI !inout to allow internal modif.
+      real,intent(out) :: MLONG,MLAT    
+
+!Local:
+      real,parameter :: FAKTOR=.0174532952
+      real :: cbg,cbm,ci,clg,clm,sbg,sbm,si,slg,slm,ylg,zpi
+
       ZPI=FAKTOR*360.
       CBG=11.4*FAKTOR
       CI=COS(CBG)
@@ -55,5 +62,5 @@ C
       MLONG=MLONG/FAKTOR
       IF(MLONG.LT.-180.0) MLONG=MLONG+360.0
       IF(MLONG.GT. 180.0) MLONG=MLONG-360.0
-      RETURN
-      END
+
+      END Subroutine Geomag
