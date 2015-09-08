@@ -50,15 +50,16 @@ C NEI    number of slots for excited and ionized states
 C
 C
       SUBROUTINE EXSECT (ENER, DEL)
-      use cglow,only: nmaj,nei,nbins
+!      use cglow,only: nmaj,nei,nbins
       implicit none
+      include 'cglow.h'
 
 ! Args:
       real,intent(in) :: ENER(NBINS),DEL(NBINS)
 ! Local:
-      integer :: IIMAXX(NBINS),inv
-      real :: AE,sigion
-      real :: SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+      integer  IIMAXX(NBINS),inv
+      real  AE,sigion
+      real  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIO(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
@@ -73,14 +74,17 @@ C
       integer i,i1,i2,i3,ibz,ie,iee,ii,ij,itmax,iv,j,jy,k,kk,kuk,kuk1,
      > ml
 
-      COMMON /CXSECT/ SIGS, PE, PI, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+      COMMON /CXSECT/ SIGS, PE, PIO, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
      >                TS, TA, TB, GAMS, GAMB
 
       real,parameter :: QQN=6.51E-14
-      integer,parameter :: NNN(NMAJ)=[8,7,8], NINN(NMAJ)=[3,7,6], 
-     >                     NUM(NMAJ)=[31,28,28]
+      integer,parameter :: NNN(NMAJ), NINN(NMAJ), NUM(NMAJ)
+
+      DATA NNN/8,7,8/
+      DATA NINN/3,7,6/ 
+      DATA NUM/31,28,28/
 C
       DATA WW  /1.96, 4.17, 9.29, 9.53,10.76,10.97,12.07,12.54, 0.,0.,
      >          0.98, 1.64, 4.50, 8.44, 9.90,13.50, 0.25, 0.00, 0.,0.,
@@ -215,20 +219,20 @@ C
           SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**0.8
           IF(IJ.EQ.1) SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**2
           PE(IJ,IV) = CE(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
-          PI(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
+          PIO(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
           GOTO 80
    60     I=II-1
           IF (I .LE. 0) THEN
             SIGS(IJ,IV)=CC(II,IJ)
             PE(IJ,IV)=CE(II,IJ)
-            PI(IJ,IV)=CI(II,IJ)
+            PIO(IJ,IV)=CI(II,IJ)
           ELSE
             FAC = log (EX/EC(I,IJ)) / log (EC(II,IJ)/EC(I,IJ))
             SIGS(IJ,IV) = EXP (log (CC(I,IJ))
      >                         + log (CC(II,IJ)/CC(I,IJ)) * FAC)
             PE(IJ,IV) = EXP (log (CE(I,IJ))
      >                       + log (CE(II,IJ)/CE(I,IJ)) * FAC)
-            PI(IJ,IV) = EXP (log (CI(I,IJ))
+            PIO(IJ,IV) = EXP (log (CI(I,IJ))
      >                       + log (CI(II,IJ)/CI(I,IJ)) * FAC)
           ENDIF
    80   CONTINUE
@@ -428,25 +432,28 @@ C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
       real FUNCTION SIGION(I,ML,E,E1,E2,T12)
-      use cglow,only: nei,nmaj,dp
+!      use cglow,only: nei,nmaj,dp
       implicit none
-      real :: ww, ao, omeg,anu,bb,auto,thi,ak,aj,TS,TA,
-     >              TB,GAMS,GAMB
-!
+      include 'cglow.h'
 ! Args:
       integer,intent(in) :: i,ml
       real,intent(in) :: E,E1
-      real,intent(out) :: T12 ! yes this is out
+! yes this is out
+      real,intent(out) :: T12 
 ! the out value isn't actually used, but needed to allow internal modif.
       real,intent(inout) :: E2 
 ! Local:
       Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
       Real S,A,TZ,GG,TTL,AL2,AL1,TTL1
-      COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+
+      real WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
+
+      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
+     >                TS, TA, TB, GAMS, GAMB
 
 
       real,parameter:: QQ=1.E-16
@@ -488,14 +495,15 @@ C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
       pure integer FUNCTION INV (ETA, JY, ENER)
-      use cglow,only: nbins
+!      use cglow,only: nbins
       implicit none
+      include 'cglow.h'
 !
 ! Args:
       real,intent(in) :: ETA,ENER(NBINS)
       integer,intent(in) :: JY
 ! Local:
-      integer :: iv
+      integer iv
       
       IF (ETA .LT. 0.) THEN
         INV = -1
@@ -530,16 +538,17 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 
       SUBROUTINE HEXC(ENER,SIGIX,RATIO)
-      use cglow,only: nmaj,nei,nbins
+!      use cglow,only: nmaj,nei,nbins
       implicit none
+      include 'cglow.h'
 !
 ! Args:
       real,intent(in) :: ENER(NBINS),SIGIX(NEI,NMAJ,NBINS)
       real,intent(out) :: RATIO(NBINS)
 !
 ! Local:
-      real ::  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
-      integer :: k,i,kg
+      real  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
+      integer  k,i,kg
       real,external :: TERPOO
       DATA EGR/1.E4,      2.E4,      5.E4,      1.E5,      2.E5,
      >         3.E5,      5.E5,      1.E6,      2.E6,      5.E6,

@@ -7,9 +7,9 @@
 ! For more information see the file glow.txt.
 !
       SUBROUTINE EGRID (ENER, DEL)
-      use cglow,only: nbins
+!      use cglow,only: nbins
       implicit none
-
+      include 'cglow.h'
       Integer N
       Real, Intent(Out) :: ENER(Nbins), DEL(Nbins)
 

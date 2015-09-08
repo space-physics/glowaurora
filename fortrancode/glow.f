@@ -119,12 +119,13 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax,pi
+!      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax,pi
       implicit none
+      include 'cglow.h'
 
-      integer :: IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      &   i,iei,ist,j,n
-      real ::  UT, GLAT, GLONG, 
+      real  UT, GLAT, GLONG, 
      >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -149,7 +150,7 @@ C
      >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 C
-      real :: ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
+      real ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
 C
       Integer :: IFIRST=1
 C

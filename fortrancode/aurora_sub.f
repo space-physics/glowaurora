@@ -31,7 +31,9 @@ C
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap,PyPhitop)
 
-      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+!      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+      implicit none
+      include 'cglow.h'
 
       real,intent(in) :: Z(JMAX)
       Integer, Intent(In) :: Pyidate
@@ -41,15 +43,15 @@ C
       Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
      & Pyecalc(jmax),Pypi(jmax),Pysi(jmax)
 
-C
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR
+     & IIMAXX(NBINS)
+      real UT, GLAT, GLONG, 
+     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -58,14 +60,37 @@ C
      >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
-     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW),
+     &   SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
-     >                IIMAXX(NBINS)
-C
-      DIMENSION D(8), T(2), SW(25),
+     &   WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+     >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
+     >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
+     >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
+     >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ),
+     &    ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
+     >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
+     >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
+
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
+
+      COMMON /CXSECT/ SIGS, PE, PI, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+
+      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
+     >                TS, TA, TB, GAMS, GAMB
+
+      COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI,DELZ, DEL2, DELA, DELP,
+     >                DELM, DELS, DEN, FAC
+
+      real D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
 C
       LOGICAL JF(12)

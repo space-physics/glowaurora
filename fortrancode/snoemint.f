@@ -19,8 +19,9 @@ C   ZNO    Nitric oxide density at Z in cm-3
 C
 C
       SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
-      use cglow,only: jmax
+!      use cglow,only: jmax
       implicit none
+      include 'cglow.h'
       
       integer, intent(in) :: IDATE
       real,intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)

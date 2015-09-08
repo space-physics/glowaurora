@@ -29,9 +29,10 @@ C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
 
-      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+!      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+      include 'cglow.h'
 
-      real :: Z(JMAX)
+      real Z(JMAX)
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -56,7 +57,7 @@ C
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
 C
-      DIMENSION D(8), T(2), SW(25),
+      real D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
 C
       LOGICAL JF(12)

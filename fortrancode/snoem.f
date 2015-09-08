@@ -9,11 +9,12 @@
 
 ! Adapted by Stan Solomon, 5/14, from IDL and F90 code supplied by Dan Marsh. 
       subroutine snoem(doy, kp, f107, z, mlat, nozm)
-      use cglow,only: pi
+!      use cglow,only: pi
       implicit none
+      include 'cglow.h'
 !      save
 
-      real :: cosd, sind,thet
+      real  cosd, sind,thet
       sind(thet) = sin(thet/180.*pi)
       cosd(thet) = cos(thet*pi/180.)
 !Args:        
@@ -22,9 +23,12 @@
       real,intent(out) :: z(16), mlat(33), nozm(33,16)
 ! Local:
       real no_mean(33,16), eofs(33,16,3)
-      real theta0         ! day number in degrees
-      real dec            ! solar declination angle
-      real m1, m2, m3     ! coefficients for first 3 eofs
+! day number in degrees
+      real theta0     
+! solar declination angle    
+      real dec        
+! coefficients for first 3 eofs    
+      real m1, m2, m3     
       integer j, k, n
       integer :: ifirst=1
 

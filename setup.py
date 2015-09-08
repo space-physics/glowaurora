@@ -4,6 +4,8 @@ from numpy.distutils.core import setup,Extension
 from os.path import join
 from glob import glob
 
+# f2py -m aurora -c cglow.f90 egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f
+
 fortranfiles=['cglow.f90','egrid.f','maxt.f','glow.f',
               'vquart.f','gchem.f','ephoto.f','solzen.f','rcolum.f',
               'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
@@ -40,10 +42,10 @@ setup(name='glowaurora',
       ext_modules=ext,
       data_files=[('',fortdata) ],
       # leave gridaurora in for now as we may use ztanh grid
-	  install_requires=['gridaurora','msise00','pymap3d',
+	  install_requires=['msise00','pymap3d', #'gridaurora',
                          'numpy','pandas','astropy'],
       dependency_links = ['https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
-                          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
+                          #'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
                           'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d'
                             ],
       )

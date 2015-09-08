@@ -28,7 +28,10 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax
+      Program
+
+!      use cglow,only:jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax
+      include 'cglow.h'
 C
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,

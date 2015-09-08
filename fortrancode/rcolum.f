@@ -20,17 +20,21 @@
 ! at sea level, the tropopause, the stratopause, and the mesopause.
 !
       SUBROUTINE RCOLUM (CHI, ZZ, ZMAJ, TN, ZCOL, ZVCD)
-      use cglow,only: nmaj,jmax,pi,Re
+!      use cglow,only: nmaj,jmax,pi,Re
       implicit none
+      include 'cglow.h'
 !Args:
       real, intent(in) :: chi,zz(jmax),TN(JMAX)
       real,intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
 !Local:  
-      integer,PARAMETER ::NM=3,NU=4
-      real :: ZMAJ(NMAJ,JMAX), ZCG(NM), zcus(nm,nu),ghrg,ghz,tng,chap
+      integer,PARAMETER :: NM=3,NU=4
+
+      real  ZMAJ(NMAJ,JMAX), ZCG(NM),ghrg,ghz,tng,chap,
+      real,parameter :: ZUS(nu), TNUS(nu),zcus(nm,nu)
       integer i,j, jg
-      real,parameter :: ZUS(nu)=[0.0, 1.5E6, 5.E6, 9.E6],
-     &                  TNUS(nu)=[288., 217., 271., 187.]
+      
+      DATA ZUS/0.0, 1.5E6, 5.E6, 9.E6/
+      DATA TNUS/288., 217., 271., 187./
       DATA ZCUS/8.00E17, 4.54E24, 1.69E25,
      >          8.00E17, 5.46E23, 2.03E24,
      >          8.00E17, 3.63E21, 1.35E22,
@@ -93,14 +97,17 @@ C
 
 
       real FUNCTION CHAP (CHI, Z, T, I)
-      use cglow,only: nmaj,pi,Re,G
+!      use cglow,only: nmaj,pi,Re,G
       implicit none
+      include 'cglow.h'
 !Args:
       real,intent(in) :: chi,z,t
       integer,intent(in) :: I
 !Local:
-      real, parameter :: AM(nmaj)=[16., 32., 28.]
-      real :: gr,hn,hg,hf,sqhf,SPERFC 
+      real, parameter :: AM(nmaj)
+      real gr,hn,hg,hf,sqhf,SPERFC 
+
+      DATA AM/16., 32., 28./
 
       GR=G*(RE/(RE+Z))**2 
       HN=1.38E-16*T/(AM(I)*1.662E-24*GR)
@@ -129,8 +136,9 @@ C
 C
 C
       SUBROUTINE VCD(ZZ,ZMAJ,ZVCD)
-      use cglow,only: nmaj,jmax
+!      use cglow,only: nmaj,jmax
       implicit none
+      include 'cglow.h'
 ! Args:
       real,intent(in) :: zz(jmax),zmaj(NMAJ,JMAX)
       real,intent(out) :: ZVCD(NMAJ,JMAX)
