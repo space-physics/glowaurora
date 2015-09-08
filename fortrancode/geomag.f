@@ -15,12 +15,13 @@ C
       implicit none
 
       INTEGER,intent(in) :: ART
-      REAL,intent(inout)  :: LONG,LATI !inout to allow internal modif.
+!inout to allow internal modif.
+      REAL,intent(inout)  :: LONG,LATI
       real,intent(out) :: MLONG,MLAT    
 
 !Local:
       real,parameter :: FAKTOR=.0174532952
-      real :: cbg,cbm,ci,clg,clm,sbg,sbm,si,slg,slm,ylg,zpi
+      real cbg,cbm,ci,clg,clm,sbg,sbm,si,slg,slm,ylg,zpi
 
       ZPI=FAKTOR*360.
       CBG=11.4*FAKTOR

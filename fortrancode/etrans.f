@@ -63,12 +63,13 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE ETRANS
-      use cglow, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
+!      use cglow, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
       implicit none
+      include 'cglow.h'
 
-      integer :: IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+      integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
-      real ::  UT, GLAT, GLONG, 
+      real   UT, GLAT, GLONG, 
      >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -84,7 +85,7 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW),
-     &    SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+     &    SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIO(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
@@ -96,15 +97,15 @@ C
      >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
      >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
 
-      real ::    PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
+      real    PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
      >          PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
      >          PHIUP(JMAX), PHIDWN(JMAX), TSIGNE(JMAX), TAUE(JMAX),
      >          SECION(JMAX), SECP(NMAJ,JMAX), R1(JMAX), EXPT2(JMAX),
      >          PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS), POTION(NMAJ)
 
-      real :: APROD,DAG,EDEP,EET,ein,eout,epe,ephi,et,fluxj,phiout,
+      real  APROD,DAG,EDEP,EET,ein,eout,epe,ephi,et,fluxj,phiout,
      &     rmusin, sindip
-      integer :: i,ib,ibb,ii,im,iq,iv,j,jj,jjj4,k,kk,ll,n
+      integer  i,ib,ibb,ii,im,iq,iv,j,jj,jjj4,k,kk,ll,n
 
       COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -115,7 +116,7 @@ C
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 
 
-      COMMON /CXSECT/ SIGS, PE, PI, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+      COMMON /CXSECT/ SIGS, PE, PIO, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
      >                TS, TA, TB, GAMS, GAMB
@@ -353,11 +354,11 @@ C
         DO 980 N = 1, NMAJ
           DO 975 I=1,JMAX
             PRODUA(I) = PRODUA(I)
-     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PI(N,J)*PHIDWN(I)
-     >                  + (1. - PI(N,J))*SIGA(N,K,J)*PHIUP(I))
+     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIO(N,J)*PHIDWN(I)
+     >                  + (1. - PIO(N,J))*SIGA(N,K,J)*PHIUP(I))
             PRODDA(I) = PRODDA(I)
-     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PI(N,J)*PHIUP(I)
-     >                  + (1. - PI(N,J))*SIGA(N,K,J)*PHIDWN(I))
+     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIO(N,J)*PHIUP(I)
+     >                  + (1. - PIO(N,J))*SIGA(N,K,J)*PHIDWN(I))
   975     CONTINUE
   980   CONTINUE
         DO 985 I=1,JMAX
@@ -462,8 +463,9 @@ C Subroutine IMPIT solves parabolic differential equation by implicit
 C Crank-Nicholson method
 C
       SUBROUTINE IMPIT(FLUXJ)
-      use cglow,only: jmax
+!      use cglow,only: jmax
       Implicit None
+      include 'cglow.h'
 
       Real, Intent(In) :: FLUXJ
       REAL K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX),fac,dem
