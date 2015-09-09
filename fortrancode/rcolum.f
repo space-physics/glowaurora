@@ -24,15 +24,17 @@
       implicit none
       include 'cglow.h'
 !Args:
-      real, intent(in) :: chi,zz(jmax),TN(JMAX)
-      real,intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
-!Local:  
+      real, intent(in) :: chi,zz(jmax),ZMAJ(NMAJ,JMAX),TN(JMAX)
+      real, intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
+!Local:
       integer,PARAMETER :: NM=3,NU=4
 
-      real  ZMAJ(NMAJ,JMAX), ZCG(NM),ghrg,ghz,tng,chap,
-      real,parameter :: ZUS(nu), TNUS(nu),zcus(nm,nu)
+      real  ZCG(NM),ghrg,ghz,tng
+      real  ZUS(nu), TNUS(nu),zcus(nm,nu)
       integer i,j, jg
-      
+
+      real,external :: chap
+
       DATA ZUS/0.0, 1.5E6, 5.E6, 9.E6/
       DATA TNUS/288., 217., 271., 187./
       DATA ZCUS/8.00E17, 4.54E24, 1.69E25,
@@ -40,10 +42,8 @@
      >          8.00E17, 3.63E21, 1.35E22,
      >          7.80E17, 8.48E18, 3.16E19/
 
-
-
       CALL VCD (ZZ, ZMAJ, ZVCD)
-C
+
       IF (CHI .GE. 2.) THEN 
         DO 40 I=1,NMAJ
         DO 40 J=1,JMAX
@@ -104,7 +104,7 @@ C
       real,intent(in) :: chi,z,t
       integer,intent(in) :: I
 !Local:
-      real, parameter :: AM(nmaj)
+      real AM(nmaj)
       real gr,hn,hg,hf,sqhf,SPERFC 
 
       DATA AM/16., 32., 28./
@@ -116,10 +116,8 @@ C
       SQHF=SQRT(HF) 
       CHAP=SQRT(0.5*PI*HG)*SPERFC(SQHF) 
       End Function CHAP
-C
-C
-C
-C
+
+
       pure real FUNCTION SPERFC(DUMMY) 
       implicit none
       real,intent(in) :: dummy
@@ -131,10 +129,8 @@ C
       ENDIF 
 
       END function sperfc
-C
-C
-C
-C
+
+
       SUBROUTINE VCD(ZZ,ZMAJ,ZVCD)
 !      use cglow,only: nmaj,jmax
       implicit none

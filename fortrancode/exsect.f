@@ -59,7 +59,7 @@ C
 ! Local:
       integer  IIMAXX(NBINS),inv
       real  AE,sigion
-      real  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIO(NMAJ,NBINS),
+      real  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
@@ -74,16 +74,16 @@ C
       integer i,i1,i2,i3,ibz,ie,iee,ii,ij,itmax,iv,j,jy,k,kk,kuk,kuk1,
      > ml
 
-      COMMON /CXSECT/ SIGS, PE, PIO, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+      COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
      >                TS, TA, TB, GAMS, GAMB
 
       real,parameter :: QQN=6.51E-14
-      integer,parameter :: NNN(NMAJ), NINN(NMAJ), NUM(NMAJ)
+      integer NNN(NMAJ), NINN(NMAJ), NUM(NMAJ)
 
       DATA NNN/8,7,8/
-      DATA NINN/3,7,6/ 
+      DATA NINN/3,7,6/
       DATA NUM/31,28,28/
 C
       DATA WW  /1.96, 4.17, 9.29, 9.53,10.76,10.97,12.07,12.54, 0.,0.,
@@ -219,20 +219,20 @@ C
           SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**0.8
           IF(IJ.EQ.1) SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**2
           PE(IJ,IV) = CE(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
-          PIO(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
+          PIN(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
           GOTO 80
    60     I=II-1
           IF (I .LE. 0) THEN
             SIGS(IJ,IV)=CC(II,IJ)
             PE(IJ,IV)=CE(II,IJ)
-            PIO(IJ,IV)=CI(II,IJ)
+            PIN(IJ,IV)=CI(II,IJ)
           ELSE
             FAC = log (EX/EC(I,IJ)) / log (EC(II,IJ)/EC(I,IJ))
             SIGS(IJ,IV) = EXP (log (CC(I,IJ))
      >                         + log (CC(II,IJ)/CC(I,IJ)) * FAC)
             PE(IJ,IV) = EXP (log (CE(I,IJ))
      >                       + log (CE(II,IJ)/CE(I,IJ)) * FAC)
-            PIO(IJ,IV) = EXP (log (CI(I,IJ))
+            PIN(IJ,IV) = EXP (log (CI(I,IJ))
      >                       + log (CI(II,IJ)/CI(I,IJ)) * FAC)
           ENDIF
    80   CONTINUE

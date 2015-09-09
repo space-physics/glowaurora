@@ -132,7 +132,7 @@
 
 
 ! regression coefficients which reduce to solar min. spectrum:
-      real,parameter :: B1(NMAJ),B2(NMAJ) 
+      real :: B1(NMAJ),B2(NMAJ) 
       DATA B1/1.0, 0.0138, 0.005/
       DATA B2/1.0, 0.59425, 0.3811/
 

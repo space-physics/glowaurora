@@ -195,7 +195,7 @@ C
 
       integer idate,iscale,jlocal,kchem,ierr
       real  UT, GLAT, GLONG, 
-     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
@@ -232,7 +232,7 @@ C
       integer i,ic,iter,iw,ix,j200,n    
     
       real(kind=dp) :: COEF(JMAX,5), ROOT(JMAX)
-C
+
       DATA A / 1.07E-5, 0.00585, 0.00185, 0.04500, 1.06000,
      >         9.70E-5, 0.04790, 0.17120, 0.00100, 0.77000,
      >         0.00540, 0.07900, 38*0.0 /
@@ -562,7 +562,7 @@ C
       CALL VQUART (COEF, ROOT, J200)
 C
       DO 250 I=1,J200
-      E(I) = ROOT(I)
+      E(I) =real(ROOT(I))
   250 CONTINUE
 C
       E(J200+1) = E(J200) * ( E(J200+3) / E(J200) )

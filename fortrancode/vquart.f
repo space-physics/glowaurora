@@ -1,23 +1,23 @@
-C WARNING: THIS FUNCTION IS KNOWN TO BE BROKEN and gives erroneous results MH 8/2015
+! WARNING: THIS FUNCTION IS KNOWN TO BE BROKEN and gives erroneous results MH 8/2015
 
-C Subroutine VQUART
-C
-C This software is part of the GLOW model.  Use is governed by the Open Source
-C Academic Research License Agreement contained in the file glowlicense.txt.
-C For more information see the file glow.txt.
-C
-C TGCM routine obtained from C. Ridley, 9/88.
-C Modified by Stan Solomon, 11/88, 5/91.
-C
-C Determines positive roots of equations of form:
-C A(I,5)*X**4 + A(I,4)*X**3 + A(I,3)*X**2 + A(I,2)*X + A(I,1) = 0 
-C It is specifically designed for real quartics with real roots,
-C only one of which is positive.
-C Coefficients of quartics supplied in array A(JMAX,5).
-C Positive roots returned in ROOT(JMAX) for I from 1 to NJ.
-C W1, W2, W3, W4, W5 are working arrays.
-C
-C
+! Subroutine VQUART
+!
+! This software is part of the GLOW model.  Use is governed by the Open Source
+! Academic Research License Agreement contained in the file glowlicense.txt.
+! For more information see the file glow.txt.
+!
+! TGCM routine obtained from C. Ridley, 9/88.
+! Modified by Stan Solomon, 11/88, 5/91.
+!
+! Determines positive roots of equations of form:
+! A(I,5)*X**4 + A(I,4)*X**3 + A(I,3)*X**2 + A(I,2)*X + A(I,1) = 0 
+! It is specifically designed for real quartics with real roots,
+! only one of which is positive.
+! Coefficients of quartics supplied in array A(JMAX,5).
+! Positive roots returned in ROOT(JMAX) for I from 1 to NJ.
+! W1, W2, W3, W4, W5 are working arrays.
+!
+!
       SUBROUTINE VQUART (A, ROOT, NJ)
 !      use cglow,only: jmax,dp
       implicit none
@@ -29,8 +29,7 @@ C
 ! Local
       Integer I
       Real(kind=dp) W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
-      
-      real(kind=dp) :: E=1.D-38, Z=0.
+      real(kind=dp),parameter :: E=1.D-38, Z=0.
 
       DO 200 I=1,NJ
         W1(I)=-(A(I,5)*A(I,1)-4.D0*A(I,4)*A(I,2)+3.D0*A(I,3)**2) / 12.D0

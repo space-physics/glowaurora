@@ -126,7 +126,7 @@ C
       integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      &   i,iei,ist,j,n
       real  UT, GLAT, GLONG, 
-     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
@@ -159,7 +159,7 @@ C First call only: set up energy grid:
 C
       IF (IFIRST .EQ. 1) THEN
         IFIRST = 0
-        CALL EGRID (ENER, DEL, NBINS)
+        CALL EGRID (ENER, DEL)
       ENDIF
 C
 C

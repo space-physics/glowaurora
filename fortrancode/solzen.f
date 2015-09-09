@@ -11,7 +11,6 @@
 ! yyddd, universal time in seconds, geographic latitude and longitude
 ! in degrees.
 
-
       SUBROUTINE SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
 !      use cglow,only: pi
       implicit none
