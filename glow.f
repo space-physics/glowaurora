@@ -227,7 +227,7 @@ C
 
 C Add background ionization to photoionization:
 C
-      CALL QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO, JMAX, NMAJ, NST)
+      CALL QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO)
 C
 C
 C Call subroutine ETRANS to calculate photoelectron and auroral

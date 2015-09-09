@@ -8,7 +8,7 @@ f2py -m aurora -c machprec.f90 egrid.f maxt.f90 glow.f vquart.f gchem.f ephoto.f
 
 """
 from datetime import datetime
-from numpy import array,tile,roots,log,arange,append,isclose
+from numpy import array,zeros,float32,log,arange,append,isclose
 from numpy.testing import assert_allclose
 #
 from histutils.fortrandates import datetime2yd,datetime2gtd
@@ -92,10 +92,16 @@ def test_rcolum_qback():
     assert isclose(zvcd[2,5],8.04e+25,rtol=1e-2) #TODO changes a bit between python 2 / 3
 #%% skipping EPHOTO since we care about night time more for now
     znoint = test_snoemint()
-    #photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
-    #phono = zeros((nst,jmax),dtype=float32,order='F')
-    photoi,phono = aurora.qback(zmaj=densd[['O','O2','N2']].values.T,zno=znoint,zvcd=zvcd,
-                         jm=jmax,nmaj=nmaj,nst=nst)
+    # zeros because nighttime
+    photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
+    phono = zeros((nst,jmax),dtype=float32,order='F')
+    aurora.qback(zmaj=densd[['O','O2','N2']].values.T,
+                                zno=znoint,
+                                zvcd=zvcd,
+                                photoi=photoi,phono=phono)
+    assert isclose(photoi[0,0,117],1.4616582)
+    assert isclose(phono[0,73],0.00030911868)
+
 def test_glow():
     # electron precipitation
     """ First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others
