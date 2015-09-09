@@ -24,7 +24,7 @@ C
       !PHOTI and PHONO should be INOUT
       real,intent(inout)::PHOTOI(NST,NMAJ,jmax), PHONO(NST,jmax)
 !Local:
-      real,parameter :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9, 
+      real,parameter :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9,
      & SIGIO=1.0E-17,
      & SIGIO2=2.0E-17, SIGIN2=2.0E-17, SLBAO2=1.6E-18, SLBIO2=1.0E-18,
      & SLAAO2=1.0E-20, SLAINO=2.0E-18

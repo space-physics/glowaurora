@@ -28,8 +28,8 @@ C
       real,intent(out):: ZNO(JMAX)
       
       Real ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
-     & xmlat,xmlong
-      integer iday,h,j,klat1,klat2,kz1,kz2
+     & xmlat,xmlong,h
+      integer iday,j,klat1,klat2,kz1,kz2
       
 
 C Find magnetic latitude:
@@ -57,7 +57,7 @@ C
       DO J=1,16
         ZMNOI(J) = LOG(ZMNO(KLAT1,J)*(1.-RAT)+ZMNO(KLAT2,J)*RAT)
       END DO
-C
+
       H=0.03*ZTN(JMAX)
       DO J=1,JMAX
         IF (Z(J) .LE. 100.) ZNO(J)=EXP(ZMNOI(16))
