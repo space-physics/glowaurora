@@ -2,7 +2,6 @@
 """
 Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
-bostonmicrowave.com
 """
 from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
@@ -14,7 +13,7 @@ try:
 except:
     pass
 #
-import aurora
+import glowfort as aurora
 
 def glowaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 #%% temporarily use glow grid instead of our own
