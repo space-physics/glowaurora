@@ -52,6 +52,11 @@ def test_egrid_maxt():
 #except AssertionError as e:
 #    print('this mismatch is in discussion with S. Solomon.   {}'.format(e))
 
+def test_solzen():
+    sza = aurora.solzen(yd,utsec,glat,glon)
+    assert isclose(sza, 104.68412017822266)
+    return sza
+
 def test_snoem():
     doy = datetime2gtd(dtime)[0]
     zno,maglat,nozm = aurora.snoem(doy,1.75*log(0.4*ap),f107)
@@ -76,14 +81,12 @@ def test_ssflux():
     wave1,wave2,sflux = aurora.ssflux(iscale,f107,f107a,hlybr,fexvir,hlya,heiew,xuvfac)
     assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 
-def test_solzen_rcolum_qback():
-    sza = aurora.solzen(yd,utsec,glat,glon)
-    assert isclose(sza, 104.68412017822266)
-
+def test_rcolum_qback():
     densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
 
     """ VCD: Vertical Column Density """
-    zcol,zvcd = aurora.rcolummod(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'],nmaj)
+    sza = test_solzen()
+    zcol,zvcd = aurora.rcolum(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'])
 # FIXME these tests were numerically unstable (near infinity values)
     assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
     assert isclose(zvcd[2,5],8.04e+25,rtol=1e-2) #TODO changes a bit between python 2 / 3
@@ -110,10 +113,11 @@ def test_glow():
     assert_allclose(zcsum,zeta,rtol=1e-6)
 
 if __name__ == '__main__':
+    test_solzen()
     test_egrid_maxt()
     test_snoem()
     test_snoemint()
     test_fieldm()
     test_ssflux()
-    test_solzen_rcolum_qback()
+    test_rcolum_qback()
     test_glow()

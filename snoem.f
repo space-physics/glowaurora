@@ -28,7 +28,9 @@
       real m1, m2, m3     ! coefficients for first 3 eofs
       integer j, k, n
 
-!      integer :: ifirst=1
+!      integer :: ifirst=1  
+!      IFIRST MUST BE DISABLED OR UNINITIALIZED VALUES 
+!        MAY BE USED DEPENDING ON COMPILER (GFORTRAN/F2PY)
 
 !... read eof file
 !      if (ifirst .eq. 1) then
