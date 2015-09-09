@@ -50,27 +50,41 @@ C NEI    number of slots for excited and ionized states
 C
 C
       SUBROUTINE EXSECT (ENER, DEL)
-C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
-C
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+!      use cglow,only: nmaj,nei,nbins
+      implicit none
+      include 'cglow.h'
+
+! Args:
+      real,intent(in) :: ENER(NBINS),DEL(NBINS)
+! Local:
+      integer  IIMAXX(NBINS),inv
+      real  AE,sigion
+      real  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
-     >                IIMAXX(NBINS)
-C
-      COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+     &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
-C
-      DIMENSION ENER(NBINS), DEL(NBINS), SIGI(NBINS), T12(NBINS),
-     >          RATIO(NBINS), NNN(NMAJ), NINN(NMAJ), NUM(NMAJ),
-     >          EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ)
-C
-      DATA QQN/6.51E-14/, NNN/8,7,8/, NINN/3,7,6/, NUM/31,28,28/
+
+      real SIGI(NBINS), T12(NBINS),
+     > RATIO(NBINS), EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ),
+     > detj,e1,e2,eta,etj,ex,fac,ff,gama,sigg,t0,tmax,tmt,wag,we,wth1
+      integer i,i1,i2,i3,ibz,ie,iee,ii,ij,itmax,iv,j,jy,k,kk,kuk,kuk1,
+     > ml
+
+      COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+
+      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
+     >                TS, TA, TB, GAMS, GAMB
+
+      real,parameter :: QQN=6.51E-14
+      integer NNN(NMAJ), NINN(NMAJ), NUM(NMAJ)
+
+      DATA NNN/8,7,8/
+      DATA NINN/3,7,6/
+      DATA NUM/31,28,28/
 C
       DATA WW  /1.96, 4.17, 9.29, 9.53,10.76,10.97,12.07,12.54, 0.,0.,
      >          0.98, 1.64, 4.50, 8.44, 9.90,13.50, 0.25, 0.00, 0.,0.,
@@ -205,20 +219,20 @@ C
           SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**0.8
           IF(IJ.EQ.1) SIGS(IJ,IV)=CC(NUM(IJ),IJ)*(EC(NUM(IJ),IJ)/EX)**2
           PE(IJ,IV) = CE(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
-          PI(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
+          PIN(IJ,IV) = CI(NUM(IJ),IJ)* (EC(NUM(IJ),IJ)/EX)
           GOTO 80
    60     I=II-1
           IF (I .LE. 0) THEN
             SIGS(IJ,IV)=CC(II,IJ)
             PE(IJ,IV)=CE(II,IJ)
-            PI(IJ,IV)=CI(II,IJ)
+            PIN(IJ,IV)=CI(II,IJ)
           ELSE
             FAC = log (EX/EC(I,IJ)) / log (EC(II,IJ)/EC(I,IJ))
             SIGS(IJ,IV) = EXP (log (CC(I,IJ))
      >                         + log (CC(II,IJ)/CC(I,IJ)) * FAC)
             PE(IJ,IV) = EXP (log (CE(I,IJ))
      >                       + log (CE(II,IJ)/CE(I,IJ)) * FAC)
-            PI(IJ,IV) = EXP (log (CI(I,IJ))
+            PIN(IJ,IV) = EXP (log (CI(I,IJ))
      >                       + log (CI(II,IJ)/CI(I,IJ)) * FAC)
           ENDIF
    80   CONTINUE
@@ -241,11 +255,11 @@ C
           ENDIF
           IF (ENER(J).GT.THI(K,I) .AND. THI(K,I).GT.0.001) THEN
             AE = AK(K,I)/ENER(J) * log(ENER(J)/AJ(K,I))
-            GAMMA = GAMS(K,I) * ENER(J) / (ENER(J)+GAMB(K,I))
+            GAMA = GAMS(K,I) * ENER(J) / (ENER(J)+GAMB(K,I))
             T0 = TS(K,I) - (TA(K,I)/(ENER(J)+TB(K,I)))
-            SIGIX(K,I,J) = 1.E-16 * AE * GAMMA
-     >                    * ( ATAN(((ENER(J)-THI(K,I))/2.-T0)/GAMMA)
-     >                       +ATAN(T0/GAMMA) )
+            SIGIX(K,I,J) = 1.E-16 * AE * GAMA
+     >                    * ( ATAN(((ENER(J)-THI(K,I))/2.-T0)/GAMA)
+     >                       +ATAN(T0/GAMA) )
             IF (SIGIX(K,I,J) .LT. 1.E-30) SIGIX(K,I,J) = 0.0
           ELSE
             SIGIX(K,I,J) = 0.0
@@ -417,21 +431,32 @@ C
 C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
-      FUNCTION SIGION(I,ML,E,E1,E2,T12)
-      use machprec
-C
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
-C
-      COMMON /CXPARS/ WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+      real FUNCTION SIGION(I,ML,E,E1,E2,T12)
+!      use cglow,only: nei,nmaj,dp
+      implicit none
+      include 'cglow.h'
+! Args:
+      integer,intent(in) :: i,ml
+      real,intent(in) :: E,E1
+! yes this is out
+      real,intent(out) :: T12 
+! the out value isn't actually used, but needed to allow internal modif.
+      real,intent(inout) :: E2 
+! Local:
+      Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
+      Real S,A,TZ,GG,TTL,AL2,AL1,TTL1
+
+      real WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
-C
-      Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
-      Real(sp) sigion
-      DATA QQ/1.E-16/
+
+      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
+     >                TS, TA, TB, GAMS, GAMB
+
+
+      real,parameter:: QQ=1.E-16
 C
 C
       IF (E .LE. THI(ML,I)) GOTO 30
@@ -469,18 +494,23 @@ C
 C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
-      FUNCTION INV (ETA, JY, ENER)
-C
-      INCLUDE 'glow.h'
-C
-      DIMENSION ENER(NBINS)
-C
+      pure integer FUNCTION INV (ETA, JY, ENER)
+!      use cglow,only: nbins
+      implicit none
+      include 'cglow.h'
+!
+! Args:
+      real,intent(in) :: ETA,ENER(NBINS)
+      integer,intent(in) :: JY
+! Local:
+      integer iv
+      
       IF (ETA .LT. 0.) THEN
         INV = -1
       ELSE
-        DO IV=1,JY
+        DO 30 IV=1,JY
           IF (ETA .LE. ENER(IV)) GOTO 40
-        End DO
+   30   CONTINUE
         IV = JY
    40   INV = IV
       ENDIF
@@ -508,13 +538,18 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 
 
       SUBROUTINE HEXC(ENER,SIGIX,RATIO)
-
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEI=10)
-
-      DIMENSION ENER(NBINS), SIGIX(NEI,NMAJ,NBINS), RATIO(NBINS)
-      DIMENSION TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
+!      use cglow,only: nmaj,nei,nbins
+      implicit none
+      include 'cglow.h'
+!
+! Args:
+      real,intent(in) :: ENER(NBINS),SIGIX(NEI,NMAJ,NBINS)
+      real,intent(out) :: RATIO(NBINS)
+!
+! Local:
+      real  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
+      integer  k,i,kg
+      real,external :: TERPOO
       DATA EGR/1.E4,      2.E4,      5.E4,      1.E5,      2.E5,
      >         3.E5,      5.E5,      1.E6,      2.E6,      5.E6,
      >         1.E7,      1.E8,      1.E9/
@@ -561,9 +596,10 @@ C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
 
 
 
-      FUNCTION TERPOO(X,X1,X2,Y1,Y2)
+      pure real FUNCTION TERPOO(X,X1,X2,Y1,Y2)
       implicit none
-      Real,intent(in) :: x,x1,x2,y1,y2
-      real :: terpoo
+! Args:
+      real,intent(in) :: x,x1,x2,y1,y2
+
       TERPOO = EXP ( log(Y1) + log(X/X1)*log(Y2/Y1)/log(X2/X1) )
       END function terpoo

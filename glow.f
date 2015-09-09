@@ -119,25 +119,19 @@ C NF      obsolete
 C
 C
       SUBROUTINE GLOW
-      use machprec
+!      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax,pi
+      implicit none
+      include 'cglow.h'
 
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
-C
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+     &   i,iei,ist,j,n
+      real  UT, GLAT, GLONG, 
+     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -147,6 +141,14 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 C
       real ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
 C

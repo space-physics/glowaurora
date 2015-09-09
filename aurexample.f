@@ -28,19 +28,12 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       PROGRAM AURORA
-      use machprec
-      use maxt,only : phi0
-      
-      INCLUDE 'glow.h'
-      
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
-C
+
+!      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+      include 'cglow.h'
+
+      real Z(JMAX)
+
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -64,7 +57,7 @@ C
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
 C
-      DIMENSION Z(JMAX), D(8), T(2), SW(25),
+      real D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
 C
       LOGICAL JF(12)
@@ -111,7 +104,7 @@ C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      call Phi0(EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO,Phitop)
+      CALL MAXT (EF, EC, ENER, DEL, ITAIL, FMONO, EMONO, PHITOP)
 C
 C
 C Calculate local solar time:
@@ -124,7 +117,7 @@ C
 C Call MSIS-2K to get neutral densities and temperature:
 C
         CALL TSELEC(SW)
-C
+
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
@@ -139,7 +132,7 @@ C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
 C Model (NOEM)
 C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
 C
 C
 C Call International Reference Ionosphere-1990 subroutine to get
@@ -151,7 +144,9 @@ C
       DO IJF=1,12
         JF(IJF) = .TRUE.
       END DO
+
       JF(5) = .FALSE.
+      JF(12) = .FALSE. !no disk output for iri90
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
@@ -215,7 +210,7 @@ C
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
 C
-C Output photoionization, electron impact ionization, 
+C Output photoionization, electron impact ionization,
 C electron density, and ion densities:
 C
       write (6,690)
@@ -247,7 +242,7 @@ C
   795 format (' VCB:',11f7.0)
 C
 C
-C     CALL ROUT('rt.out',13,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 C
       STOP
       END PROGRAM AURORA
