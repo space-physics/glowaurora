@@ -56,6 +56,14 @@ def test_snoem():
     doy = datetime2gtd(dtime)[0]
     zno,maglat,nozm = aurora.snoem(doy,1.75*log(0.4*ap),f107)
     assert_allclose((nozm[12,15],nozm[-2,-1]),(33547142.,  44171752.))
+    return nozm
+
+def test_snoemint():
+    densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
+# (nighttime background ionization)
+    znoint = aurora.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
+    assert_allclose(znoint[[28,63]], (1.40939280e+08,   4.21317850e+06))
+    return znoint
 
 def test_fieldm():
     xdip,ydip,zdip,totfield,dipang,decl,smodip = aurora.fieldm(glat,glon%360,z[50])
@@ -68,28 +76,26 @@ def test_ssflux():
     wave1,wave2,sflux = aurora.ssflux(iscale,f107,f107a,hlybr,fexvir,hlya,heiew,xuvfac)
     assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 
-def test_solzen_rcolum_snoemint_qback():
+def test_solzen_rcolum_qback():
     sza = aurora.solzen(yd,utsec,glat,glon)
     assert isclose(sza, 104.68412017822266)
-#%%
- # (nighttime background ionization)
+
     densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
-    znoint = aurora.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
-    assert_allclose(znoint[[28,63]], (1.40939280e+08,   4.11383025e+06))
+
     """ VCD: Vertical Column Density """
     zcol,zvcd = aurora.rcolummod(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'],nmaj)
 # FIXME these tests were numerically unstable (near infinity values)
     assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
     assert isclose(zvcd[2,5],8.04e+25,rtol=1e-2) #TODO changes a bit between python 2 / 3
 #%% skipping EPHOTO since we care about night time more for now
-#%%
+    znoint = test_snoemint()
     #photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
     #phono = zeros((nst,jmax),dtype=float32,order='F')
     photoi,phono = aurora.qback(zmaj=densd[['O','O2','N2']].values.T,zno=znoint,zvcd=zvcd,
                          jm=jmax,nmaj=nmaj,nst=nst)
 def test_glow():
     # electron precipitation
-    """ First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others 
+    """ First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others
     """
     aurora.glow() #no args
     #aurora
@@ -106,7 +112,8 @@ def test_glow():
 if __name__ == '__main__':
     test_egrid_maxt()
     test_snoem()
+    test_snoemint()
     test_fieldm()
     test_ssflux()
-    test_solzen_rcolum_snoemint_qback()
+    test_solzen_rcolum_qback()
     test_glow()

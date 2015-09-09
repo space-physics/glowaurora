@@ -18,23 +18,22 @@ C Output:
 C   ZNO    Nitric oxide density at Z in cm-3
 C
 C
-      SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
-      use machprec
+      SUBROUTINE SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
+!      use cglow,only: jmax
       implicit none
+      include 'cglow.h'
       
-      integer, intent(in) :: IDATE, JMAX
-      real(sp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
-      real(sp),intent(out):: ZNO(JMAX)
+      integer, intent(in) :: IDATE
+      real,intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
+      real,intent(out):: ZNO(JMAX)
       
-      Real(sp) ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
-     & xmlat,xmlong
-      integer iday,h,j,klat1,klat2,kz1,kz2
+      Real ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
+     & xmlat,xmlong,h
+      integer iday,j,klat1,klat2,kz1,kz2
       
-C
-C
-C
+
 C Find magnetic latitude:
-C
+
       CALL GEOMAG(0,GLONG,GLAT,XMLONG,XMLAT)
 C
 C
@@ -58,7 +57,7 @@ C
       DO J=1,16
         ZMNOI(J) = LOG(ZMNO(KLAT1,J)*(1.-RAT)+ZMNO(KLAT2,J)*RAT)
       END DO
-C
+
       H=0.03*ZTN(JMAX)
       DO J=1,JMAX
         IF (Z(J) .LE. 100.) ZNO(J)=EXP(ZMNOI(16))
@@ -70,6 +69,4 @@ C
         ENDIF
         IF (Z(J) .GT. 150.) ZNO(J)=EXP(ZMNOI(1)+(150.-Z(J))/H)
       END DO
-C
-      RETURN
-      END
+      END SUBROUTINE SNOEMINT

@@ -28,18 +28,18 @@
       real m1, m2, m3     ! coefficients for first 3 eofs
       integer j, k, n
 
-      integer :: ifirst=1
+!      integer :: ifirst=1
 
 !... read eof file
-      if (ifirst .eq. 1) then
-        ifirst = 0
+!      if (ifirst .eq. 1) then
+!        ifirst = 0
         open(unit=1,file='snoem_eof.dat',status='old')
             read(1,*) (z(k),k=1,16)
             read(1,*) (mlat(j),j=1,33)
             read(1,*) ((no_mean(j,k),j=1,33),k=1,16)
             read(1,*) (((eofs(j,k,n),j=1,33),k=1,16),n=1,3)
         close(unit=1)
-      endif
+!      endif
 
 !... calculate coefficients (m1 to m3) for eofs based on geophysical parameters
 !... eof1 - kp 

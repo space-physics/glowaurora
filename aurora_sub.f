@@ -122,7 +122,7 @@ C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
 C Model (NOEM)
 C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,JMAX,Z,ZTN,ZNO)
+      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
 C
 C
 C Call International Reference Ionosphere-1990 subroutine to get
