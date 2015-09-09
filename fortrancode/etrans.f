@@ -64,13 +64,22 @@ C
 C
       SUBROUTINE ETRANS
 !      use cglow, only: nmaj,jmax,nw,nst,nbins,nei,nf,lmax,nc,nex
-      implicit none
-      include 'cglow.h'
+! *************************
+! TODO using "implicit none" causes this file to give error with f2py/f2py3
+!constructing wrapper function "aurora"...
+!		  pyion,pyecalc,pypi,pysi,pyisr = aurora(z,pyidate,pyut,pyglat,pyglong,pyf107a,pyf107,pyf107p,pyap,pyphitop)
+!{}
+!analyzevars: charselector={'len': '4'} unhandled.analyzevars: charselector={'len': '4'} unhandled.analyzevars: charselector={'len': '4'} unhandled.getctype: No C-type found in "{}", assuming void.
+!
+! issue with common block? Leave it alone till Stan has new F90 code available.
+! ************************
+!      implicit none
+      INCLUDE 'cglow.h'
 
       integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
       real   UT, GLAT, GLONG, 
-     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
@@ -85,7 +94,7 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW),
-     &    SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIO(NMAJ,NBINS),
+     &    SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
@@ -101,7 +110,7 @@ C
      >          PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
      >          PHIUP(JMAX), PHIDWN(JMAX), TSIGNE(JMAX), TAUE(JMAX),
      >          SECION(JMAX), SECP(NMAJ,JMAX), R1(JMAX), EXPT2(JMAX),
-     >          PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS), POTION(NMAJ)
+     >          PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS)
 
       real  APROD,DAG,EDEP,EET,ein,eout,epe,ephi,et,fluxj,phiout,
      &     rmusin, sindip
@@ -116,7 +125,7 @@ C
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 
 
-      COMMON /CXSECT/ SIGS, PE, PIO, SIGA, SEC, SIGEX, SIGIX, IIMAXX
+      COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
      >                TS, TA, TB, GAMS, GAMB
@@ -126,7 +135,9 @@ C
 
       integer :: IFIRST=1
       real,parameter :: AVMU=0.5
-      POTION=[16.,16.,18.]
+      
+      real potion(nmaj)
+      DATA POTION/16.,16.,18./
 
       IERR = 0
       FAC = 0.
@@ -354,11 +365,11 @@ C
         DO 980 N = 1, NMAJ
           DO 975 I=1,JMAX
             PRODUA(I) = PRODUA(I)
-     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIO(N,J)*PHIDWN(I)
-     >                  + (1. - PIO(N,J))*SIGA(N,K,J)*PHIUP(I))
+     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIN(N,J)*PHIDWN(I)
+     >                  + (1. - PIN(N,J))*SIGA(N,K,J)*PHIUP(I))
             PRODDA(I) = PRODDA(I)
-     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIO(N,J)*PHIUP(I)
-     >                  + (1. - PIO(N,J))*SIGA(N,K,J)*PHIDWN(I))
+     >                  + ZMAJ(N,I) * (SIGA(N,K,J)*PIN(N,J)*PHIUP(I)
+     >                  + (1. - PIN(N,J))*SIGA(N,K,J)*PHIDWN(I))
   975     CONTINUE
   980   CONTINUE
         DO 985 I=1,JMAX

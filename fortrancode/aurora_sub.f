@@ -39,11 +39,10 @@ C
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap, PyPhitop(NBINS,nmaj)
-
       Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
      & Pyecalc(jmax),Pypi(jmax),Pysi(jmax)
 
-      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR
+      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
       real UT, GLAT, GLONG, 
      >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -61,17 +60,9 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW),
-     &   SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PI(NMAJ,NBINS),
+     &   SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
-     >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
-     &   WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
-     >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
-     >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
-     >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
-     >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ),
-     &    ALPHA(JMAX), BETA(JMAX), GAMA(JMAX), PSI(JMAX),
-     >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
-     >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
+     >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS)
 
 
       COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -82,19 +73,15 @@ C
      >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 
-      COMMON /CXSECT/ SIGS, PE, PI, SIGA, SEC, SIGEX, SIGIX, IIMAXX
-
-      COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
-     >                TS, TA, TB, GAMS, GAMB
-
-      COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI,DELZ, DEL2, DELA, DELP,
-     >                DELM, DELS, DEN, FAC
+      COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       real D(8), T(2), SW(25),
-     >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
-C
+     >          OUTF(11,JMAX), OARR(30), TPI(NMAJ),ap,dipd,emono,fmono,
+     > rz12,stl,szad,totpi,totsi
+      integer i,iday,ijf,itail,j,j200,jmag,mmdd,ns
+
       LOGICAL JF(12)
-C
+
       DATA SW/25*1./
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
       idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong;
@@ -159,7 +146,8 @@ C
       END DO
 
       JF(5) = .FALSE.
-      JF(12) = .FALSE. !no disk output for iri90
+!no disk output for iri90
+      JF(12) = .FALSE. 
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
@@ -217,20 +205,20 @@ C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
 
-C      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
-  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
-     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
-C      WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
-  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
-     >        ' Ec=',F6.3,' Ie=',I1)
-C
-C Output photoionization, electron impact ionization,
-C electron density, and ion densities:
-C
-C     write (6,690)
-  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
-     >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
-C    >        '     O        O2         N2        NO')
+!      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
+!  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
+!     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
+!      WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
+!  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
+!     >        ' Ec=',F6.3,' Ie=',I1)
+!
+! Output photoionization, electron impact ionization,
+! electron density, and ion densities:
+!
+!     write (6,690)
+!  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
+!    >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
+!    >        '     O        O2         N2        NO')
       do 750 j=1,jmax
         do 700 i=1,nmaj
           tpi(i) = 0.
@@ -242,9 +230,9 @@ C    >        '     O        O2         N2        NO')
 
         Pypi(j) = totpi
         Pysi(j) = totsi
-C       write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
-C    >                zo(j),zo2(j),zn2(j),zno(j)
-  730   format (1x, 0p, f5.1, 1p, 14e10.2)
+!       write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
+!    >                zo(j),zo2(j),zn2(j),zno(j)
+!  730   format (1x, 0p, f5.1, 1p, 14e10.2)
   750 continue
 
       Pyecalc = ecalc
@@ -258,14 +246,14 @@ C
 C Output selected volume emission rates and column brightnesses:
 C
 !      write (6,780)
-  780 format ('   z     3371   4278   5200   5577   6300',
-     >        '   7320  10400   3466   7774   8446')
+!  780 format ('   z     3371   4278   5200   5577   6300',
+!    >        '   7320  10400   3466   7774   8446')
 !      write (6,790) (z(j), (zeta(iw,j),iw=1,10), j=1,jmax)
-  790 format (1x, f5.1, 10f7.1)
+! 790 format (1x, f5.1, 10f7.1)
 !      write (6,795)  (vcb(iw),iw=1,10)
-  795 format (' VCB:',11f7.0)
-C
-C
-C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
-C
+! 795 format (' VCB:',11f7.0)
+!
+!
+!     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+!
       END SUBROUTINE AURORA

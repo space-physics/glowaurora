@@ -77,7 +77,7 @@ C
       integer idate, iscale,ierr,i,j,jlocal,k,kchem,l,m,m1,m2,n,
      &   NNN(NMAJ)
       real  UT, GLAT, GLONG, 
-     >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
@@ -345,7 +345,7 @@ C energies E1 and E2, and calls them M1 and M2
 C 
 C R1 is the upper edge of the lower box, R2 is the lower edge of the
 C upper box.
-C
+
       Real,Intent(in)    :: DEL(NBINS), ENER(NBINS)
       Real,Intent(out)   :: E1,E2,R1,R2
       Integer,Intent(out):: M1,M2

@@ -20,7 +20,7 @@
 !     EMONO  characteristic enerngy of FMONO in eV
 !
 ! Returned by subroutine:
-!     Phi   Hemispherical flux in cm-2 s-1 eV-1
+!     MAXT   Hemispherical flux in cm-2 s-1 eV-1
 !
       Subroutine maxt(EFLUX, EZER, ENER, dE, ITAIL, FMONO, EMONO, phi)
 !      use cglow, only: nbins
