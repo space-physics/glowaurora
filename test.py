@@ -69,7 +69,7 @@ def test_ssflux():
     assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 
 def test_solzen_rcolum_snoemint_qback():
-    sza = aurora.szacalc(yd,utsec,glat,glon)
+    sza = aurora.solzen(yd,utsec,glat,glon)
     assert isclose(sza, 104.68412017822266)
 #%%
  # (nighttime background ionization)
