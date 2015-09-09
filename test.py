@@ -54,7 +54,7 @@ def test_egrid_maxt():
 
 def test_snoem():
     doy = datetime2gtd(dtime)[0]
-    zno,maglat,nozm = aurora.snoemmod.snoem(doy,1.75*log(0.4*ap),f107)
+    zno,maglat,nozm = aurora.snoem(doy,1.75*log(0.4*ap),f107)
     assert_allclose((nozm[12,15],nozm[-2,-1]),(33547142.,  44171752.))
 
 def test_fieldm():
