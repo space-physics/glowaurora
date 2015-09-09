@@ -187,25 +187,20 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE GCHEM
-C
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
-      PARAMETER (NR=50)
-C
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+!      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex,RE,dp
+      implicit none
+      include 'cglow.h'
+
+      integer,PARAMETER :: NR=50
+
+      integer idate,iscale,jlocal,kchem,ierr
+      real  UT, GLAT, GLONG, 
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC, 
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -215,10 +210,16 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), E(JMAX),
      >    DEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      REAL KZ, L
-C
-      DIMENSION A(NR), B(NR), BZ(NR,JMAX), G(NR,JMAX), KZ(NR,JMAX),
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, E, DEN, ZETA, ZCETA, VCB
+
+      real A(NR), B(NR), BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
      >          P(NEX,JMAX), L(NEX,JMAX),
@@ -226,11 +227,12 @@ C
      >          QQ(JMAX), RR(JMAX), SS(JMAX), TT(JMAX), UU(JMAX),
      >          VV(JMAX), WW(JMAX), XX(JMAX),
      >          AA(JMAX), BB(JMAX), CC(JMAX), DD(JMAX), EE(JMAX),
-     >          FF(JMAX), GG(JMAX), HH(JMAX)
-C
-      DOUBLE PRECISION COEF(JMAX,5), ROOT(JMAX)
-C
-      DATA RE/6.37E8/
+     >          FF(JMAX), GG(JMAX), HH(JMAX),dz,gh
+
+      integer i,ic,iter,iw,ix,j200,n    
+    
+      real(kind=dp) :: COEF(JMAX,5), ROOT(JMAX)
+
       DATA A / 1.07E-5, 0.00585, 0.00185, 0.04500, 1.06000,
      >         9.70E-5, 0.04790, 0.17120, 0.00100, 0.77000,
      >         0.00540, 0.07900, 38*0.0 /
@@ -269,14 +271,14 @@ C Assign g-factors at altitudes which are sunlit:
 C
       DO 40 I=1,JMAX
       DO 40 N=1,NR
-      G(N,I) = 0.0
+      GF(N,I) = 0.0
    40 CONTINUE
 C
       DO 50 I=1,JMAX
       GH = (RE+ZZ(I)) * SIN(SZA)
       IF (SZA .LT. 1.6 .OR. GH .GT. RE) THEN
-        G(1,I) = 0.041
-        G(2,I) = 0.013
+        GF(1,I) = 0.041
+        GF(2,I) = 0.013
       ENDIF
    50 CONTINUE
 C
@@ -560,7 +562,7 @@ C
       CALL VQUART (COEF, ROOT, J200)
 C
       DO 250 I=1,J200
-      E(I) = ROOT(I)
+      E(I) =real(ROOT(I))
   250 CONTINUE
 C
       E(J200+1) = E(J200) * ( E(J200+3) / E(J200) )
@@ -718,7 +720,7 @@ C
 C
       ZCETA(1,2,I) = B(38) * B(36) * RN2EI(I)
       ZCETA(2,2,I) = B(38) * PHOTOI(3,3,I)
-      ZCETA(3,2,I) = G(2,I) * DEN(5,I)
+      ZCETA(3,2,I) = GF(2,I) * DEN(5,I)
 C
       ZCETA(1,3,I) = A(1) * B(27) * PHOTOD(1,3,I) / L(10,I)
       ZCETA(2,3,I) = A(1) * B(27) * PHOTOI(6,3,I) / L(10,I)
@@ -825,7 +827,5 @@ C
       DO 600 IW=1,NW
         VCB(IW) = VCB(IW) / 1.E6
   600 CONTINUE
-C
-C
-      RETURN
-      END
+
+      END SUBROUTINE GCHEM
