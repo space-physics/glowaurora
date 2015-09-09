@@ -9,12 +9,14 @@ f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rco
 from datetime import datetime
 from numpy import array,zeros,float32,log,arange,append,isclose
 from numpy.testing import assert_allclose
+from os import chdir
 #
 from histutils.fortrandates import datetime2yd,datetime2gtd
 from msise00.runmsis import rungtd1d
-#TODO make package work
-import glowfort
-
+import glowaurora
+from glowaurora import glowfort
+#TODO hack for module data path issue
+chdir(glowaurora.__path__[0])
 #%% test inputs
 z = arange(80,110+1,1)
 z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
