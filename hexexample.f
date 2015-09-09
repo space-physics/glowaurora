@@ -109,7 +109,7 @@ C
 C
 C Set up energy grid:
 C
-      CALL EGRID (ENER, DEL, NBINS)
+      CALL EGRID (ENER, DEL)
 C
 C
 C Generate auroral electron flux into PHITOP array:

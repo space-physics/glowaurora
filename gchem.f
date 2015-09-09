@@ -187,7 +187,6 @@ C NF      number of available types of auroral fluxes
 C
 C
       SUBROUTINE GCHEM
-      use vquartmod
 C
       INCLUDE 'glow.h'
       PARAMETER (NMAJ=3)

@@ -31,24 +31,19 @@ C
      &                  Pyidate, Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
      &                  Pyf107p, Pyap,PyPhitop)
 
-      use machprec
+!      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+!      implicit none
+      include 'cglow.h'
 
-      INCLUDE 'glow.h'
-      PARAMETER (NMAJ=3)
-      PARAMETER (NEX=20)
-      PARAMETER (NW=20)
-      PARAMETER (NC=10)
-      PARAMETER (NST=6)
-      PARAMETER (NEI=10)
-      PARAMETER (NF=4)
-
+      real,intent(in) :: Z(JMAX)
       Integer, Intent(In) :: Pyidate
       Real,Intent(In) :: Pyut, Pyglat, Pyglong, Pyf107a, Pyf107,
-     &                  Pyf107p, Pyap, PyPhitop(NBINS,3)
-      Real, Dimension(JMAX),Intent(Out)    :: Pyecalc,Pypi,Pysi
-      Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,3)
+     &                  Pyf107p, Pyap, PyPhitop(NBINS,nmaj)
+      Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
+     & Pyecalc(jmax),Pypi(jmax),Pysi(jmax)
 
-C
+      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR
+     & IIMAXX(NBINS)
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -66,17 +61,17 @@ C
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
+
       COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
-C
-      DIMENSION Z(JMAX), D(8), T(2), SW(25),
+
+      real D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
-C
+
       LOGICAL JF(12)
-C
+
       DATA SW/25*1./
 C     Hack alert, didn't get fancier due to newer GLOW version coming soon enough
       idate=Pyidate; ut=Pyut; glat=Pyglat; glong=Pyglong;
@@ -116,12 +111,12 @@ C
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
-         ZN2(J) = D(3)
-         ZO2(J) = D(4)
+          ZN2(J) = D(3)
+          ZO2(J) = D(4)
           ZRHO(J) = D(6)
-         ZNS(J) = D(8)
+          ZNS(J) = D(8)
           ZTN(J) = T(2)
-       END DO
+        END DO
 C
 C
 C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
@@ -141,8 +136,8 @@ C
       END DO
 
       JF(5) = .FALSE.
-      JF(12) = .FALSE.
-
+!no disk output for iri90
+      JF(12) = .FALSE. 
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
@@ -158,7 +153,7 @@ C
         IF (ZTE(J) .LT. ZTN(J)) ZTE(J) = ZTN(J)
         ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
         ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
-       ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
+        ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
       END DO
 C
 C
@@ -201,26 +196,25 @@ C
       DIPD = DIP * 180. / PI
 
 C      write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
-C  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
-C     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
+  444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
+     >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
 C      WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
-C  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
-C     >        ' Ec=',F6.3,' Ie=',I1)
+  445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
+     >        ' Ec=',F6.3,' Ie=',I1)
 C
 C Output photoionization, electron impact ionization,
 C electron density, and ion densities:
 C
 C     write (6,690)
-C  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
-C     >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
+  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
+     >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
 C    >        '     O        O2         N2        NO')
-      do j=1,jmax
-        do i=1,nmaj
+      do 750 j=1,jmax
+        do 700 i=1,nmaj
           tpi(i) = 0.
-          do ns=1,nst
+          do 700 ns=1,nst
             tpi(i) = tpi(i) + photoi(ns,i,j)
-          End Do
-        End Do
+  700     continue
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
 
@@ -228,8 +222,8 @@ C    >        '     O        O2         N2        NO')
         Pysi(j) = totsi
 C       write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
 C    >                zo(j),zo2(j),zn2(j),zno(j)
-C  730   format (1x, 0p, f5.1, 1p, 14e10.2)
-      End Do
+  730   format (1x, 0p, f5.1, 1p, 14e10.2)
+  750 continue
 
       Pyecalc = ecalc
 
@@ -241,13 +235,13 @@ C
 C
 C Output selected volume emission rates and column brightnesses:
 C
-C      write (6,780)
-C  780 format ('   z     3371   4278   5200   5577   6300',
-C     >        '   7320  10400   3466   7774   8446')
-C      write (6,790) (z(j), (zeta(iw,j),iw=1,10), j=1,jmax)
-C  790 format (1x, f5.1, 10f7.1)
-C      write (6,795)  (vcb(iw),iw=1,10)
-C  795 format (' VCB:',11f7.0)
+!      write (6,780)
+  780 format ('   z     3371   4278   5200   5577   6300',
+     >        '   7320  10400   3466   7774   8446')
+!      write (6,790) (z(j), (zeta(iw,j),iw=1,10), j=1,jmax)
+  790 format (1x, f5.1, 10f7.1)
+!      write (6,795)  (vcb(iw),iw=1,10)
+  795 format (' VCB:',11f7.0)
 C
 C
 C     CALL ROUT('rt.out',13,EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)

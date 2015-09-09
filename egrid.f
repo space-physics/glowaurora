@@ -6,30 +6,25 @@
 ! Academic Research License Agreement contained in the file glowlicense.txt.
 ! For more information see the file glow.txt.
 !
-module EnergyGrid
-  use machprec
-  Implicit None
-  private
-  public :: EGRID
-contains
-  SUBROUTINE EGRID (ENER, DEL,NBINS)
-      
+      SUBROUTINE EGRID (ENER, DEL)
+!      use cglow,only: nbins
+      implicit none
+      include 'cglow.h'
       Integer N
-      Integer,Intent(In) :: Nbins
-      Real(sp), Intent(Out) :: ENER(Nbins), DEL(Nbins)
+      Real, Intent(Out) :: ENER(Nbins), DEL(Nbins)
 
-      !print*,maxexponent(ener)
-      DO N=1,nbins
+      DO 20 N=1,NBINS
         IF (N .LE. 21) THEN
           ENER(N) = 0.5 * REAL(N)
         ELSE
           ENER(N) = EXP (0.05 * REAL(N+26))
         ENDIF
-      End Do
-
+   20 CONTINUE
       DEL(1) = 0.5
-      DEL(2:nbins) = ENER(2:nbins)-ENER(1:nbins-1)
-
-      ENER = ENER - DEL/2.0
-  END Subroutine EGRID
-end module EnergyGrid
+      DO 40 N=2,NBINS
+        DEL(N) = ENER(N)-ENER(N-1)
+   40 CONTINUE
+      DO 60 N=1,NBINS
+        ENER(N) = ENER(N) - DEL(N)/2.0
+   60 CONTINUE
+      End Subroutine Egrid

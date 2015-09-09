@@ -1,3 +1,5 @@
+! WARNING: THIS FUNCTION IS KNOWN TO BE BROKEN and gives erroneous results MH 8/2015
+
 ! Subroutine VQUART
 !
 ! This software is part of the GLOW model.  Use is governed by the Open Source
@@ -16,31 +18,27 @@
 ! W1, W2, W3, W4, W5 are working arrays.
 !
 !
-module vquartmod
-    use machprec
-    implicit none
-    private
-    public :: vquart
+      SUBROUTINE VQUART (A, ROOT, NJ)
+!      use cglow,only: jmax,dp
+      implicit none
+      include 'cglow.h'
+! Args
+      Real(kind=dp),intent(out) :: ROOT(JMAX)
+      Real(kind=dp),intent(in)  :: A(JMAX,5)
+      Integer,intent(in)        :: NJ
+! Local
+      Integer I
+      Real(kind=dp) W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
+      real(kind=dp),parameter :: E=1.D-38, Z=0.
 
-    real(kind=dp) :: E =1.D-38, Z=0.
-contains
-    SUBROUTINE VQUART (A, ROOT, NJ)
-    INCLUDE 'glow.h' ! f2py needs this here
-    Real(kind=dp),intent(out) :: ROOT(JMAX)
-    Real(kind=dp),intent(in)  :: A(JMAX,5)
-    Integer,intent(in)        :: NJ
-      
-    Integer I
-    Real(kind=dp) :: W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
-
-    DO I=1,NJ
-        W1(I) = -(A(I,5)*A(I,1)-4.D0*A(I,4)*A(I,2)+3.D0*A(I,3)**2) / 12.D0
-        W2(I) = ( A(I,5)*(A(I,3)*A(I,1)-A(I,2)**2)                          &
-                  -A(I,4)*(A(I,4)*A(I,1)-A(I,2)*A(I,3))                     &
-                  +A(I,3)*(A(I,4)*A(I,2)-A(I,3)**2)    ) / 4.D0
-        W4(I)= -2.D0*Real(  ( (CMPLX(W2(I),Z,dp)                           &
-                         +SQRT(CMPLX(W2(I)**2+4.D0*W1(I)**3+E,Z,dp)))/2.D0  &
-                         +CMPLX(E,Z,dp) )**(1.D0/3.D0), kind=dp)
+      DO 200 I=1,NJ
+        W1(I)=-(A(I,5)*A(I,1)-4.D0*A(I,4)*A(I,2)+3.D0*A(I,3)**2) / 12.D0
+        W2(I) = ( A(I,5)*(A(I,3)*A(I,1)-A(I,2)**2)
+     >          -A(I,4)*(A(I,4)*A(I,1)-A(I,2)*A(I,3))
+     >          +A(I,3)*(A(I,4)*A(I,2)-A(I,3)**2)    ) / 4.D0
+        W4(I)= -2.D0*DREAL(  ( (DCMPLX(W2(I),Z)
+     >               +CDSQRT(DCMPLX(W2(I)**2+4.D0*W1(I)**3+E,Z)))/2.D0
+     >                 +DCMPLX(E,Z) )**(1.D0/3.D0)  )
         W1(I) = A(I,5)*W4(I) + A(I,4)**2 - A(I,5)*A(I,3) + E
         IF (W1(I) .LE. E) W1(I) = E
         W1(I) = SQRT(W1(I))
@@ -53,7 +51,6 @@ contains
         W5(I) = W3(I)**2 - A(I,5)*(A(I,3)+2.D0*W4(I)-W2(I))
         IF (W5(I) .LE. E) W5(I) = E
         ROOT(I) = (W3(I)+SQRT(W5(I))) / A(I,5)
-    End Do
- 
-    END Subroutine VQUART
-end module Vquartmod
+200   CONTINUE
+    
+      END Subroutine VQUART

@@ -150,24 +150,24 @@ C
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
 C
-      DIMENSION ZVCD(NMAJ,JMAX)
+      real ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
 C
-C      DATA IFIRST/1/, PI/3.1415926536/
+      Integer :: IFIRST=1
 C
 C
 C First call only: set up energy grid:
 C
-C      IF (IFIRST .EQ. 1) THEN
-C        IFIRST = 0
-C        CALL EGRID (ENER, DEL, NBINS)
-C      ENDIF
+      IF (IFIRST .EQ. 1) THEN
+        IFIRST = 0
+        CALL EGRID (ENER, DEL)
+      ENDIF
 C
 C
 C Find magnetic dip angle and solar zenith angle (radians):
 C
       CALL FIELDM (GLAT, GLONG, 300., XF, YF, ZF, FF, DIP, DEC, SDIP)
       DIP = ABS(DIP) * PI/180.
-C
+
       CALL SOLZEN (IDATE, UT, GLAT, GLONG, SZA)
       SZA = SZA * PI/180.
 C
@@ -180,11 +180,11 @@ C
 C
 C Pack major species density array:
 C
-      DO J=1,JMAX
+      DO 100 J=1,JMAX
         ZMAJ(1,J) = ZO(J)
         ZMAJ(2,J) = ZO2(J)
         ZMAJ(3,J) = ZN2(J)
-      End Do
+  100 CONTINUE
 C
 C
 C Calculate slant path column densities of major species in the
@@ -200,20 +200,19 @@ C
       IF (SZA .LT. 2.) THEN
         CALL EPHOTO
       ELSE
-        DO J=1,JMAX
-          DO I=1,NMAJ
-              DO IST=1,NST
-                PHOTOI(IST,I,J) = 0.0
-                PHOTOD(IST,I,J) = 0.0
-              End Do
-          End Do
-          DO IST=1,NST
+        DO 240 J=1,JMAX
+          DO 200 I=1,NMAJ
+          DO 200 IST=1,NST
+            PHOTOI(IST,I,J) = 0.0
+            PHOTOD(IST,I,J) = 0.0
+  200     CONTINUE
+          DO 210 IST=1,NST
             PHONO(IST,J) = 0.0
-          End Do
-          DO N=1,NBINS
+  210     CONTINUE
+          DO 220 N=1,NBINS
             PESPEC(N,J) = 0.0
-          End Do
-        End Do
+  220     CONTINUE
+  240   CONTINUE
       ENDIF
 C
 C
@@ -227,8 +226,7 @@ C
           SESPEC(N,J) = 0.0
   250   CONTINUE
   255 CONTINUE
-C
-C
+
 C Add background ionization to photoionization:
 C
       CALL QBACK (ZMAJ, ZNO, ZVCD, PHOTOI, PHONO, JMAX, NMAJ, NST)
