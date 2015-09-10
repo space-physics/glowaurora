@@ -2,6 +2,7 @@
 """
 http://www.netlib.org/toms/493.gz
 before running this, type in Terminal (one-time):
+cd fortran
 f2py -m quartic -h quartic.pyf 493.f
 f2py -c quartic.pyf 493.f
 -----------------------
@@ -25,7 +26,7 @@ fail : int
 """
 from numpy import zeros,array
 import sys
-sys.path.append('fortrancode')
+sys.path.append('../fortran')
 #
 from quartic import rpoly
 
@@ -39,10 +40,8 @@ def runquartic(pin):
 
 
 
-
-
 if __name__ == '__main__':
     pin = array([1,0,0,1])
     r,i,f = runquartic(pin)
 
-    print(r[:pin.size],i[:pin.size])
+    print('real {}  \nimag {}'.format(r[:pin.size],i[:pin.size]))

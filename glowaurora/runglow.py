@@ -6,28 +6,30 @@ code wrapping in Python by Michael Hirsch
 from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
 from numpy import hstack,arange,append,array,rollaxis
-import sys,os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from os import chdir
 try:
     import seaborn
 except:
     pass
 #
-import glowfort as aurora
+#sys.path.append(os.path.dirname(os.path.abspath(__file__))) #enables fortran .dat files in site-packages module directory
+import glowaurora
+from glowaurora import glowfort
+chdir(glowaurora.__path__[0])
 
 def glowaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
 #%% temporarily use glow grid instead of our own
-    ener,dE = aurora.energygrid.egrid(nbins)
-    phitop = aurora.maxt.phi0(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
+    ener,dE = glowfort.egrid()
+    phitop = glowfort.maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
 #%% glow model
     z = arange(80,110+1,1)
     z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
 
-    ion,ecalc,photI,ImpI,isr = aurora.aurora(z,iyd,utsec,glat,glon%360,
+    ion,ecalc,photI,ImpI,isr = glowfort.aurora(z,iyd,utsec,glat,glon%360,
                                              f107a,f107,f107p,ap,phi)
 #%% handle the outputs including common blocks
-    zeta=aurora.cglow.zeta.T #columns 11:20 are identically zero
+    zeta=glowfort.cglow.zeta.T #columns 11:20 are identically zero
 
     ver = DataFrame(index=z,
                     data=zeta[:,:11],
@@ -46,7 +48,7 @@ def glowaurora(nbins,eflux,e0,iyd,utsec,glat,glon,f107a,f107,f107p,ap):
     phitop = DataFrame(index=phi[:,0],
                        data=phi[:,2],
                        columns=['flux'])
-    zceta = aurora.cglow.zceta.T
+    zceta = glowfort.cglow.zceta.T
 
     return ver,photIon,isrparam,phitop,zceta
 #%% plot
@@ -99,14 +101,14 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     tight_layout(pad=3.2, w_pad=0.3)
 
     ax = axs[0]
-    tez = aurora.cglow.tez
+    tez = glowfort.cglow.tez
     ax.plot(tez,ver.index)
     ax.set_xlabel('Energy Deposited',fontsize='large')
     ax.set_ylabel('Altitude [km]',fontsize='large')
     ax.set_title('Total Energy Depostiion',fontsize='x-large')
 #%% e^- impact ionization rates from ETRANS
     ax = axs[1]
-    sion = aurora.cglow.sion
+    sion = glowfort.cglow.sion
     sion = DataFrame(index=ver.index,data=sion.T,columns=['O','O2','N2'])
     ax.plot(sion,ver.index)
     ax.set_xlabel('e$^-$ impact ioniz. rate',fontsize='large')
