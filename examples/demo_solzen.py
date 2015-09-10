@@ -1,13 +1,28 @@
+#!/usr/bin/env python3
+"""
+Comparing solzen.f solar zenith angle with Astropy, per email discussion with UAF and UCAR staff
+Michael Hirsch
+2015
+"""
+
 from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel
 from matplotlib.pyplot import figure,show
+from os import chdir,environ,getcwd
 # Some features may require AstroPy 1.0+
 import astropy.units as u
 from astropy.coordinates import get_sun, EarthLocation, AltAz
 from astropy.time import Time
+from time import time
 #
 from histutils.fortrandates import datetime2yd
-from aurora import szacalc #compile fortran code
+#################################
+#TODO hack for module data path issue
+chdir(environ['HOME'])
+import glowaurora
+from glowaurora import glowfort
+chdir(glowaurora.__path__[0])
+#################################
 #%% demo the solar zenith angle calclation vs AstroPy
 def demosolzen(dtime,glat,glon):
 #%% SZA with glow
@@ -15,7 +30,7 @@ def demosolzen(dtime,glat,glon):
 
     sza_glow = empty_like(dtime,dtype=float)
     for j,(d,s) in enumerate(zip(yd,utsec)):
-        sza_glow[j] = szacalc.solzen(d,s,glat,glon)
+        sza_glow[j] = glowfort.solzen(d,s,glat,glon)
 
     return DataFrame(index=dtime,data=sza_glow,columns=['glow'])
 
@@ -25,19 +40,25 @@ def demosuncor(dtime,glat,glon,alt_m):
     solar = Panel( items=['glow','astropy'],
                  major_axis=dtime,
                  minor_axis=['dec','ra','gst'])
+    tic = time()
     for d,s,t in zip(yd,utsec,dtime):
-        solar['glow'].loc[t] = szacalc.suncor(d,s)
+        solar['glow'].loc[t] = glowfort.suncor(d,s)
+    fortsec = time()-tic
     solar.ix['glow',:,'dec'] = degrees(solar.ix['glow',:,'dec'])
     solar.ix['glow',:,'ra'] = degrees(solar.ix['glow',:,'ra'])
     solar.ix['glow',:,'gst'] = degrees(solar.ix['glow',:,'gst'])
 #%% solar location with AstroPy
+    tic=time()
     obs = EarthLocation(lat=glat*u.deg, lon=glon*u.deg, height=alt_m*u.m)
     times = Time(dtime, scale='ut1')
     sun = get_sun(times)
     sunobs = sun.transform_to(AltAz(obstime=times,location=obs))
+    pysec = time()-tic
     solar.ix['astropy',:,'dec'] = sun.dec.degree
     solar.ix['astropy',:,'ra'] = sun.ra.degree
     solar.ix['astropy',:,'gst'] = sunobs.obstime.sidereal_time('apparent','greenwich').degree
+
+    print('in seconds, fortran time: {:.3f}   python time: {:.3f} '.format(fortsec,pysec))
 
     return solar,sunobs
 
@@ -48,7 +69,7 @@ def plotsza(sza,sun,error):
     sza.plot(ax=ax,subplots=True,title='comparison of solar zenith angle [degrees]')
 
     ax = figure().gca()
-    error.plot(ax=ax,subplots=True,title='1973 SINGLE PRECISION Error in GLOW solar predication [degrees]')
+    error.plot(ax=ax,subplots=True,title='SINGLE PRECISION Error in GLOW solar predication [degrees]')
 
 if __name__ == '__main__':
     dtime = date_range('2013-04-01','2013-04-02',
