@@ -11,7 +11,7 @@ if __name__ == '__main__':
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
     p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',nargs='?',default='')
     p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(65,-148))
-    p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190)
+#    p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190) #hard-coded in cglow.h
     p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1)
     p.add_argument('--e0',help='characteristic energy [eV]',type=float,default=1e3)
     p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=150)
