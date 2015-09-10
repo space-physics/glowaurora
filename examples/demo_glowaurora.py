@@ -9,7 +9,7 @@ from glowaurora.runglow import glowaurora,plotaurora
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
-    p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',type=str,nargs='?',default=None)
+    p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',nargs='?',default='')
     p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(65,-148))
     p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190)
     p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1)
@@ -20,10 +20,7 @@ if __name__ == '__main__':
     p.add_argument('--ap',help='daily ap',type=float,default=4)
     p = p.parse_args()
 
-    if p.simtime is None:
-        dtime = datetime.now()
-    else:
-        dtime = parse(p.simtime)
+    dtime = parse(p.simtime)
 
     yd,utsec = datetime2yd(dtime)[:2]
 
