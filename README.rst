@@ -39,6 +39,15 @@ Self-test f2py
 
 the self-test should give zero errors
 
+volume emission rate plots
+--------------------------
+.. code:: bash
+
+  $ python examples/demo_aurora.py
+
+this produces the plots seen here, with the volume emission rate and intermediate
+processes modeled for the given primary electron precipitation input.
+
 Papers
 ======
 (Thanks to Stephen Kaeppler to pointing these out)
@@ -84,19 +93,15 @@ after compiling, from Terminal::
 
 observe that aurtest.out is almost exactly equal to reference/aurexample.out, to the least digit of precision.
 
+Windows operating system
+========================
 On Windows, consider `factors like <https://scivision.co/f2py-running-fortran-code-in-python-on-windows/>`_
-
-old version
------------
-.. code:: bash
-
-    git checkout 61aee5e4d2530208afbcb49b6a586ceae51bc7c6
 
 
 Licensing
 =========
 
-original Fortran code in directory ``fortrancode/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/:
+original Fortran code in directory ``fortran/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/:
 
 "This software is part of the GLOW model.  Use is governed by the Open Source Academic Research License
 Agreement contained in the file glowlicense.txt."
