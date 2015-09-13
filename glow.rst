@@ -1,3 +1,4 @@
+==============================================
 Preliminary Documentation for the GLOW Model
 ==============================================
 
@@ -12,11 +13,16 @@ Preliminary Documentation for the GLOW Model
 
 **see README file for release notes**
 
+.. contents::
+
+Introduction
+============
+
 The GLOW family of subroutines calculate ionization
 and excitation rates, energetic electron production and transport, excited
 species densities, and airglow emission rates for the terrestrial thermosphere.
 Use is governed by the Open Source Academic Research License Agreement
-contained in the file glowlicense.txt.  Standards and practices are
+contained in the file ``glowlicense.txt``.  Standards and practices are
 specified by the "rules of the road" adopted by the CEDAR and TIMED programs.
 Other than the example driver programs, the header file glow.h, and
 possibly the master subroutine glow.f, it is inadvisable to modify the code.
@@ -26,16 +32,19 @@ Since this is a developmental code, there are bound to be problems which
 users will uncover.  Please let me know about them.  I will also attempt to
 accommodate any reasonable suggestions for enhancements or changes.  By
 following this procedure, users will benefit by staying compatible with future
-developments, and from a more systematic elimination of any progrmming errors.
+developments, and from a more systematic elimination of any programming errors.
 Also, please upgrade to the latest version.  Use of obsolete versions may lead
 to incorrect results.
+
+Program Description
+===================
 
 Programs DAYEXAMPLE and AUREXAMPLE are provided to give some guidance in
 how to use the subroutine package for a daytime and auroral run, respectively.
 Program HEXEXAMPLE shows how to do a high-energy electron flux calculation.
 These programs use MSIS-2K and IRI-90 to specify the neutral atmosphere and
 initial electron density profile.  The programs should be modified by the
-user to suit particular purposes.  It is not necessary to use MSIS and IRI;
+user to suit particular purposes.  It is **not** necessary to use MSIS and IRI;
 any model or measurement that specifies neutral densities, temperatures, and
 high-altitude electron densities can be employed.  The output statements at the
 end are just examples of a small subset of the calculated parameters.
@@ -56,8 +65,8 @@ appropriate for the altitude and energy range under study before compiling.
 The number of altitudes must correspond to the altitude array supplied by
 the driver program.
 
-The data files ``ephoto_x*.dat`` and ``ssflux_*.dat`` must exist on the current
-working directory.  The number of wavelenth bins in these files must equal
+The data files ``ephoto_x*.dat`` and ``ssflux_*.dat`` must exist on the **current
+working directory**.  The number of wavelenth bins in these files must equal
 the parameter LMAX specified in glow.h, and the wavelength ranges must be the
 same in all input files.
 
@@ -69,7 +78,7 @@ generally compile using third-level optimization (-O3).  I would be interested
 in hearing of experiences with other compilers, but make no claims or promises.
 
 Subroutine description
-----------------------
+======================
 
 Subroutines called by the example programs include:
 
@@ -102,7 +111,7 @@ Subroutine  Description
 ==========  =============
 
 Definitions
-------------
+===========
 (taken from the introductory comment to subroutine GLOW)
 
 Supplied to subroutine in labeled common /CGLOW/:
@@ -204,10 +213,10 @@ NF          (obsolete)
 ==========  =============
 
 Notes:
-------
+======
 
 MSIS-2000 and IRI-90
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 Versions of MSIS-2K and IRI-90 are provided for the convenience of users
 who do not have their own copies.  Attribution to the appropriate sources
 (Hedin, 1991; Picone, 2002; Belitza, 1990) should be made.  This is not the
@@ -222,7 +231,7 @@ Note that the user must change the directory specified in the call to IRI90
 to correspond to the location of the ccir*.asc and ursi*.asc data files.
 
 glow.h
-~~~~~~
+------
 The header file ``glow.h`` is "included" in the routines that require the
 altitude, electron energy, and wavelength grid size parameters.  Execution
 time increases rapidly with size of the energy grid.  The default grid extends
@@ -235,7 +244,7 @@ the bottom of the altitude grid.  As for resolution, a rule of thumb is about
 four points per scale height.
 
 Sanity checks
-~~~~~~~~~~~~~
+-------------
 The ETRANS error code IERR and energy conservation ratio EFRAC
 should be checked for normal return.  IERR should equal zero; if it doesn't
 it means that the total inelastic cross section is near zero somewhere, which
@@ -245,7 +254,7 @@ It can get up to the 0.1-0.2 range in the twilight, which is not good, but at
 present unavoidable.
 
 Ne caveats
-~~~~~~~~~~
+----------
 Electron density calculations can be made by GCHEM below 200 km but not
 above where transport/diffusion effects become important.  Therefore, an
 electron density profile (such as from the NCAR TIE-GCM or from IRI) must be
@@ -266,7 +275,7 @@ KCHEM=1 (electrons and all ions except O+(2D,2P) provided) should be fairly
 reliable.
 
 XUV
-~~~
+---
 For daytime calculations, the parameter XUVFAC is provided to deal with the
 uncertainty concerning the solar spectrum from 18-250 A.  When the
 Hinteregger et al. [1981] model is employed, a reasonable value for XUVFAC is
@@ -282,21 +291,20 @@ solar spectrum input file must be equal to LMAX (specified in glow.h) and
 the wavelength ranges must correspond to those in ephoto_x*.dat.
 
 Low energy precipitation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The upper boundary of the electron transport calculation by ETRANS is
+------------------------
+The upper altitude boundary of the electron transport calculation by ETRANS is
 specified by the PHITOP array, which may contain a flux of auroral electrons,
 conjugate photoelectrons, or both.  In the program AUREXAMPLE, an initial
 electron density profile is obtained from IRI for the first call to GLOW,
 then it is replaced by the calculated profile below 200 km (and a constant
 value above 200 km), and GLOW is called again.  This isn't really necessary
 but it gives an improved estimate of the low-energy electron flux (which
-depends on the ambient electron density), since IRI isn't valid in the auroral
+depends on the ambient electron density), since IRI is not valid in the auroral
 regions.  For high-energy calculations this second call may safely be skipped.
-In any case, it is safest to put a floor on the electron density profile,
-e.g., ZE(J) > 100.
+In any case, it is safest to put a floor on the electron density profile, e.g., ZE(J) > 100.
 
 NO Density
-~~~~~~~~~~
+----------
 The example programs contain an estimate of NO density from the NOEM
 empirical model (Marsh et al., 2004), which is based on measurements by the
 SNOE satellite.  This can be important for the NO+/O2+ ratio in the lower
@@ -304,13 +312,13 @@ ionosphere and hence has a small effect on E-region electron density, but does
 not otherwise significantly affect the model.
 
 Electron Impact Cross-section
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
 Electron impact cross sections employed by the model can be obtained from
 common block CXSECT if necessary; just include a copy of this common block
 (from EXSECT) in the calling program.
 
 Bibliography
-------------
+============
 .. [1] Nagy, A. F., and P. M. Banks, Photoelectron fluxes in the ionosphere, J. Geophys. Res., 75, 6260, 1970.
 .. [2] Solomon, S. C., P. B. Hays, and V. J. Abreu, The auroral 6300A emission: Observations and modeling, J. Geophys. Res., 93, 9867, 1988.
 .. [3] Solomon, S. C., and V. J. Abreu, The 630 nm dayglow, J. Geophys. Res., 94, 6817, 1989.
