@@ -189,6 +189,7 @@ C Output section:
 C
       SZAD = SZA * 180. / PI
       DIPD = DIP * 180. / PI
+
       write (6,444) IDATE, UT, GLAT, GLONG, F107, F107A, AP
   444 FORMAT (' Date=',i5,' UT=',f6.0,' Lat=',f5.1,' Lon=',f6.1,
      >        ' F107=',f4.0,' F107A=',f4.0,' Ap=',f4.0)
@@ -207,7 +208,6 @@ C
         write (6,730) z(j),tez(j),totsi,(sion(i,j),i=1,3)
   730   format (1x, 0p, f5.1, 1p, 5e10.2)
       end do
-C
-C
-      STOP
-      END
+
+
+      END Program
