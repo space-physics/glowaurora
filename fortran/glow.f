@@ -125,13 +125,13 @@ C
 
       integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      &   i,iei,ist,j,n
-      real  UT, GLAT, GLONG, 
+      real  UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, 
+     >    SZA, DIP, EFRAC,
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -152,15 +152,15 @@ C
 C
       real ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
 C
-      Integer :: IFIRST=1
+!      Integer :: IFIRST=1
 C
 C
-C First call only: set up energy grid:
+C First call only: set up energy grid:  NOT NEEDED M.H. Aug 2015
 C
-      IF (IFIRST .EQ. 1) THEN
-        IFIRST = 0
-        CALL EGRID (ENER, DEL)
-      ENDIF
+!      IF (IFIRST .EQ. 1) THEN
+!        IFIRST = 0
+!        CALL EGRID (ENER, DEL)
+!      ENDIF
 C
 C
 C Find magnetic dip angle and solar zenith angle (radians):

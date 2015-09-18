@@ -28,10 +28,12 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      Program 
-!      use cglow,only: jmax,nmaj,nex,nw,nc,nst,nei,nf,nbins,lmax
+      Program glowprogram
+!      use cglow,only: jmax,nmaj,nex,nw,nc,nst,nei,nf,nbins,lmax,pi
       include 'cglow.h'
-C
+
+      real Z(JMAX)
+
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -55,11 +57,13 @@ C
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
 C
-      DIMENSION Z(JMAX), D(8), T(2), SW(25),
-     >          OUTF(11,JMAX), OARR(30)
+      real D(8), T(2), SW(25),
+     >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
 C
       LOGICAL JF(12)
-C
+      DATA SW/25*1./
+
+     ! 170 values for Z -> Jmax=170 in cglow.h
       DATA Z/     30., 31., 32., 33., 34., 35., 36., 37., 38., 39.,
      >            40., 41., 42., 43., 44., 45., 46., 47., 48., 49.,
      >            50., 51., 52., 53., 54., 55., 56., 57., 58., 59.,
@@ -77,8 +81,6 @@ C
      >           417.,428.,440.,453.,467.,482.,498.,515.,533.,551.,
      >           570.,590.,610.,630.,650.,670.,690.,710.,730.,750.,
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
-C
-      DATA SW/25*1./
 C
 C
 C Obtain input parameters:
@@ -108,7 +110,7 @@ C
 C
 C Generate auroral electron flux into PHITOP array:
 C
-      CALL MAXT (EF, EC, ENER, DEL, NBINS, ITAIL, FMONO, EMONO, PHITOP)
+      CALL MAXT (EF, EC, ENER, DEL, ITAIL, FMONO, EMONO, PHITOP)
 C
 C
 C Calculate local solar time:
@@ -118,13 +120,15 @@ C
       IF (STL .GT. 24.) STL = STL - 24.
 C
 C
-C Call MSIS-90 to get neutral densities and temperature:
+C Call MSIS to get neutral densities and temperature:
 C
         CALL TSELEC(SW)
-C
+
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
+          ! If altitude under 100km and O number density there < 1e7 cm^-3,
+          ! replace O density with O2 density there 
           IF (ZO(J) .LT. 1.E7 .AND. Z(J) .LT. 100.) ZO(J) = D(4)*1.E-7
           ZN2(J) = D(3)
           ZO2(J) = D(4)
@@ -149,13 +153,15 @@ C
       DO IJF=1,12
         JF(IJF) = .TRUE.
       END DO
+
       JF(5) = .FALSE.
+      JF(12) = .FALSE. !no disk output for iri90
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
       MMDD = -IDAY
       CALL IRI90(JF,JMAG,GLAT,GLONG,RZ12,MMDD,STL,Z,JMAX,
-     >           '/home/stans/mod/iri/',OUTF,OARR)
+     >           'iri/',OUTF,OARR)
       DO J=1,JMAX
         ZE(J) = OUTF(1,J) / 1.E6
         IF (ZE(J) .LT. 100.) ZE(J) = 100.
