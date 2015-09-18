@@ -208,25 +208,29 @@ C
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
 C
-C Output photoionization, electron impact ionization,
+C Output total energy deposition,
+C photoionization, electron impact ionization,
 C electron density, and ion densities:
 C
       write (6,690)
-  690 format ('   Z    Photoion   EIion    Ecalc     O+(2P)    ',
+  690 format ('   Z     Edep    Photoion   EIion    Ecalc     ',
+     >        'O+(2P)    '
      >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
 C    >        '     O        O2         N2        NO')
-      do 750 j=1,jmax
-        do 700 i=1,nmaj
+      do j=1,jmax
+        do i=1,nmaj
           tpi(i) = 0.
-          do 700 ns=1,nst
+          do ns=1,nst
             tpi(i) = tpi(i) + photoi(ns,i,j)
-  700     continue
+          end do
+        end do
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
-        write (6,730) z(j),totpi,totsi,ecalc(j),(zxden(i,j),i=1,7)
+        write (6,730) z(j),tez(j),totpi,totsi,ecalc(j),
+     >               (zxden(i,j),i=1,7)
 C    >                zo(j),zo2(j),zn2(j),zno(j)
   730   format (1x, 0p, f5.1, 1p, 14e10.2)
-  750 continue
+      end do
 C
 C
 C Output selected volume emission rates and column brightnesses:
@@ -241,4 +245,4 @@ C
 
 C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
 
-      END PROGRAM
+      END Program
