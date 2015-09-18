@@ -1,4 +1,5 @@
-C Example driver program for GLOW subroutine package - aurora version
+C Example driver program for GLOW subroutine package.
+C  aurora version
 C
 C Stan Solomon, 4/05, 12/14
 C
@@ -27,9 +28,8 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      PROGRAM AURORA
-
-!      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
+      Program glowprogram
+!      use cglow,only: jmax,nmaj,nex,nw,nc,nst,nei,nf,nbins,lmax,pi
       include 'cglow.h'
 
       real Z(JMAX)
@@ -61,8 +61,9 @@ C
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
 C
       LOGICAL JF(12)
-C
       DATA SW/25*1./
+      
+     ! 120 values for Z -> Jmax=120 in cglow.h
       DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
      >            90., 91., 92., 93., 94., 95., 96., 97., 98., 99.,
      >           100.,101.,102.,103.,104.,105.,106.,107.,108.,109.,
@@ -85,7 +86,7 @@ C
 C Set other parameters and switches:
 C
       JLOCAL = 0
-      KCHEM=4
+      KCHEM = 4
       ISCALE = 1
       XUVFAC = 3.
       HLYBR = 0.
@@ -114,7 +115,7 @@ C
       IF (STL .GT. 24.) STL = STL - 24.
 C
 C
-C Call MSIS-2K to get neutral densities and temperature:
+C Call MSIS to get neutral densities and temperature:
 C
         CALL TSELEC(SW)
 
@@ -241,9 +242,7 @@ C
   790 format (1x, f5.1, 10f7.1)
       write (6,795)  (vcb(iw),iw=1,10)
   795 format (' VCB:',11f7.0)
-C
-C
+
 C     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
-C
-      STOP
-      END PROGRAM AURORA
+
+      END PROGRAM

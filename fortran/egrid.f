@@ -10,8 +10,10 @@
 !      use cglow,only: nbins
       implicit none
       include 'cglow.h'
-      Integer N
+! Args:
       Real, Intent(Out) :: ENER(Nbins), DEL(Nbins)
+! Local:
+      Integer N
 
       DO 20 N=1,NBINS
         IF (N .LE. 21) THEN

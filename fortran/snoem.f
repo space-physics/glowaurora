@@ -7,17 +7,14 @@
 
 ! Marsh et al., JGR, 109, A07301, doi:10.1029/2003JA010199, 2004.
 
-! Adapted by Stan Solomon, 5/14, from IDL and F90 code supplied by Dan Marsh. 
+! Adapted by Stan Solomon, 5/14, from IDL and F90 code supplied by Dan Marsh.
 
       subroutine snoem(doy, kp, f107, z, mlat, nozm)
 !      use cglow,only: pi
       implicit none
       include 'cglow.h'
 
-      real cosd, sind,thet
-      sind(thet) = sin(thet/180.*pi)
-      cosd(thet) = cos(thet*pi/180.)
-!Args:        
+!Args:
       integer,intent(in)   :: doy
       real,intent(in)  :: kp, f107
       real,intent(out) :: z(16), mlat(33), nozm(33,16)
@@ -28,8 +25,12 @@
       real m1, m2, m3     ! coefficients for first 3 eofs
       integer j, k, n
 
-!      integer :: ifirst=1  
-!      IFIRST MUST BE DISABLED OR UNINITIALIZED VALUES 
+      real cosd, sind,thet
+      sind(thet) = sin(thet/180.*pi)
+      cosd(thet) = cos(thet*pi/180.)
+
+!      integer :: ifirst=1
+!      IFIRST MUST BE DISABLED OR UNINITIALIZED VALUES
 !        MAY BE USED DEPENDING ON COMPILER (GFORTRAN/F2PY)
 
 !... read eof file
@@ -44,7 +45,7 @@
 !      endif
 
 !... calculate coefficients (m1 to m3) for eofs based on geophysical parameters
-!... eof1 - kp 
+!... eof1 - kp
 
       m1 =  kp * 0.689254 - 1.53366
 
@@ -54,28 +55,28 @@
 
       dec = 0.006918
      &    - 0.399912 * cosd(theta0)   + 0.070257 * sind(theta0)
-     &    - 0.006758 * cosd(2*theta0) + 0.000907 * sind(2*theta0) 
+     &    - 0.006758 * cosd(2*theta0) + 0.000907 * sind(2*theta0)
      &    - 0.002697 * cosd(3*theta0) + 0.001480 * sind(3*theta0)
 
       dec = dec * 180./pi
 
-      m2 = -0.31978 
-     $   + dec    * 0.097309 
+      m2 = -0.31978
+     $   + dec    * 0.097309
      $   + dec**2 * 0.00048979
      $   - dec**3 * 0.00010360
-      
-!... eof3 - f107 
 
-      m3 =  log10(f107) * 6.35777 - 13.8163 
+!... eof3 - f107
+
+      m3 =  log10(f107) * 6.35777 - 13.8163
 
 !... zonal mean distrib. is sum of mean and eofs
 
       do k=1,16
         do j=1,33
-          nozm(j,k) = no_mean(j,k) 
-     $              - m1 * eofs(j,k,1) 
-     $              + m2 * eofs(j,k,2) 
-     $              - m3 * eofs(j,k,3) 
+          nozm(j,k) = no_mean(j,k)
+     $              - m1 * eofs(j,k,1)
+     $              + m2 * eofs(j,k,2)
+     $              - m3 * eofs(j,k,3)
         end do
       end do
 

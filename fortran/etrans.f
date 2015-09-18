@@ -67,7 +67,7 @@ C
 ! *************************
 ! TODO using "implicit none" causes this file to give error with f2py/f2py3
 !constructing wrapper function "aurora"...
-!		  pyion,pyecalc,pypi,pysi,pyisr = aurora(z,pyidate,pyut,pyglat,pyglong,pyf107a,pyf107,pyf107p,pyap,pyphitop)
+!         pyion,pyecalc,pypi,pysi,pyisr = aurora(z,pyidate,pyut,pyglat,pyglong,pyf107a,pyf107,pyf107p,pyap,pyphitop)
 !{}
 !analyzevars: charselector={'len': '4'} unhandled.analyzevars: charselector={'len': '4'} unhandled.analyzevars: charselector={'len': '4'} unhandled.getctype: No C-type found in "{}", assuming void.
 !
@@ -78,13 +78,13 @@ C
 
       integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
-      real   UT, GLAT, GLONG, 
+      real   UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, 
+     >    SZA, DIP, EFRAC,
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -135,7 +135,7 @@ C
 
       integer :: IFIRST=1
       real,parameter :: AVMU=0.5
-      
+
       real potion(nmaj)
       DATA POTION/16.,16.,18./
 
@@ -463,8 +463,7 @@ C
       PHIOUT = PHIOUT / RMUSIN
       EOUT = EDEP + PHIOUT
       EFRAC = (EOUT - EIN) / EIN
-C
-C
+
       END SUBROUTINE ETRANS
 C
 C
@@ -477,8 +476,9 @@ C
 !      use cglow,only: jmax
       Implicit None
       include 'cglow.h'
-
+!Args:
       Real, Intent(In) :: FLUXJ
+!Local:
       REAL K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX),fac,dem
       real,dimension(jmax) :: alpha, beta, gama, psi, delz, del2, dela,
      > delp,delm,dels,den
