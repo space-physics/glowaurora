@@ -33,6 +33,10 @@ C
       include 'cglow.h'
 
       real Z(JMAX)
+      real D(8), T(2), SW(25), OUTF(11,JMAX), OARR(30), TPI(NMAJ)
+
+      LOGICAL JF(12)
+      DATA SW/25*1./
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -56,14 +60,8 @@ C
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
-C
-      real D(8), T(2), SW(25),
-     >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
-C
-      LOGICAL JF(12)
-      DATA SW/25*1./
-      
-     ! 120 values for Z -> Jmax=120 in cglow.h
+
+      ! 120 values for Z -> Jmax=120 in cglow.h
       DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
      >            90., 91., 92., 93., 94., 95., 96., 97., 98., 99.,
      >           100.,101.,102.,103.,104.,105.,106.,107.,108.,109.,
@@ -76,10 +74,8 @@ C
      >           417.,428.,440.,453.,467.,482.,498.,515.,533.,551.,
      >           570.,590.,610.,630.,650.,670.,690.,710.,730.,750.,
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
-C
-C
-C Obtain input parameters:
-C
+
+C Obtain input parameters from stdin:
       read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
 C
 C
