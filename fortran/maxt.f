@@ -28,12 +28,13 @@
       include 'cglow.h'
 !Args:
       Real,Intent(Out) :: phi(NBINS)
-      Real, Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS), 
+      Real, Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS),
      & FMONO,EMONO
       Integer,Intent(In):: ITAIL
 !Local:
       Real B,TE, PHIMAX, ERAT
       Integer K
+
       TE = 0.
 C
       IF (EZER < 500.) THEN

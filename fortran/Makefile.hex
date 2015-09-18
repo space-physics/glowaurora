@@ -1,8 +1,7 @@
-# USAGE: 
+# USAGE:
 # make -s FC=<compiler>
 # EXAMPLE:
-# make -s FC=gfortran 
-
+# make -s FC=gfortran
 
 EXEC=auroraexample
 
@@ -12,14 +11,7 @@ ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
-FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons 
-#-fdefault-real-8 SEG FAULT
-# -ffpe-trap=precision -g
-#FFLAGS = -g $(DBGFLAGS) 
-
-DBGFLAGS = -debug full -traceback
-DBGFLAGS += -check bounds -check format -check output_conversion -check pointers -check uninit
-DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
+FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons
 
 .SUFFIXES: .o .F .F90 .f90 .f .mod
 
@@ -34,7 +26,7 @@ DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
 #
 # Sources (in order of dependency):
 #
-SOURCES = egrid.f ephoto.f maxt.f rcolum.f etrans.f exsect.f fieldm.f vquart.f gchem.f geomag.f solzen.f glow.f iri90.f nrlmsise00.f qback.f rout.f snoem.f snoemint.f ssflux.f aurexample.f 
+SOURCES = egrid.f ephoto.f maxt.f rcolum.f etrans.f exsect.f fieldm.f vquart.f gchem.f geomag.f solzen.f glow.f iri90.f nrlmsise00.f qback.f rout.f snoem.f snoemint.f ssflux.f hexexample.f
 
 OBJS := $(addsuffix .o, $(basename $(SOURCES)))
 

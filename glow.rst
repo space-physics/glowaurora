@@ -212,6 +212,15 @@ NEI         number of states produced by electron impact
 NF          (obsolete)
 ==========  =============
 
+Additional quantites (have not verified definitions M.H. Aug 2015)
+
+==========  =============
+Variable    Description
+==========  =============
+TeFlux      Total electron flux ?
+
+==========  =============
+
 Notes:
 ======
 
