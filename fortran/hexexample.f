@@ -33,6 +33,10 @@ C
       include 'cglow.h'
 
       real Z(JMAX)
+      real D(8), T(2), SW(25), OUTF(11,JMAX), OARR(30), TPI(NMAJ)
+
+      LOGICAL JF(12)
+      DATA SW/25*1./
 
       COMMON /CGLOW/
      >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
@@ -56,14 +60,8 @@ C
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      >                IIMAXX(NBINS)
-C
-      real D(8), T(2), SW(25),
-     >          OUTF(11,JMAX), OARR(30), TPI(NMAJ)
-C
-      LOGICAL JF(12)
-      DATA SW/25*1./
 
-     ! 170 values for Z -> Jmax=170 in cglow.h
+      ! 170 values for Z -> Jmax=170 in cglow.h
       DATA Z/     30., 31., 32., 33., 34., 35., 36., 37., 38., 39.,
      >            40., 41., 42., 43., 44., 45., 46., 47., 48., 49.,
      >            50., 51., 52., 53., 54., 55., 56., 57., 58., 59.,
@@ -81,10 +79,8 @@ C
      >           417.,428.,440.,453.,467.,482.,498.,515.,533.,551.,
      >           570.,590.,610.,630.,650.,670.,690.,710.,730.,750.,
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
-C
-C
-C Obtain input parameters:
-C
+
+C Obtain input parameters from stdin:
       read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
 C
 C
@@ -128,7 +124,7 @@ C
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
           ! If altitude under 100km and O number density there < 1e7 cm^-3,
-          ! replace O density with O2 density there 
+          ! replace O density with O2 density there
           IF (ZO(J) .LT. 1.E7 .AND. Z(J) .LT. 100.) ZO(J) = D(4)*1.E-7
           ZN2(J) = D(3)
           ZO2(J) = D(4)
@@ -201,7 +197,7 @@ C
      >        ' Ec=',F6.3,' Ie=',I1)
 C
 C
-C Output total energy deposition, and electron impact ionization rates:` 
+C Output total energy deposition, and electron impact ionization rates:`
 C
       write (6,690)
   690 format ('   Z     Edep      Itot     I(O)      I(O2)',

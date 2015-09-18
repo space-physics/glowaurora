@@ -3,7 +3,7 @@
 # EXAMPLE:
 # make -s FC=gfortran
 
-EXEC=auroraexample
+EXEC=hexexample
 
 ############################################################
 # use gfortran by default
