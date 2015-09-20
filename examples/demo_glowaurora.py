@@ -14,7 +14,7 @@ def E0aurora(dt,glatlon,flux,e0,f107a,f107,f107p,ap):
 
     ver,photIon,isr,phitop,zceta = runglowaurora(flux,e0,
                                               dt,glat,glon,
-                                              f107a,f107,f107p,ap,mass=48)
+                                              f107a,f107,f107p,ap)
 
     plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon)
 
