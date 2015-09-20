@@ -180,12 +180,13 @@ C
 C
 C Pack major species density array:
 C
-      DO 100 J=1,JMAX
+      DO J=1,JMAX
         ZMAJ(1,J) = ZO(J)
         ZMAJ(2,J) = ZO2(J)
         ZMAJ(3,J) = ZN2(J)
-  100 CONTINUE
-C
+        if (isnan(zmaj(1,j)).or.isnan(zmaj(2,j)) .or. isnan(zmaj(3,j)))
+     >  stop 'glow.f: NaN in ZMAJ'
+      End do
 C
 C Calculate slant path column densities of major species in the
 C direction of the sun:

@@ -76,6 +76,8 @@ C
 !      implicit none
       INCLUDE 'cglow.h'
 
+      logical isfinite
+
       integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
       real   UT, GLAT, GLONG,
@@ -170,9 +172,9 @@ C
         EHEAT(I) = 0.0
         EPROD(I) = 0.0
         SECION(I) = 0.0
-        DO 200 N = 1, NMAJ
+        DO N = 1, NMAJ
           SION(N,I) = 0.0
-  200   CONTINUE
+        End Do
   300 CONTINUE
 C
       DO 500 JJ = 1, NBINS
@@ -186,6 +188,7 @@ C Divide downward flux at top of atmos. by average pitch angle cosine:
 C
       DO 120 J=1,NBINS
         PHIINF(J) = PHITOP(J) / AVMU
+        if (isnan(phiinf(j))) stop 'etrans: NaN in PhiInf'
   120 CONTINUE
 C
 C
@@ -281,7 +284,7 @@ C
 C
 C Solve parabolic d.e. by Crank-Nicholson method to find downward flux:
 C
-      DO 880 I = 2, JMAX-1
+      DO I = 2, JMAX-1
         PSI(I) = 1.
         ALPHA(I) = (T1(I-1) - T1(I+1)) / (DEL2(I) * T1(I))
         BETA(I) = T2(I) * (T1(I+1) - T1(I-1)) / (T1(I) * DEL2(I))
@@ -297,7 +300,16 @@ C
      >                - (PRODWN(I+1,J) - PRODWN(I-1,J))
      >                   /PRODWN(I,J)/DEL2(I))
      >             - PRODUP(I,J) * T1(I)
-  880 CONTINUE
+        if (.not.isfinite(GAMA(I))) then
+         print *,'GAMA PRODWNn1 PRODWN PRODWNp1 PRODUP',
+     >     ' PRODn1 PROD PRODp1 T1 T2 ALPHA DEL2',
+     >     GAMA(I),PRODWN(I-1,J),PRODWN(I,J),PRODWN(I+1,J),
+     >     PRODUP(I,J),PROD(I-1),PROD(I),PROD(I+1),
+     >     T1(I),T2(I),ALPHA(I),
+     >     DEL2(I)
+         stop 'etran: non-finite GAMA'
+        end if
+      End DO
 C
       IF (ABS(BETA(2)) .LT. 1.E-20) THEN
         BETA(2) = 1.E-20
@@ -307,9 +319,10 @@ C
       DEN(1) = PHIDWN(2)
       FLUXJ = PHIINF(J)
       CALL IMPIT(FLUXJ)
-      DO 890 I = 1, JMAX
+      DO I = 1, JMAX
         PHIDWN(I) = DEN(I)
-  890 CONTINUE
+        if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN (jlocal != 1)'
+      End Do
 C
 C
 C Apply lower boundary condition: PHIUP=PHIDWN.  Should be nearly zero.
@@ -322,34 +335,38 @@ C
         IF (TAUE(I) .GT. 60.) TAUE(I)=60.
         EXPT2(I) = EXP(-TAUE(I))
   900 CONTINUE
-      DO 905 I=2,JMAX
-        PHIUP(I) = R1(I) + (PHIUP(I-1)-R1(I)) * EXPT2(I)
-  905 CONTINUE
-      GO TO 930
+      DO I=2,JMAX
+        PHIUP(I) = R1(I) + (PHIUP(I-1)-R1(I)) * EXPT2(I)        
+        if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP  (jlocal != 1)'
+      End DO
+
+      GOTO 930
 C
 C
-C Local calculation only:
+C Local calculation only  (if jlocal=1):
 C
   910 CONTINUE
-      DO 920 I = 1, JMAX
+      DO I = 1, JMAX
         IF (T2(I) .LE. T1(I)) THEN
           IERR = 1
           T2(I) = T1(I) * 1.0001
         ENDIF
         PHIUP(I) = (PROD(I)/2.0 + PRODUP(I,J)) / (T2(I) - T1(I))
         PHIDWN(I) = (PROD(I)/2.0 + PRODWN(I,J)) / (T2(I) - T1(I))
-  920 CONTINUE
+        if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP  (jlocal=1)'
+        if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN (jlocal=1)'
+      End Do
 C
-  930 CONTINUE
+  930 CONTINUE  ! if jlocal != 1
 C
 C
 C Multiply fluxes by average pitch angle cosine and put in arrays,
 C and calculate outgoing electron energy flux for conservation check:
 C
-      DO 940 I=1,JMAX
+      DO I=1,JMAX
         UFLX(J,I) = PHIUP(I) * AVMU
         DFLX(J,I) = PHIDWN(I) * AVMU
-  940 CONTINUE
+      End do
 C
       PHIOUT = PHIOUT + PHIUP(JMAX) * DEL(J) * ENER(J)
 C
@@ -414,7 +431,16 @@ C
         DO 1080 N = 1, NMAJ
           DO 1070 I = 1, JMAX
             SECP(N,I) = SEC(N,K,J) * ZMAJ(N,I) * (PHIUP(I) + PHIDWN(I))
+!            if (isnan(sec(n,k,j))) stop 'etrans: NaN in SEC'
+!            if (isnan(zmaj(n,i))) stop 'etrans: NaN in ZMAJ'
+!            if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP'
+!            if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN'
+            if (isnan(secp(n,i))) stop 'etrans: NaN in SECP'
             SION(N,I) = SION(N,I) + SECP(N,I) * DEL(K)
+            
+            if (isnan(sion(n,i))) 
+     >        stop 'etrans: NaN in impact ionization SION'
+
             SECION(I) = SECION(I) + SECP(N,I) * DEL(K)
             PRODUP(I,K) = PRODUP(I,K) + (SECP(N,I)*.5*RMUSIN)
             PRODWN(I,K) = PRODWN(I,K) + (SECP(N,I)*.5*RMUSIN)
@@ -478,33 +504,72 @@ C
 !Args:
       Real, Intent(In) :: FLUXJ
 !Local:
-      REAL K(JMAX), L(JMAX), A(JMAX), B(JMAX), C(JMAX), D(JMAX),fac,dem
+      logical isfinite
+      Real fac,dem
       real,dimension(jmax) :: alpha, beta, gama, psi, delz, del2, dela,
-     > delp,delm,dels,den
+     > delp,delm,dels,den,
+     > K, L, A, B, C, D
       Integer i,i1,jk,kk
 
       COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI, DELZ, DEL2, DELA, DELP,
      >                DELM, DELS, DEN, FAC
 C
       I1 = JMAX - 1
-      DO 10 I = 1, I1
+
+      DO I = 1, I1
         A(I) = PSI(I) / DELP(I) + ALPHA(I) / DEL2(I)
         B(I) = -2. * PSI(I) / DELS(I) + BETA(I)
         C(I) = PSI(I) / DELM(I) - ALPHA(I) / DEL2(I)
         D(I) = GAMA(I)
-   10 CONTINUE
+        if (isnan(c(i))) stop 'etrans:impit NaN in C(I)'
+        if (isnan(d(i))) stop 'etrans:impit NaN in D(I)'
+      End Do
+
       K(2) = (D(2) - C(2)*DEN(1)) / B(2)
       L(2) = A(2) / B(2)
-      DO 20 I = 3, I1
+      if (.not.isfinite(k(2))) then
+         print *,'K(2) D(2) C(2) DEN(1) B(2)',K(2),D(2),C(2),DEN(1),B(2)
+         stop 'etrans:impit non-finite K(2)'
+      end if
+!      if (isnan(k(2))) stop 'etrans:impit NaN in K(2)'
+
+      DO I = 3, I1
         DEM = B(I) - C(I) * L(I-1)
+        if (isnan(dem)) stop 'etrans:impit NaN in DEM'
         K(I) = (D(I) - C(I)*K(I-1)) / DEM
         L(I) = A(I) / DEM
-   20 CONTINUE
+
+        if (isnan(K(i))) then
+         print *,k
+         stop'etrans:impit NaN in K(i)'
+        end if
+!        if (isnan(L(i))) stop'etrans:impit NaN in L(i)'
+      End DO   
+
       DEN(I1) = (K(I1) - L(I1)*FLUXJ) / (1. + L(I1)*FAC)
+!      if (isnan(K(i1))) stop'etrans:impit NaN in K(i1)'
+!      if (isnan(L(i1))) stop'etrans:impit NaN in L(i1)'
+      if (isnan(den(i1))) stop 'etrans:impit: NaN in DEN(I1)'
       DEN(JMAX) = DEN(I1)
-      DO 30 KK = 1, JMAX-3
+      
+      Do KK = 1, JMAX-3
         JK = I1 - KK
         DEN(JK) = K(JK) - L(JK) * DEN(JK + 1)
-   30 CONTINUE
+        if (isnan(den(jk))) stop 'etrans:impit: NaN in DEN'
+      End Do
 
       END Subroutine IMPIT
+
+
+      logical Function isfinite(x)
+      implicit none
+
+      real,intent(in) :: x
+
+      if (abs(x) <= huge(x)) then
+        isfinite = .true.
+      else
+        isfinite = .false.
+      end if
+
+      end function isfinite
