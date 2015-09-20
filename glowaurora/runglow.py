@@ -58,11 +58,11 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 
     return ver,photIon,isrparam,phitop,zceta
 #%% plot
-def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
+def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
 #%% incident flux at top of ionosphere
     ax = figure().gca()
     ax.plot(phitop.index,phitop['diffnumflux'])
-    ax.set_title('Incident Flux',fontsize='x-large')
+    ax.set_title('Incident Flux for $E_0={}$'.format(E0),fontsize='x-large')
     ax.set_xlabel('Beam Energy [eV]',fontsize='large')
     ax.set_ylabel('Flux',fontsize='large')
     ax.set_xscale('log')
@@ -76,7 +76,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
 
     ax = axs[0]
     ax.plot(ver.values,ver.index)
-    ax.set_xlabel('VER',fontsize='large')
+    ax.set_xlabel('VER for $E_0={}$'.format(E0),fontsize='large')
     ax.set_ylabel('altitude [km]',fontsize='large')
     ax.set_ylim(top=ver.index[-1],bottom=ver.index[0])
     ax.set_xscale('log')
@@ -90,7 +90,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_xscale('log')
     ax.set_xlim(left=1e-1)
     ax.legend(photIon.columns[:2])
-    ax.set_title('Photo and e$^-$ impact ionization',fontsize='x-large')
+    ax.set_title('Photo and e$^-$ impact ionization for $E_0={}$'.format(E0),fontsize='x-large')
 
     ax = axs[2]
     ax.semilogx(photIon[['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
@@ -99,13 +99,13 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_xscale('log')
     ax.set_xlim(left=1e-3)
     ax.legend(photIon.columns[2:])
-    ax.set_title('Electron and Ion Densities',fontsize='x-large')
+    ax.set_title('Electron and Ion Densities for $E_0={}$'.format(E0),fontsize='x-large')
 
     ax = axs[3]
     ax.semilogx(isr[['Te','Ti']], isr.index)
     ax.set_xlabel('Temperature [K]',fontsize='large')
     ax.legend(isr.columns[1:])
-    ax.set_title('Particle Temperature',fontsize='x-large')
+    ax.set_title('Particle Temperature for $E_0={}$'.format(E0),fontsize='x-large')
 
     for a in axs:
         a.grid(True)
@@ -124,7 +124,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_ylim(top=ver.index[-1],bottom=ver.index[0])
     ax.set_xlabel('Energy Deposited',fontsize='large')
     ax.set_ylabel('Altitude [km]',fontsize='large')
-    ax.set_title('Total Energy Depostiion',fontsize='x-large')
+    ax.set_title('Total Energy Depostiion for $E_0={}$'.format(E0),fontsize='x-large')
 #%% e^- impact ionization rates from ETRANS
     ax = axs[1]
     sion = glowfort.cglow.sion
@@ -133,7 +133,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_xscale('log')
     ax.set_xlim(left=1e-6)
     ax.set_xlabel('e$^-$ impact ioniz. rate',fontsize='large')
-    ax.set_title('electron impact ioniz. rates',fontsize='x-large')
+    ax.set_title('electron impact ioniz. rates for $E_0={}$'.format(E0),fontsize='x-large')
     #ax.legend(True)
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
@@ -141,5 +141,5 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax = figure().gca()
     for zc in rollaxis(zceta,1):
         ax.plot(ver.index,zc)
-    ax.set_xlabel('emission constituants',fontsize='large')
+    ax.set_xlabel('emission constituants for $E_0={}$'.format(E0),fontsize='large')
     #ax.legend(True)
