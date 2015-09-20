@@ -25,7 +25,7 @@
 ! aligned with k-shell boundaries at 23, 32, and 44 A from 18 to 44 nm,
 ! 10 A in width from 60 to 1050 A, and 50 A in width from 1050 to
 ! 1750 A with the exception of Lyman-alpha which has its own bin from
-! 1210 to 1220 A. 
+! 1210 to 1220 A.
 !
 ! Methods used:
 !   If ISCALE=0 the flux is scaled using parameterization methods based
@@ -118,7 +118,7 @@
 !      use cglow,only: lmax
       implicit none
       include 'cglow.h'
-!      save
+
 ! Args:
       integer,intent(in) :: iscale
       real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC,heiew
@@ -128,11 +128,11 @@
      >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX),p107,r1,r2
       integer l
       real,parameter :: epsil=1.0E-6
-      integer :: islast=-1
+!      integer :: islast=-1  !this didn't work right in f2py
 
 
 ! regression coefficients which reduce to solar min. spectrum:
-      real :: B1(NMAJ),B2(NMAJ) 
+      real :: B1(NMAJ),B2(NMAJ)
       DATA B1/1.0, 0.0138, 0.005/
       DATA B2/1.0, 0.59425, 0.3811/
 
@@ -143,14 +143,14 @@
 ! Hinteregger contrast ratio method:
 
       IF (iscale .eq. 0) then
-        if (islast .ne. iscale) then
+!        if (islast .ne. iscale) then
           open(unit=1,file='ssflux_hint.dat',status='old')
           read(1,*)
           do l=lmax,1,-1
             read(1,*) waves(l),wavel(l),rflux(l),scale1(l),scale2(l)
           enddo
           close(unit=1)
-         endif
+!         endif
 
         IF (HLYBR .GT. EPSIL) THEN
           R1 = HLYBR
@@ -175,14 +175,14 @@
 ! EUVAC Method:
 
       IF (iscale .eq. 1) then
-        if (islast .ne. iscale) then
+!        if (islast .ne. iscale) then
           open(unit=1,file='ssflux_euvac.dat',status='old')
           read(1,*)
           do l=lmax,1,-1
             read(1,*) waves(l),wavel(l),rflux(l),a(l)
           enddo
           close(unit=1)
-        endif
+!        endif
 
       P107 = (F107+F107A)/2.
         do l=1,lmax
@@ -197,14 +197,14 @@
 ! User-supplied data:
 
       if (iscale .eq. 2) then
-        if (islast .ne. iscale) then
+!        if (islast .ne. iscale) then
           open(unit=1,file='ssflux_user.dat',status='old')
           read(1,*)
           do l=lmax,1,-1
             read(1,*) waves(l),wavel(l),uflux(l)
           enddo
           close(unit=1)
-        endif
+!        endif
         do l=1,lmax
           sflux(l)=uflux(l)
         enddo
@@ -220,6 +220,6 @@
      >      SFLUX(L) = HLYA
       enddo
 
-      islast=iscale
+!      islast=iscale
 
       End SUBROUTINE SSFLUX
