@@ -33,7 +33,7 @@
       real  ZUS(nu), TNUS(nu),zcus(nm,nu)
       integer i,j, jg
 
-      real,external :: chap
+      real :: chap !function
 
       DATA ZUS/0.0, 1.5E6, 5.E6, 9.E6/
       DATA TNUS/288., 217., 271., 187./

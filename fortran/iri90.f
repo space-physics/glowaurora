@@ -1492,7 +1492,7 @@ C
 
       Real,Intent(In) :: H
 
-      Real,External :: TN,DTNDH
+      Real :: TN,DTNDH !functions
       Real XSM1,TEX,TLBD,SIG,dtdx,tnh
 C THIS FUNCTION ALONG WITH PROCEDURE REGFA1 ALLOWS TO FIND
 C THE  HEIGHT ABOVE WHICH TN BEGINS TO BE DIFFERENT FROM TI
@@ -1522,7 +1522,7 @@ c------------------------------------------------------------------
       Real, Intent(In) :: H,H0,n0, ST(*),XS(*)
       Integer, Intent(In) :: M,ID(*)
 
-      Real,External :: eptr
+      Real eptr
       Real aa,bb,xi,summ,sm,argmax
       integer i
 
@@ -2300,8 +2300,8 @@ C Interpolation low/middle modip with transition at 30 degrees modip
 
 C Interpolation low/high Rz12: linear from 10 to 100
        B0POL=SIPL(1)+(SIPL(2)-SIPL(1))/90.*(R-10.)
-       RETURN
-       END
+
+       END FUNCTION B0POL
 c
 C
 C *********************************************************************
@@ -2313,26 +2313,30 @@ C *********************************************************************
 C
 C
        REAL FUNCTION  RLAY ( X, XM, SC, HX )
+       implicit none
+       real,intent(in) :: x,xm,sc,hx
+       real y1,y1m,y2m,eptr,epst
 C -------------------------------------------------------- RAWER  LAYER
        Y1  = EPTR ( X , SC, HX )
        Y1M = EPTR ( XM, SC, HX )
        Y2M = EPST ( XM, SC, HX )
        RLAY = Y1 - Y1M - ( X - XM ) * Y2M / SC
-       RETURN
-       END
+       END function rlay
 C
 C
        REAL FUNCTION D1LAY ( X, XM, SC, HX )
+       implicit none
+       real,intent(in) :: x,xm,sc,hx
+       real epst
 C ------------------------------------------------------------ dLAY/dX
        D1LAY = ( EPST(X,SC,HX) - EPST(XM,SC,HX) ) /  SC
-       RETURN
-       END
+       END function d1lay
 C
 C
        REAL FUNCTION D2LAY ( X, SC, HX )
        Implicit None
        Real,Intent(In) :: X,SC,HX
-       Real,External :: Epla
+       Real Epla !function
 C ---------------------------------------------------------- d2LAY/dX2
        D2LAY = EPLA(X,SC,HX) /  (SC * SC)
        END FUNCTION D2LAY
@@ -2355,6 +2359,9 @@ C ------------------------------------------------------------ TRANSITION
 C
 C
        REAL FUNCTION EPST ( X, SC, HX )
+       implicit none
+       Real,intent(in) :: x,sc,hx
+       real d1,argmax
 C -------------------------------------------------------------- STEP
        COMMON/ARGEXP/ARGMAX
        D1 = ( X - HX ) / SC
@@ -2366,15 +2373,16 @@ C -------------------------------------------------------------- STEP
        ENDIF
        RETURN
 1       EPST = 1. / ( 1. + EXP( -D1 ))
-       RETURN
-       END
+       END FUNCTION epst
 C
 C
        REAL FUNCTION EPSTEP ( Y2, Y1, SC, HX, X)
+       implicit none
+       real,intent(in) :: y2,y1,sc,hx,x
+       real epst
 C---------------------------------------------- STEP FROM Y1 TO Y2
        EPSTEP = Y1 + ( Y2 - Y1 ) * EPST ( X, SC, HX)
-       RETURN
-       END
+       END function epstep
 C
 C
        Pure REAL FUNCTION EPLA ( X, SC, HX )
@@ -2394,20 +2402,25 @@ C ------------------------------------------------------------ PEAK
        END FUNCTION EPLA
 c
 c
-       FUNCTION XE2TO5(H,HMF2,NL,HX,SC,AMP)
+       real FUNCTION XE2TO5(H,HMF2,NL,HX,SC,AMP)
+       implicit none
 C----------------------------------------------------------------------
 C NORMALIZED ELECTRON DENSITY (N/NMF2) FOR THE MIDDLE IONOSPHERE FROM
 C HME TO HMF2 USING LAY-FUNCTIONS.
 C----------------------------------------------------------------------
-       DIMENSION       HX(NL),SC(NL),AMP(NL)
-       SUM = 1.0
+       Real,intent(in) :: H,HMF2, HX(NL),SC(NL),AMP(NL)
+       integer,intent(in) :: Nl
+
+       real ylay,zlay,summ,rlay
+       integer i    
+
+       SUMM = 1.0
        DO 1 I=1,NL
           YLAY = AMP(I) * RLAY( H, HMF2, SC(I), HX(I) )
           zlay=10.**ylay
-1          sum=sum*zlay
-       XE2TO5 = sum
-       RETURN
-       END
+1          summ=summ*zlay
+       XE2TO5 = summ
+       END FUNCTION XE2TO5
 C
 C
        REAL FUNCTION XEN(H,HMF2,XNMF2,HME,NL,HX,SC,AMP)

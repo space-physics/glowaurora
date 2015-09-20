@@ -6,7 +6,7 @@ code wrapping in Python by Michael Hirsch
 from __future__ import division,absolute_import
 from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
-from numpy import hstack,arange,append,array,rollaxis
+from numpy import hstack,asarray,rollaxis
 from os import chdir
 try:
     import seaborn
@@ -23,8 +23,19 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     chdir(glowpath)
     yd,utsec = datetime2yd(dt)[:2]
 
-    z = arange(80,110+1,1)
-    z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
+    z = range(80,110+1,1)
+    #z = list(range(30,110+1,1))
+    z += (
+         [111.5,113.,114.5,116.] +
+         list(range(118,150+2,2) + range(153,168+3,3) + range(172,180+4,4) +
+         range(185,205+5,5) + range(211,223+6,6) + range(230,244+7,7)      +
+         range(252,300+8,8) + range(309,345+9,9) + range(355,395+10,10)    +
+         range(406,428+11,11)) +
+         [440,453,467,482,498,515,533,551] +
+         list(range(570,950+20,20))
+         )
+
+    z = asarray(z)
 #%% (1) setup flux at top of ionosphere
     ener,dE = glowfort.egrid()
 

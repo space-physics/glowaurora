@@ -128,6 +128,10 @@ C
           ZRHO(J) = D(6)
           ZNS(J) = D(8)
           ZTN(J) = T(2)
+          if (isnan(zo(j)))  stop 'NaN in O+ density'
+          if (isnan(zn2(j))) stop 'NaN in N2+ density'
+          if (isnan(zo2(j))) stop 'NaN in O2+ density'
+          if (isnan(ztn(j))) stop 'NaN in Tn'
         END DO
 C
 C
@@ -166,6 +170,9 @@ C
         ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
         ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
         ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
+        if (isnan(ze(j))) stop 'NaN in Ne'
+        if (isnan(zti(j)))stop 'NaN in Ti'
+        if (isnan(zte(j)))stop 'NaN in Te'
       END DO
 C
 C
@@ -231,6 +238,12 @@ C
         end do
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
+
+        if (isnan(totpi)) stop 'NaN in photoionization'
+        if (isnan(totsi)) then
+         print *,'at altitude',z(j) 
+         stop 'NaN in impact ionization'
+        end if
 
         Pypi(j) = totpi
         Pysi(j) = totsi
