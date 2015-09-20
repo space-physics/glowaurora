@@ -1,4 +1,4 @@
-C Example driver program for GLOW subroutine package - aurora version
+C Subroutine callable by f2py Python
 C
 C Stan Solomon, 4/05, 12/14
 C
@@ -29,7 +29,7 @@ C NF      number of types of auroral fluxes
 C
       SUBROUTINE AURORA(Z,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
      &                  idate_, ut_, glat_, glong_, f107a_, f107_,
-     &                  f107p,ap,PyPhitop)
+     &                  PyPhitop)
 
 !      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
       implicit none
@@ -37,25 +37,19 @@ C
 
       Integer, Intent(In) :: idate_
       Real,Intent(In) :: Z(JMAX),ut_, glat_, glong_, f107a_, f107_,
-     &                  f107p, ap, PyPhitop(nbins,3)
+     &                  PyPhitop(nbins,3)
 ! it's 3, not nmaj
       Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
      & Pyecalc(jmax),Pypi(jmax),Pysi(jmax)
 
-      real D(8), T(2), SW(25),
-     >          OUTF(11,JMAX), OARR(30), TPI(NMAJ),dipd,emono,fmono,
-     > rz12,stl,szad,totpi,totsi
-      integer i,iday,ijf,itail,j,j200,jmag,mmdd,ns
-
-      LOGICAL JF(12)
-
-      DATA SW/25*1./
+      real  TPI(NMAJ),dipd,szad,totpi,totsi
+      integer i,j200,ns,j
 
       integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
 
       real UT, GLAT, GLONG,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    F107, F107A, hlybr, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
@@ -89,92 +83,7 @@ C
       idate=idate_; ut=ut_; glat=glat_; glong=glong_
       f107a=f107a_; f107=f107_
       ENER = PyPhitop(:,1); DEL=PyPhitop(:,2); PHITOP=PyPhitop(:,3)
-C
-C Obtain input parameters:
-C
-C     read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
-C
-C
-C Set other parameters and switches:
-C
-      JLOCAL = 0
-      KCHEM=4
-      ISCALE = 1
-      XUVFAC = 3.
-      HLYBR = 0.
-      FEXVIR = 0.
-      HLYA = 0.
-      HEIEW = 0.
-      ITAIL = 0
-      FMONO = 0.
-      EMONO = 0.
-C
-C Calculate local solar time:
-C
-      STL = (UT/240.+GLONG) / 15.
-      IF (STL .LT. 0.) STL = STL + 24.
-      IF (STL .GT. 24.) STL = STL - 24.
-C
-C
-C Call MSIS-2K to get neutral densities and temperature:
-C
-        CALL TSELEC(SW)
 
-        DO J=1,JMAX
-          CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
-          ZO(J) = D(2)
-          ZN2(J) = D(3)
-          ZO2(J) = D(4)
-          ZRHO(J) = D(6)
-          ZNS(J) = D(8)
-          ZTN(J) = T(2)
-        END DO
-C
-C
-C Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
-C Model (NOEM)
-C
-      CALL SNOEMINT(IDATE,GLAT,GLONG,F107,AP,Z,ZTN,ZNO)
-C
-C
-C Call International Reference Ionosphere-1990 subroutine to get
-C electron density and temperature and ion temperature:
-C
-C NOTE: the directory specified in the call to IRI90 must be changed
-C to the one where the ccirnn.asc and ursinn.asc files are.
-C
-      DO IJF=1,12
-        JF(IJF) = .TRUE.
-      END DO
-
-      JF(5) = .FALSE.
-!no disk output for iri90
-      JF(12) = .FALSE.
-      JMAG = 0
-      RZ12 = -F107A
-      IDAY = IDATE - IDATE/1000*1000
-      MMDD = -IDAY
-      CALL IRI90(JF,JMAG,GLAT,GLONG,RZ12,MMDD,STL,Z,JMAX,
-     >           'iri/',OUTF,OARR)
-      DO J=1,JMAX
-        ZE(J) = OUTF(1,J) / 1.E6
-        IF (ZE(J) .LT. 100.) ZE(J) = 100.
-        ZTI(J) = OUTF(3,J)
-        IF (ZTI(J) .LT. ZTN(J)) ZTI(J) = ZTN(J)
-        ZTE(J) = OUTF(4,J)
-        IF (ZTE(J) .LT. ZTN(J)) ZTE(J) = ZTN(J)
-        ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
-        ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
-        ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
-      END DO
-C
-C
-C Fill altitude array and initialize N(2D):
-C
-      DO J=1,JMAX
-        ZZ(J)   = Z(J) * 1.E5
-        ZND(J)  = 0.
-      END DO
 C
 C
 C Call GLOW to calculate ionized and excited species, airglow emission

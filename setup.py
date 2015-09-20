@@ -11,13 +11,15 @@ from glob import glob
 fortranfiles=['egrid.f','maxt.f','glow.f',
               'vquart.f','gchem.f','ephoto.f','solzen.f','rcolum.f',
               'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
-              'geomag.f','qback.f','fieldm.f','aurora_sub.f']
+              'geomag.f','qback.f','fieldm.f',
+              'nrlmsise00.f','iri90.f',
+              'aurora_sub.f']
 
 root='fortran'
 
 fortranpaths = [join(root,f) for f in fortranfiles]
 fortdata = glob(join(root,'*.dat'))
-#iridata = glob(join('iri','*.asc')) #in pyiri90
+iridata = glob(join('iri','*.asc')) #in pyiri90
 #%%
 with open('README.rst') as f:
 	long_description = f.read()
@@ -43,7 +45,7 @@ setup(name='glowaurora',
       include_package_data=True,
       ext_modules=ext,
       data_files=[('glowaurora',fortdata),
-#                  ('glowaurora/iri',iridata)
+                  ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
 
 	  install_requires=['msise00','pymap3d', 'histutils','pyiri90',
