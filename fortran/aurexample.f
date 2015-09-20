@@ -30,22 +30,27 @@ C NF      number of types of auroral fluxes
 C
       Program glowprogram
 !      use cglow,only: jmax,nmaj,nex,nw,nc,nst,nei,nf,nbins,lmax,pi
+      implicit none
       include 'cglow.h'
 
-      real Z(JMAX)
-      real D(8), T(2), SW(25), OUTF(11,JMAX), OARR(30), TPI(NMAJ)
+      real Z(JMAX),ap,f107p,ef,ec,emono,fmono
+      real D(8), T(2), SW(25), OUTF(11,JMAX), OARR(30), TPI(NMAJ),dipd,
+     > rz12,stl,szad,totpi,totsi
+      integer i,iday,ijf,j,j200,jmag,mmdd,ns,itail,iw
 
       LOGICAL JF(12)
       DATA SW/25*1./
 
-      COMMON /CGLOW/
-     >    IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
-     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+     & IIMAXX(NBINS)
+
+      real UT, GLAT, GLONG,
+     >    F107, F107A, hlybr, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
      >    ZTN(JMAX), ZTI(JMAX), ZTE(JMAX),
      >    PHITOP(NBINS), EFLUX(NF), EZERO(NF),
-     >    SZA, DIP, EFRAC, IERR,
+     >    SZA, DIP, EFRAC,
      >    ZMAJ(NMAJ,JMAX), ZCOL(NMAJ,JMAX),
      >    WAVE1(LMAX), WAVE2(LMAX), SFLUX(LMAX),
      >    ENER(NBINS), DEL(NBINS),
@@ -54,12 +59,20 @@ C
      >    QTI(JMAX), AURI(NMAJ,JMAX), PIA(NMAJ,JMAX), SION(NMAJ,JMAX),
      >    UFLX(NBINS,JMAX), DFLX(NBINS,JMAX), AGLW(NEI,NMAJ,JMAX),
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
-     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
-C
-      COMMON /CXSECT/ SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
+     >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW),
+     &   SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
-     >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
-     >                IIMAXX(NBINS)
+     >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS)
+
+      COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
+     >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
+     >    ZZ, ZO, ZN2, ZO2, ZNO, ZNS, ZND, ZRHO, ZE,
+     >    ZTN, ZTI, ZTE, PHITOP, EFLUX, EZERO, SZA, DIP, EFRAC, IERR,
+     >    ZMAJ, ZCOL, WAVE1, WAVE2, SFLUX, ENER, DEL, PESPEC, SESPEC,
+     >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
+     >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
+
+      COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       ! 120 values for Z -> Jmax=120 in cglow.h
       DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
@@ -207,16 +220,16 @@ C
       WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
-C
+!
 C Output total energy deposition,
 C photoionization, electron impact ionization,
 C electron density, and ion densities:
-C
+!
       write (6,690)
   690 format ('   Z     Edep    Photoion   EIion    Ecalc     ',
      >        'O+(2P)    '
      >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
-C    >        '     O        O2         N2        NO')
+!    >        '     O        O2         N2        NO')
       do j=1,jmax
         do i=1,nmaj
           tpi(i) = 0.
@@ -231,7 +244,7 @@ C    >        '     O        O2         N2        NO')
 C    >                zo(j),zo2(j),zn2(j),zno(j)
   730   format (1x, 0p, f5.1, 1p, 14e10.2)
       end do
-C
+
 C
 C Output selected volume emission rates and column brightnesses:
 C
