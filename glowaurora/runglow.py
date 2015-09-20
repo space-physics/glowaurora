@@ -78,7 +78,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.plot(ver.values,ver.index)
     ax.set_xlabel('VER for $E_0={}$'.format(E0),fontsize='large')
     ax.set_ylabel('altitude [km]',fontsize='large')
-    ax.set_ylim(top=ver.index[-1],bottom=ver.index[0])
+    ax.set_ylim(top=400,bottom=ver.index[0])
     ax.set_xscale('log')
     ax.set_xlim(left=1e-4)
     ax.legend(ver.columns)
@@ -89,6 +89,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.set_xlabel('ionization',fontsize='large')
     ax.set_xscale('log')
     ax.set_xlim(left=1e-1)
+    ax.set_ylim(top=400)
     ax.legend(photIon.columns[:2])
     ax.set_title('Photo and e$^-$ impact ionization for $E_0={}$'.format(E0),fontsize='x-large')
 
@@ -98,6 +99,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.set_xlabel('Density',fontsize='large')
     ax.set_xscale('log')
     ax.set_xlim(left=1e-3)
+    ax.set_ylim(top=400)
     ax.legend(photIon.columns[2:])
     ax.set_title('Electron and Ion Densities for $E_0={}$'.format(E0),fontsize='x-large')
 
@@ -105,6 +107,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.semilogx(isr[['Te','Ti']], isr.index)
     ax.set_xlabel('Temperature [K]',fontsize='large')
     ax.legend(isr.columns[1:])
+    ax.set_ylim(top=400)
     ax.set_title('Particle Temperature for $E_0={}$'.format(E0),fontsize='x-large')
 
     for a in axs:
