@@ -3,32 +3,89 @@
 Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
+from __future__ import division,absolute_import
 from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
 from numpy import hstack,arange,append,array,rollaxis
-from os import chdir
+from os import chdir,getcwd
 try:
     import seaborn
 except:
     pass
 #
 from histutils.fortrandates import datetime2yd
+from pyiri90.runiri90 import runiri
+from msise00.runmsis import rungtd1d
 import glowaurora
 from glowaurora import glowfort
-chdir(glowaurora.__path__[0])
+#
+glowpath=glowaurora.__path__[0]
 
-def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
+def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap,mass):
+    chdir(glowpath)
     yd,utsec = datetime2yd(dt)[:2]
-#%% temporarily use glow grid instead of our own
-    ener,dE = glowfort.egrid()
-    phitop = glowfort.maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
-    phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
-#%% glow model
     z = arange(80,110+1,1)
     z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
 
+    glowfort.cglow.zz = z*1e5
+    glowfort.cglow.znd[:]=0.
+
+# Set other parameters and switches:
+    glowfort.cglow.jlocal = 0
+    glowfort.cglow.kchem = 4
+    glowfort.cglow.iscale = 1
+    glowfort.cglow.xuvfac = 3.
+    glowfort.cglow.hlybr = 0.
+    glowfort.cglow.fexvir = 0.
+    glowfort.cglow.hlya = 0.
+    glowfort.cglow.heiew = 0.
+#%% (1) setup flux at top of ionosphere
+    ener,dE = glowfort.egrid() #assigned to COMMON in fortran
+
+    phitop = glowfort.maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
+
+    phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
+
+    glowfort.cglow.zz = z*1e5
+    glowfort.cglow.znd[:]=0.
+#%% (2) call MSIS
+    tselecopts = (1,)*25
+    dens,temp=rungtd1d(dt,z,glat,glon,f107a,f107,ap,mass,tselecopts)
+    glowfort.cglow.zo = dens['O']
+    glowfort.cglow.zn2 = dens['N2']
+    glowfort.cglow.zo2 = dens['O2']
+    glowfort.cglow.zrho = dens['Total']
+    glowfort.cglow.zns  = dens['N']
+    glowfort.cglow.ztn  = temp['heretemp']
+#%% (3) call snoem
+    """
+    Call SNOEMINT to obtain NO profile from the Nitric Oxide Empirical
+    Model (NOEM)
+    """
+    glowfort.cglow.zno = glowfort.snoemint(dt.strftime('%Y%j'),
+                               glat,glon,f107,ap,z,temp['heretemp'])
+#%% (4a) call iri-90
+    outf,oarr = runiri(dt,z,glat,glon,f107,f107a,ap,mass=48)
+    chdir(glowpath) #need this since iri90 changes path
+#%% (4b) store iri90 in COMMON blocks, after unit conversion
+    glowfort.cglow.ze = outf['ne']/1e6 # M-3 -> CM-3
+    glowfort.cglow.ze[glowfort.cglow.ze<100.] = 100.
+
+    glowfort.cglow.zti = outf['Ti']
+    i = glowfort.cglow.zti<glowfort.cglow.ztn
+    glowfort.cglow.zti[i] = glowfort.cglow.ztn[i]
+
+    glowfort.cglow.zte = outf['Te']
+    i = glowfort.cglow.zte<glowfort.cglow.ztn
+    glowfort.cglow.zte[i] = glowfort.cglow.ztn[i]
+
+    glowfort.cglow.zxden[2,:] = outf['nO+']/1e6
+    glowfort.cglow.zxden[5,:] = outf['nO2+']/1e6
+    glowfort.cglow.zxden[6,:] = outf['nNO+']/1e6
+#%% glow model
+
     ion,ecalc,photI,ImpI,isr = glowfort.aurora(z,yd,utsec,glat,glon%360,
-                                             f107a,f107,f107p,ap,phi)
+                                             f107a,f107,phi)
 #%% handle the outputs including common blocks
     zeta=glowfort.cglow.zeta.T #columns 11:20 are identically zero
 
@@ -46,8 +103,8 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
                          data=isr,
                          columns=['ne','Te','Ti'])
 
-    phitop = DataFrame(index=phi[:,0],
-                       data=phi[:,2],
+    phitop = DataFrame(index=phi[:,0], #eV
+                       data=phi[:,2],  #diffnumflux
                        columns=['diffnumflux'])
     zceta = glowfort.cglow.zceta.T
 
