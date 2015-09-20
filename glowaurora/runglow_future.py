@@ -7,7 +7,7 @@ from __future__ import division,absolute_import
 from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
 from numpy import hstack,arange,append,array,rollaxis
-from os import chdir,getcwd
+from os import chdir
 try:
     import seaborn
 except:
@@ -24,6 +24,7 @@ glowpath=glowaurora.__path__[0]
 def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap,mass):
     chdir(glowpath)
     yd,utsec = datetime2yd(dt)[:2]
+
     z = arange(80,110+1,1)
     z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
 
@@ -40,7 +41,7 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap,mass):
     glowfort.cglow.hlya = 0.
     glowfort.cglow.heiew = 0.
 #%% (1) setup flux at top of ionosphere
-    ener,dE = glowfort.egrid() #assigned to COMMON in fortran
+    ener,dE = glowfort.egrid()
 
     phitop = glowfort.maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
 
