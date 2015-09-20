@@ -426,8 +426,7 @@ C
 C
 C Bottom of Energy loop
 C
-C
-C
+
       DO 1250 I = 1, JMAX
         EHEAT(I) = EHEAT(I) / RMUSIN
  1250 CONTINUE
