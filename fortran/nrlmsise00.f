@@ -1,5 +1,6 @@
 C-----------------------------------------------------------------------
       SUBROUTINE GTD7(IYD,SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP,MASS,D,T)
+c        Implicit None
 C
 C     NRLMSISE-00
 C     -----------
@@ -19,8 +20,8 @@ C           their individual variations are not presently separable with
 C           the drag data used to define this model component.
 C
 C        SUBROUTINES FOR SPECIAL OUTPUTS:
-C        
-C        HIGH ALTITUDE DRAG: EFFECTIVE TOTAL MASS DENSITY 
+C
+C        HIGH ALTITUDE DRAG: EFFECTIVE TOTAL MASS DENSITY
 C        (SUBROUTINE GTD7D, OUTPUT D(6))
 C           For atmospheric drag calculations at altitudes above 500 km,
 C           call SUBROUTINE GTD7D to compute the "effective total mass
@@ -32,7 +33,7 @@ C          See subroutine GHP7 to specify outputs at a pressure level
 C          rather than at an altitude.
 C
 C        OUTPUT IN M-3 and KG/M3:   CALL METERS(.TRUE.)
-C 
+C
 C     INPUT VARIABLES:
 C        IYD - YEAR AND DAY AS YYDDD (day of year from 1 to 365 (or 366))
 C              (Year ignored in current model)
@@ -58,9 +59,9 @@ C        MASS - MASS NUMBER (ONLY DENSITY FOR SELECTED GAS IS
 C                 CALCULATED.  MASS 0 IS TEMPERATURE.  MASS 48 FOR ALL.
 C                 MASS 17 IS Anomalous O ONLY.)
 C
-C     NOTES ON INPUT VARIABLES: 
+C     NOTES ON INPUT VARIABLES:
 C        UT, Local Time, and Longitude are used independently in the
-C        model and are not of equal importance for every situation.  
+C        model and are not of equal importance for every situation.
 C        For the most physically realistic calculation these three
 C        variables should be consistent (STL=SEC/3600+GLONG/15).
 C        The Equation of Time departures from the above formula
@@ -82,7 +83,7 @@ C        D(1) - HE NUMBER DENSITY(CM-3)
 C        D(2) - O NUMBER DENSITY(CM-3)
 C        D(3) - N2 NUMBER DENSITY(CM-3)
 C        D(4) - O2 NUMBER DENSITY(CM-3)
-C        D(5) - AR NUMBER DENSITY(CM-3)                       
+C        D(5) - AR NUMBER DENSITY(CM-3)
 C        D(6) - TOTAL MASS DENSITY(GM/CM3)
 C        D(7) - H NUMBER DENSITY(CM-3)
 C        D(8) - N NUMBER DENSITY(CM-3)
@@ -91,7 +92,7 @@ C        T(1) - EXOSPHERIC TEMPERATURE
 C        T(2) - TEMPERATURE AT ALT
 C
 C     NOTES ON OUTPUT VARIABLES:
-C        TO GET OUTPUT IN M-3 and KG/M3:   CALL METERS(.TRUE.) 
+C        TO GET OUTPUT IN M-3 and KG/M3:   CALL METERS(.TRUE.)
 C
 C        O, H, and N are set to zero below 72.5 km
 C
@@ -99,7 +100,7 @@ C        T(1), Exospheric temperature, is set to global average for
 C        altitudes below 120 km. The 120 km gradient is left at global
 C        average value for altitudes below 72 km.
 C
-C        D(6), TOTAL MASS DENSITY, is NOT the same for subroutines GTD7 
+C        D(6), TOTAL MASS DENSITY, is NOT the same for subroutines GTD7
 C        and GTD7D
 C
 C          SUBROUTINE GTD7 -- D(6) is the sum of the mass densities of the
@@ -110,11 +111,11 @@ C
 C          SUBROUTINE GTD7D -- D(6) is the "effective total mass density
 C          for drag" and is the sum of the mass densities of all species
 C          in this model, INCLUDING anomalous oxygen.
-C        
+C
 C     SWITCHES: The following is for test and special purposes:
-C          
+C
 C        TO TURN ON AND OFF PARTICULAR VARIATIONS CALL TSELEC(SW),
-C        WHERE SW IS A 25 ELEMENT ARRAY CONTAINING 0. FOR OFF, 1. 
+C        WHERE SW IS A 25 ELEMENT ARRAY CONTAINING 0. FOR OFF, 1.
 C        FOR ON, OR 2. FOR MAIN EFFECTS OFF BUT CROSS TERMS ON
 C        FOR THE FOLLOWING VARIATIONS
 C               1 - F10.7 EFFECT ON MEAN  2 - TIME INDEPENDENT
@@ -132,7 +133,14 @@ C              22 - ALL TN3 VAR           23 - TURBO SCALE HEIGHT VAR
 C
 C        To get current values of SW: CALL TRETRV(SW)
 C
-      DIMENSION D(9),T(2),AP(7),DS(9),TS(2)
+      Real,Intent(OUT):: D(9), T(2)
+      Real,Intent(In) :: SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP(7)
+      Integer,Intent(IN)::IYD,MASS
+
+      CHARACTER(len=4):: ISDATE(3),ISTIME(2),NAME(2),
+     & ISD(3),IST(2),NAM(2)
+
+      Real DS(9),TS(2)
       DIMENSION ZN3(5),ZN2(4),SV(25)
       COMMON/GTS3C/TLB,S,DB04,DB16,DB28,DB32,DB40,DB48,DB01,ZA,T0,Z0
      & ,G0,RL,DD,DB14,TR12
@@ -140,8 +148,8 @@ C
       COMMON/LOWER7/PTM(10),PDM(10,8)
       COMMON/PARM7/PT(150),PD(150,9),PS(150),PDL(25,2),PTL(100,4),
      $ PMA(100,10),SAM(100)
-      COMMON/DATIM7/ISD(3),IST(2),NAM(2)
-      COMMON/DATIME/ISDATE(3),ISTIME(2),NAME(2)
+      COMMON/DATIM7/ISD,IST,NAM
+      COMMON/DATIME/ISDATE,ISTIME,NAME
       COMMON/CSW/SW(25),ISW,SWC(25)
       COMMON/MAVG7/PAVGM(10)
       COMMON/DMIX/DM04,DM16,DM28,DM32,DM40,DM01,DM14
@@ -153,9 +161,6 @@ C
       DATA MN2/4/,ZN2/72.5,55.,45.,32.5/
       DATA ZMIX/62.5/,ALAST/99999./,MSSL/-999/
       DATA SV/25*1./
-C     write(6,*) 'inside gtd7'
-c     write(6,*) IYD,SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP,MASS,D,T
-C     write(6,*) f107a,f107
       IF(ISW.NE.64999) CALL TSELEC(SV)
 C      Put identification data into common/datime/
       DO 1 I=1,3
@@ -176,7 +181,7 @@ C
       XMM=PDM(5,3)
 C
 C       THERMOSPHERE/MESOSPHERE (above ZN2(1))
-      ALTT=AMAX1(ALT,ZN2(1))
+      ALTT=MAX(ALT,ZN2(1))
       MSS=MASS
 C       Only calculate N2 in thermosphere if alt in mixed region
       IF(ALT.LT.ZMIX.AND.MASS.GT.0) MSS=28
@@ -247,7 +252,7 @@ C      ***** HE DENSITY ****
 C      **** O DENSITY ****
         D(2)=0
         D(9)=0
-  216   CONTINUE
+        CONTINUE
 C      ***** O2 DENSITY ****
         D(4)=0
         IF(MASS.NE.32.AND.MASS.NE.48) GOTO 232
@@ -269,14 +274,14 @@ C       TOTAL MASS DENSITY
 C
         IF(MASS.EQ.48) THEN
          D(6) = 1.66E-24*(4.*D(1)+16.*D(2)+28.*D(3)+32.*D(4)+40.*D(5)+
-     &       D(7)+14.*D(8))  
+     &       D(7)+14.*D(8))
          IF(IMR.EQ.1) D(6)=D(6)/1000.
          ENDIF
          T(2)=TZ
    10 CONTINUE
       GOTO 90
    50 CONTINUE
-      DD=DENSM(ALT,1.,0.,TZ,MN3,ZN3,TN3,TGN3,MN2,ZN2,TN2,TGN2)                
+      DD=DENSM(ALT,1.,0.,TZ,MN3,ZN3,TN3,TGN3,MN2,ZN2,TN2,TGN2)
       T(2)=TZ
    90 CONTINUE
       ALAST=ALT
@@ -284,14 +289,15 @@ C
       END
 C-----------------------------------------------------------------------
       SUBROUTINE GTD7D(IYD,SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP,MASS,
-     $ D,T)
+     & D,T)
+      Implicit None
 C
 C     NRLMSISE-00
 C     -----------
 C        This subroutine provides Effective Total Mass Density for
 C        output D(6) which includes contributions from "anomalous
 C        oxygen" which can affect satellite drag above 500 km.  This
-C        subroutine is part of the distribution package for the 
+C        subroutine is part of the distribution package for the
 C        Neutral Atmosphere Empirical Model from the surface to lower
 C        exosphere.  See subroutine GTD7 for more extensive comments.
 C
@@ -320,9 +326,9 @@ C        MASS - MASS NUMBER (ONLY DENSITY FOR SELECTED GAS IS
 C                 CALCULATED.  MASS 0 IS TEMPERATURE.  MASS 48 FOR ALL.
 C                 MASS 17 IS Anomalous O ONLY.)
 C
-C     NOTES ON INPUT VARIABLES: 
+C     NOTES ON INPUT VARIABLES:
 C        UT, Local Time, and Longitude are used independently in the
-C        model and are not of equal importance for every situation.  
+C        model and are not of equal importance for every situation.
 C        For the most physically realistic calculation these three
 C        variables should be consistent (STL=SEC/3600+GLONG/15).
 C        The Equation of Time departures from the above formula
@@ -338,26 +344,29 @@ C        D(1) - HE NUMBER DENSITY(CM-3)
 C        D(2) - O NUMBER DENSITY(CM-3)
 C        D(3) - N2 NUMBER DENSITY(CM-3)
 C        D(4) - O2 NUMBER DENSITY(CM-3)
-C        D(5) - AR NUMBER DENSITY(CM-3)                       
+C        D(5) - AR NUMBER DENSITY(CM-3)
 C        D(6) - TOTAL MASS DENSITY(GM/CM3) [includes anomalous oxygen]
 C        D(7) - H NUMBER DENSITY(CM-3)
 C        D(8) - N NUMBER DENSITY(CM-3)
 C        D(9) - Anomalous oxygen NUMBER DENSITY(CM-3)
 C        T(1) - EXOSPHERIC TEMPERATURE
 C        T(2) - TEMPERATURE AT ALT
-C
-      DIMENSION D(9),T(2),AP(7),DS(9),TS(2)
+      Real,Intent(Out) :: D(9), T(2)
+      Real,Intent(In)  :: SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP(7)
+      Integer,Intent(In):: IYD,MASS
+
+      Integer IMR      
+
       COMMON/METSEL/IMR
       CALL GTD7(IYD,SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP,MASS,D,T)
 C       TOTAL MASS DENSITY
 C
         IF(MASS.EQ.48) THEN
          D(6) = 1.66E-24*(4.*D(1)+16.*D(2)+28.*D(3)+32.*D(4)+40.*D(5)+
-     &       D(7)+14.*D(8)+16.*D(9))  
+     &       D(7)+14.*D(8)+16.*D(9))
          IF(IMR.EQ.1) D(6)=D(6)/1000.
          ENDIF
-      RETURN
-      END
+      END SUBROUTINE GTD7D
 C-----------------------------------------------------------------------
       SUBROUTINE GHP7(IYD,SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP,
      $  D,T,PRESS)
@@ -383,7 +392,7 @@ C             (7) AVERAGE OF EIGHT 3 HR AP INDICIES FROM 36 TO 59 HRS PRIOR
 C                    TO CURRENT TIME
 C        PRESS - PRESSURE LEVEL(MB)
 C     OUTPUT:
-C        ALT - ALTITUDE(KM) 
+C        ALT - ALTITUDE(KM)
 C        D(1) - HE NUMBER DENSITY(CM-3)
 C        D(2) - O NUMBER DENSITY(CM-3)
 C        D(3) - N2 NUMBER DENSITY(CM-3)
@@ -463,10 +472,12 @@ C      RADIUS (REFF)
       RETURN
       END
 C-----------------------------------------------------------------------
-      FUNCTION VTST7(IYD,SEC,GLAT,GLONG,STL,F107A,F107,AP,IC)
+      Real FUNCTION VTST7(IYD,SEC,GLAT,GLONG,STL,F107A,F107,AP,IC)
 C       Test if geophysical variables or switches changed and save
 C       Return 0 if unchanged and 1 if changed
-      DIMENSION AP(7),IYDL(2),SECL(2),GLATL(2),GLL(2),STLL(2)
+      Integer,Intent(In) :: IYD,IC
+      Real, Intent(In) :: SEC,GLAT,GLONG,STL,F107A,F107, AP(*)
+      DIMENSION IYDL(2),SECL(2),GLATL(2),GLL(2),STLL(2)
       DIMENSION FAL(2),FL(2),APL(7,2),SWL(25,2),SWCL(25,2)
       COMMON/CSW/SW(25),ISW,SWC(25)
       SAVE
@@ -506,8 +517,7 @@ C       Return 0 if unchanged and 1 if changed
         SWCL(I,IC)=SWC(I)
    16 CONTINUE
    20 CONTINUE
-      RETURN
-      END
+      END FUNCTION VTST7
 C-----------------------------------------------------------------------
       SUBROUTINE GTS7(IYD,SEC,ALT,GLAT,GLONG,STL,F107A,F107,AP,MASS,D,T)
 C
@@ -515,7 +525,7 @@ C     Thermospheric portion of NRLMSISE-00
 C     See GTD7 for more extensive comments
 C
 C        OUTPUT IN M-3 and KG/M3:   CALL METERS(.TRUE.)
-C 
+C
 C     INPUT VARIABLES:
 C        IYD - YEAR AND DAY AS YYDDD (day of year from 1 to 365 (or 366))
 C              (Year ignored in current model)
@@ -541,9 +551,9 @@ C        MASS - MASS NUMBER (ONLY DENSITY FOR SELECTED GAS IS
 C                 CALCULATED.  MASS 0 IS TEMPERATURE.  MASS 48 FOR ALL.
 C                 MASS 17 IS Anomalous O ONLY.)
 C
-C     NOTES ON INPUT VARIABLES: 
+C     NOTES ON INPUT VARIABLES:
 C        UT, Local Time, and Longitude are used independently in the
-C        model and are not of equal importance for every situation.  
+C        model and are not of equal importance for every situation.
 C        For the most physically realistic calculation these three
 C        variables should be consistent (STL=SEC/3600+GLONG/15).
 C        The Equation of Time departures from the above formula
@@ -565,7 +575,7 @@ C        D(1) - HE NUMBER DENSITY(CM-3)
 C        D(2) - O NUMBER DENSITY(CM-3)
 C        D(3) - N2 NUMBER DENSITY(CM-3)
 C        D(4) - O2 NUMBER DENSITY(CM-3)
-C        D(5) - AR NUMBER DENSITY(CM-3)                       
+C        D(5) - AR NUMBER DENSITY(CM-3)
 C        D(6) - TOTAL MASS DENSITY(GM/CM3) [Anomalous O NOT included]
 C        D(7) - H NUMBER DENSITY(CM-3)
 C        D(8) - N NUMBER DENSITY(CM-3)
@@ -646,7 +656,7 @@ C
 C
       IF(MASS.EQ.0) GO TO 50
 C       N2 variation factor at Zlb
-      G28=SW(21)*GLOBE7(YRD,SEC,GLAT,GLONG,STL,F107A,F107, 
+      G28=SW(21)*GLOBE7(YRD,SEC,GLAT,GLONG,STL,F107A,F107,
      & AP,PD(1,3))
       DAY=AMOD(YRD,1000.)
 C        VARIATION OF TURBOPAUSE HEIGHT
@@ -674,7 +684,7 @@ C      Diffusive density at Alt
       DD=D(3)
 C      Turbopause
       ZH28=PDM(3,3)*ZHF
-      ZHM28=PDM(4,3)*PDL(6,2) 
+      ZHM28=PDM(4,3)*PDL(6,2)
       XMD=28.-XMM
 C      Mixed density at Zlb
       B28=DENSU(ZH28,DB28,TINF,TLB,XMD,ALPHA(3)-1.,TZ,PTM(6),S,MN1,
@@ -941,32 +951,37 @@ C       ADJUST DENSITIES FROM CGS TO KGM
       ALAST=ALT
       RETURN
   100 FORMAT(1X,'MASS', I5, '  NOT VALID')
-      END
+      END Subroutine GTS7
 C-----------------------------------------------------------------------
       SUBROUTINE METERS(METER)
+      Implicit None
 C      Convert outputs to Kg & Meters if METER true
-      LOGICAL METER
+      LOGICAL,Intent(In) :: METER
+      Integer IMR
       COMMON/METSEL/IMR
       SAVE
       IMR=0
       IF(METER) IMR=1
-      END
+      END SUBROUTINE METERS
 C-----------------------------------------------------------------------
-      FUNCTION SCALH(ALT,XM,TEMP)
+      Real FUNCTION SCALH(ALT,XM,TEMP)
 C      Calculate scale height (km)
       COMMON/PARMB/GSURF,RE
       SAVE
       DATA RGAS/831.4/
       G=GSURF/(1.+ALT/RE)**2
       SCALH=RGAS*TEMP/(G*XM)
-      RETURN
-      END
+      END FUNCTION SCALH
 C-----------------------------------------------------------------------
-      FUNCTION GLOBE7(YRD,SEC,LAT,LONG,TLOC,F107A,F107,AP,P)
-C       CALCULATE G(L) FUNCTION 
+      Real FUNCTION GLOBE7(YRD,SEC,LAT,LONG,TLOC,F107A,F107,AP,P)
+C       CALCULATE G(L) FUNCTION
 C       Upper Thermosphere Parameters
-      REAL LAT, LONG
-      DIMENSION P(200),SV(25),AP(7)
+      REAL,Intent(IN) :: YRD,SEC,LAT, LONG,TLOC,F107A,F107,AP(*)
+!     inout since P modified in function
+      Real,Intent(inout) :: P(*)  
+
+      
+      Real SV(25)
       COMMON/TTEST/TINF,GB,ROUT,T(15)
       COMMON/CSW/SW(25),ISW,SWC(25)
       COMMON/LPOLY/PLG(9,4),CTLOC,STLOC,C2TLOC,S2TLOC,C3TLOC,S3TLOC,
@@ -991,7 +1006,7 @@ C       Eq. A24a
    10 CONTINUE
       IF(SW(9).GT.0) SW9=1.
       IF(SW(9).LT.0) SW9=-1.
-      IYR = YRD/1000.
+      IYR = int(YRD/1000.)
       DAY = YRD - IYR*1000.
       XLONG=LONG
 C      Eq. A22 (remainder of code)
@@ -1024,7 +1039,7 @@ C     PLG(9,2) = (15.*C*PLG(8,2)-8.*PLG(7,2))/7.
       PLG(7,3)=(11.*C*PLG(6,3)-7.*PLG(5,3))/4.
       PLG(8,3)=(13.*C*PLG(7,3)-8.*PLG(6,3))/5.
       PLG(4,4) = 15.*S2*S
-      PLG(5,4) = 105.*S2*S*C 
+      PLG(5,4) = 105.*S2*S*C
       PLG(6,4)=(9.*C*PLG(5,4)-7.*PLG(4,4))/2.
       PLG(7,4)=(11.*C*PLG(6,4)-8.*PLG(5,4))/3.
       XL=LAT
@@ -1083,7 +1098,7 @@ C        DIURNAL
   200 CONTINUE
 C        SEMIDIURNAL
       IF(SW(8).EQ.0) GOTO 210
-      T81 = (P(24)*PLG(4,3)+P(36)*PLG(6,3))*CD14*SWC(5) 
+      T81 = (P(24)*PLG(4,3)+P(36)*PLG(6,3))*CD14*SWC(5)
       T82 = (P(34)*PLG(4,3)+P(37)*PLG(6,3))*CD14*SWC(5)
       T(8) = F2*
      1 ((P(6)*PLG(3,3) + P(42)*PLG(5,3) + T81)*C2TLOC
@@ -1180,50 +1195,49 @@ C  PARMS NOT USED: 83, 90,100,140-150
       DO 50 I = 1,NSW
    50 TINF = TINF + ABS(SW(I))*T(I)
       GLOBE7 = TINF
-      RETURN
-      END
+      END FUNCTION GLOBE7
 C-----------------------------------------------------------------------
       SUBROUTINE TSELEC(SV)
 C        SET SWITCHES
 C        Output in  COMMON/CSW/SW(25),ISW,SWC(25)
 C        SW FOR MAIN TERMS, SWC FOR CROSS TERMS
-C  
+C
 C        TO TURN ON AND OFF PARTICULAR VARIATIONS CALL TSELEC(SV),
-C        WHERE SV IS A 25 ELEMENT ARRAY CONTAINING 0. FOR OFF, 1. 
+C        WHERE SV IS A 25 ELEMENT ARRAY CONTAINING 0. FOR OFF, 1.
 C        FOR ON, OR 2. FOR MAIN EFFECTS OFF BUT CROSS TERMS ON
 C
 C        To get current values of SW: CALL TRETRV(SW)
 C
-      DIMENSION SV(1),SAV(25),SVV(1)
+      Real,intent(in) :: SV(25)
+      Real,intent(out) :: SVV(25) !from Python use gtd7.csw.sw instead of tretrv
+
+      Real SAV(25)
       COMMON/CSW/SW(25),ISW,SWC(25)
       SAVE
-      DO 100 I = 1,25
+      DO I = 1,25
         SAV(I)=SV(I)
-        SW(I)=AMOD(SV(I),2.)
+        SW(I)=MOD(SV(I),2.)
         IF(ABS(SV(I)).EQ.1.OR.ABS(SV(I)).EQ.2.) THEN
           SWC(I)=1.
         ELSE
           SWC(I)=0.
         ENDIF
-  100 CONTINUE
+      End DO
       ISW=64999
       RETURN
       ENTRY TRETRV(SVV)
-      DO 200 I=1,25
-         SVV(I)=SAV(I)
-C        SAV(I)=1.
-C        SWC(I)=1.
-C        SW(I)=1.
-  200 CONTINUE
-      END
+      DO I=1,25
+        SVV(I)=SAV(I)
+      End Do
+      END SUBROUTINE TSELEC
 C-----------------------------------------------------------------------
-      FUNCTION GLOB7S(P)
+      Real FUNCTION GLOB7S(P)
 C      VERSION OF GLOBE FOR LOWER ATMOSPHERE 10/26/99
       REAL LONG
       COMMON/LPOLY/PLG(9,4),CTLOC,STLOC,C2TLOC,S2TLOC,C3TLOC,S3TLOC,
      $ IYR,DAY,DF,DFA,APD,APDF,APT(4),LONG
       COMMON/CSW/SW(25),ISW,SWC(25)
-      DIMENSION P(200),T(14)
+      Real P(*),T(14)
       SAVE
       DATA DR/1.72142E-2/,DGTR/1.74533E-2/,PSET/2./
       DATA DAYL/-1./,P32,P18,P14,P39/4*-1000./
@@ -1238,7 +1252,7 @@ C       CONFIRM PARAMETER SET
         T(J)=0.
    10 CONTINUE
       IF(DAY.NE.DAYL.OR.P32.NE.P(32)) CD32=COS(DR*(DAY-P(32)))
-      IF(DAY.NE.DAYL.OR.P18.NE.P(18)) CD18=COS(2.*DR*(DAY-P(18)))       
+      IF(DAY.NE.DAYL.OR.P18.NE.P(18)) CD18=COS(2.*DR*(DAY-P(18)))
       IF(DAY.NE.DAYL.OR.P14.NE.P(14)) CD14=COS(DR*(DAY-P(14)))
       IF(DAY.NE.DAYL.OR.P39.NE.P(39)) CD39=COS(2.*DR*(DAY-P(39)))
       DAYL=DAY
@@ -1264,7 +1278,7 @@ C        DIURNAL
       IF(SW(7).EQ.0) GOTO 200
       T71 = P(12)*PLG(3,2)*CD14*SWC(5)
       T72 = P(13)*PLG(3,2)*CD14*SWC(5)
-      T(7) = 
+      T(7) =
      1 ((P(4)*PLG(2,2) + P(5)*PLG(4,2)
      2 + T71)*CTLOC
      4 + (P(7)*PLG(2,2) + P(8)*PLG(4,2)
@@ -1272,9 +1286,9 @@ C        DIURNAL
   200 CONTINUE
 C        SEMIDIURNAL
       IF(SW(8).EQ.0) GOTO 210
-      T81 = (P(24)*PLG(4,3)+P(36)*PLG(6,3))*CD14*SWC(5) 
+      T81 = (P(24)*PLG(4,3)+P(36)*PLG(6,3))*CD14*SWC(5)
       T82 = (P(34)*PLG(4,3)+P(37)*PLG(6,3))*CD14*SWC(5)
-      T(8) = 
+      T(8) =
      1 ((P(6)*PLG(3,3) + P(42)*PLG(5,3) + T81)*C2TLOC
      3 +(P(9)*PLG(3,3) + P(43)*PLG(5,3) + T82)*S2TLOC)
   210 CONTINUE
@@ -1307,10 +1321,10 @@ C        LONGITUDINAL
       DO 50 I=1,14
    50 TT=TT+ABS(SW(I))*T(I)
       GLOB7S=TT
-      RETURN
-      END
+
+      END FUNCTION GLOB7S
 C--------------------------------------------------------------------
-      FUNCTION DENSU(ALT,DLB,TINF,TLB,XM,ALPHA,TZ,ZLB,S2,
+      Real FUNCTION DENSU(ALT,DLB,TINF,TLB,XM,ALPHA,TZ,ZLB,S2,
      $  MN1,ZN1,TN1,TGN1)
 C       Calculate Temperature and Density Profiles for MSIS models
 C       New lower thermo polynomial 10/30/89
@@ -1324,7 +1338,7 @@ CCCCCCWRITE(6,*) 'DB',ALT,DLB,TINF,TLB,XM,ALPHA,ZLB,S2,MN1,ZN1,TN1
       DENSU=1.
 C        Joining altitude of Bates and spline
       ZA=ZN1(1)
-      Z=AMAX1(ALT,ZA)
+      Z=MAX(ALT,ZA)
 C      Geopotential altitude difference from ZLB
       ZG2=ZETA(Z,ZLB)
 C      Bates temperature
@@ -1337,9 +1351,9 @@ C
 C       CALCULATE TEMPERATURE BELOW ZA
 C      Temperature gradient at ZA from Bates profile
       DTA=(TINF-TA)*S2*((RE+ZLB)/(RE+ZA))**2
-      TGN1(1)=DTA 
+      TGN1(1)=DTA
       TN1(1)=TA
-      Z=AMAX1(ALT,ZN1(MN1))
+      Z=MAX(ALT,ZN1(MN1))
       MN=MN1
       Z1=ZN1(1)
       Z2=ZN1(MN)
@@ -1389,8 +1403,7 @@ C       integrate spline temperatures
 C       Density at altitude
       DENSU=DENSU*(T1/TZ)**(1.+ALPHA)*EXP(-EXPL)
    50 CONTINUE
-      RETURN
-      END
+      END FUNCTION DENSU
 C--------------------------------------------------------------------
       FUNCTION DENSM(ALT,D0,XM,TZ,MN3,ZN3,TN3,TGN3,MN2,ZN2,TN2,TGN2)
 C       Calculate Temperature and Density Profiles for lower atmos.
@@ -1405,7 +1418,7 @@ C       Calculate Temperature and Density Profiles for lower atmos.
       DENSM=D0
       IF(ALT.GT.ZN2(1)) GOTO 50
 C      STRATOSPHERE/MESOSPHERE TEMPERATURE
-      Z=AMAX1(ALT,ZN2(MN2))
+      Z=MAX(ALT,ZN2(MN2))
       MN=MN2
       Z1=ZN2(1)
       Z2=ZN2(MN)
@@ -1428,7 +1441,7 @@ C       Temperature at altitude
       TZ=1./Y
       IF(XM.EQ.0.) GO TO 20
 C
-C      CALCULATE STRATOSPHERE/MESOSPHERE DENSITY 
+C      CALCULATE STRATOSPHERE/MESOSPHERE DENSITY
       GLB=GSURF/(1.+Z1/RE)**2
       GAMM=XM*GLB*ZGDIF/RGAS
 C       Integrate temperature profile
@@ -1464,8 +1477,8 @@ C       temperature at altitude
       TZ=1./Y
       IF(XM.EQ.0.) GO TO 30
 C
-C      CALCULATE TROPOSPHERIC/STRATOSPHERE DENSITY 
-C     
+C      CALCULATE TROPOSPHERIC/STRATOSPHERE DENSITY
+C
       GLB=GSURF/(1.+Z1/RE)**2
       GAMM=XM*GLB*ZGDIF/RGAS
 C        Integrate temperature profile
@@ -1477,8 +1490,8 @@ C        Density at altitude
    30 CONTINUE
    50 CONTINUE
       IF(XM.EQ.0) DENSM=TZ
-      RETURN
-      END
+
+      END Function DENSM
 C-----------------------------------------------------------------------
       SUBROUTINE SPLINE(X,Y,N,YP1,YPN,Y2)
 C        CALCULATE 2ND DERIVATIVES OF CUBIC SPLINE INTERP FUNCTION
@@ -1516,8 +1529,8 @@ C        Y2: OUTPUT ARRAY OF SECOND DERIVATIVES
       DO 12 K=N-1,1,-1
         Y2(K)=Y2(K)*Y2(K+1)+U(K)
    12 CONTINUE
-      RETURN
-      END
+
+      END Subroutine Spline
 C-----------------------------------------------------------------------
       SUBROUTINE SPLINT(XA,YA,Y2A,N,X,Y)
 C        CALCULATE CUBIC SPLINE INTERP VALUE
@@ -1565,7 +1578,7 @@ C        Y: OUTPUT VALUE
     1 CONTINUE
       IF(X.GT.XA(KLO).AND.KHI.LE.N) THEN
         XX=X
-        IF(KHI.LT.N) XX=AMIN1(X,XA(KHI))
+        IF(KHI.LT.N) XX=MIN(X,XA(KHI))
         H=XA(KHI)-XA(KLO)
         A=(XA(KHI)-XX)/H
         B=(XX-XA(KLO))/H
@@ -1656,7 +1669,7 @@ C       O&O2 CHEMISTRY/DISSOCIATION CORRECTION FOR MSIS MODELS
       END
 C-----------------------------------------------------------------------
       BLOCK DATA GTD7BK
-C          MSISE-00 01-FEB-02   
+C          MSISE-00 01-FEB-02
       CHARACTER(len=4) :: ISDATE,ISTIME,NAME
       COMMON/PARM7/PT1(50),PT2(50),PT3(50),PA1(50),PA2(50),PA3(50),
      $ PB1(50),PB2(50),PB3(50),PC1(50),PC2(50),PC3(50),
@@ -2016,7 +2029,7 @@ C        HOT O DENSITY
      *  0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00,
      *  0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00,
      *  0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00/
-C          S PARAM  
+C          S PARAM
       DATA PJ1/
      *  9.56827E-01, 6.20637E-02, 3.18433E-02, 0.00000E+00, 0.00000E+00,
      *  3.94900E-02, 0.00000E+00, 0.00000E+00,-9.24882E-03,-7.94023E-03,
