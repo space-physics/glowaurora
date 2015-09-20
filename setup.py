@@ -25,6 +25,7 @@ with open('README.rst') as f:
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
                f2py_options=['--quiet'],
+               extra_f77_compile_args=['-finit-local-zero']
 )]
                #include_dirs=[root],
                #library_dirs=[root])]

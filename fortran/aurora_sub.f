@@ -84,17 +84,6 @@ C
       f107a=f107a_; f107=f107_
       ENER = PyPhitop(:,1); DEL=PyPhitop(:,2); PHITOP=PyPhitop(:,3)
 
-! Set other parameters and switches:
-      JLOCAL = 0
-      KCHEM = 4
-      ISCALE = 1
-      XUVFAC = 3.
-      HLYBR = 0.
-      FEXVIR = 0.
-      HLYA = 0.
-      HEIEW = 0.
-
-
 C
 C
 C Call GLOW to calculate ionized and excited species, airglow emission
