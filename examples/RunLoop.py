@@ -12,16 +12,20 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap):
 
     (glat,glon) = glatlon
 
+    vers = []
+
     for e0 in E0:
         print('char. energy {}'.format(e0))
 
         ver,photIon,isr,phitop,zceta = runglowaurora(flux,e0,
                                               dt,glat,glon,
                                               f107a,f107,f107p,ap)
+        print(ver)
+        vers.append(ver)
 
         plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,e0)
 
-    return ver,photIon,isr,phitop,zceta
+    return vers,photIon,isr,phitop,zceta
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

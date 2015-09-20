@@ -57,7 +57,8 @@ C
 ! Args:
       real,intent(in) :: ENER(NBINS),DEL(NBINS)
 ! Local:
-      integer  IIMAXX(NBINS),inv
+      integer inv !function
+      integer  IIMAXX(NBINS)
       real  AE,sigion
       real  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
@@ -388,6 +389,7 @@ C the ionization energy loss cross-section and add to SIGA:
 C
       DO 250 II=1,ITMAX
       SEC(I,II,JY) = SEC(I,II,JY) + SIGI(II) * DETJ / DEL(II)
+      if (isnan(sec(i,ii,jy))) stop 'exsect: NaN in SEC'
       WTH1 = T12(II) + WAG
       ETA = ETJ - WTH1
       IF (ETA .GT. 0.) THEN
@@ -549,7 +551,7 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
 ! Local:
       real  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
       integer  k,i,kg
-      real,external :: TERPOO
+      real :: TERPOO !function
       DATA EGR/1.E4,      2.E4,      5.E4,      1.E5,      2.E5,
      >         3.E5,      5.E5,      1.E6,      2.E6,      5.E6,
      >         1.E7,      1.E8,      1.E9/
