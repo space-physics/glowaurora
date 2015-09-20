@@ -74,9 +74,9 @@ C
       implicit none
       include 'cglow.h'
 
-      integer idate, iscale,ierr,i,j,jlocal,k,kchem,l,m,m1,m2,n,
+      integer(kind=8) idate, iscale,ierr,i,j,jlocal,k,kchem,l,m,m1,m2,n,
      &   NNN(NMAJ)
-      real  UT, GLAT, GLONG,
+      real(kind=dp)  UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -93,7 +93,7 @@ C
      >    EHEAT(JMAX), TEZ(JMAX), ECALC(JMAX),
      >    ZXDEN(NEX,JMAX), ZETA(NW,JMAX), ZCETA(NC,NW,JMAX), VCB(NW)
 
-      real DSPECT(JMAX), FLUX(LMAX,JMAX),
+      real(kind=dp) DSPECT(JMAX), FLUX(LMAX,JMAX),
      >          SIGION(NMAJ,LMAX), SIGABS(NMAJ,LMAX),
      >          TPOT(NST,NMAJ), PROB(NST,NMAJ,LMAX),
      >          EPSIL1(NST,NMAJ,LMAX), EPSIL2(NST,NMAJ,LMAX),
@@ -113,9 +113,9 @@ C
 
       SAVE SIGION, SIGABS, PROB, EPSIL1, EPSIL2
 
-      real,parameter :: SIGNO=2.0E-18
+      real(kind=dp),parameter :: SIGNO=2.0E-18
 
-      integer :: IFIRST=1
+      integer(kind=8) :: IFIRST=1
 
       DATA NNN/5,4,6/
 
@@ -343,11 +343,11 @@ C
 C R1 is the upper edge of the lower box, R2 is the lower edge of the
 C upper box.
 ! Args:
-      Real,Intent(in)    :: DEL(NBINS), ENER(NBINS)
-      Real,Intent(out)   :: E1,E2,R1,R2
-      Integer,Intent(out):: M1,M2
+      Real(kind=dp),Intent(in)    :: DEL(NBINS), ENER(NBINS)
+      Real(kind=dp),Intent(out)   :: E1,E2,R1,R2
+      Integer(kind=8),Intent(out):: M1,M2
 !Local:
-      Integer I
+      Integer(kind=8) I
 
       DO 100 I=1,NBINS
       IF (E1 .LT. ENER(I)+DEL(I)/2.) GOTO 200

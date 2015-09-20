@@ -15,17 +15,17 @@
       include 'cglow.h'
 
 !Args:
-      integer,intent(in)   :: doy
-      real,intent(in)  :: kp, f107
-      real,intent(out) :: z(16), mlat(33), nozm(33,16)
+      integer(kind=8),intent(in)   :: doy
+      real(kind=dp),intent(in)  :: kp, f107
+      real(kind=dp),intent(out) :: z(16), mlat(33), nozm(33,16)
 ! Local:
-      real no_mean(33,16), eofs(33,16,3)
-      real theta0         ! day number in degrees
-      real dec            ! solar declination angle
-      real m1, m2, m3     ! coefficients for first 3 eofs
-      integer j, k, n
+      real(kind=dp) no_mean(33,16), eofs(33,16,3)
+      real(kind=dp) theta0         ! day number in degrees
+      real(kind=dp) dec            ! solar declination angle
+      real(kind=dp) m1, m2, m3     ! coefficients for first 3 eofs
+      integer(kind=8) j, k, n
 
-      real cosd, sind,thet
+      real(kind=dp) cosd, sind,thet
       sind(thet) = sin(thet/180.*pi)
       cosd(thet) = cos(thet*pi/180.)
 
@@ -51,7 +51,7 @@
 
 !... eof2 - declination
 
-      theta0 = 360. * real(doy - 1) / 365.
+      theta0 = 360. * real(doy - 1,kind=dp) / 365.
 
       dec = 0.006918
      &    - 0.399912 * cosd(theta0)   + 0.070257 * sind(theta0)

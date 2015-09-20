@@ -123,9 +123,9 @@ C
       implicit none
       include 'cglow.h'
 
-      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+      integer(kind=8) IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      &   i,iei,ist,j,n
-      real  UT, GLAT, GLONG,
+      real(kind=dp)  UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -150,7 +150,7 @@ C
      >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 C
-      real ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
+      real(kind=dp) ZVCD(NMAJ,JMAX),dec,ff,sdip,teflux,xf,yf,zf
 C
 !      Integer :: IFIRST=1
 C

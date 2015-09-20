@@ -16,17 +16,17 @@ C
       include 'cglow.h'
 
       character(len=*),intent(in) :: rofile
-      real,intent(in) :: ef,ez,FRACO,FRACO2,FRACN2
-      integer,intent(in) :: ITAIL
+      real(kind=dp),intent(in) :: ef,ez,FRACO,FRACO2,FRACN2
+      integer(kind=8),intent(in) :: ITAIL
 
-      integer,parameter :: LUN=13
+      integer(kind=8),parameter :: LUN=13
 
-      real z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
+      real(kind=dp) z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
      >          e1027(jmax), e989(jmax), elbh(jmax)
 
 
-      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,j
-      real  UT, GLAT, GLONG, 
+      integer(kind=8) IDATE, ISCALE, JLOCAL, KCHEM, IERR,j
+      real(kind=dp)  UT, GLAT, GLONG, 
      >    F107, F107A, f107p, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),

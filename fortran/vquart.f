@@ -25,9 +25,9 @@
 ! Args
       Real(kind=dp),intent(out) :: ROOT(JMAX)
       Real(kind=dp),intent(in)  :: A(JMAX,5)
-      Integer,intent(in)        :: NJ
+      Integer(kind=8),intent(in)        :: NJ
 ! Local
-      Integer I
+      Integer(kind=8) I
       Real(kind=dp) W1(JMAX), W2(JMAX), W3(JMAX), W4(JMAX), W5(JMAX)
       real(kind=dp),parameter :: E=1.D-38, Z=0.
 

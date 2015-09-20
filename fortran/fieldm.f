@@ -7,7 +7,7 @@ C the same time as IRI.  Labeled common /CONST/ which contained only the
 C degree/radian conversion factor UMR was changed to a data statement.
 C
 C THIS IS A SPECIAL VERSION OF THE POGO 68/10 MAGNETIC FIELD
-C LEGENDRE MODEL. TRANSFORMATION COEFF. G(144) VALID FOR 1973.
+C LEGENDRE MODEL. TRANSFORMATION COEFF. GG(144) VALID FOR 1973.
 C INPUT: DLAT, DLONG=GEOGRAPHIC COORDINATES/DEG.(-90/90,0/360),
 C        ALT=ALTITUDE/KM.
 C OUTPUT: F TOTAL FIELD (GAUSS), Z DOWNWARD VERTICAL COMPONENT
@@ -17,15 +17,16 @@ C SHEIK,1977.
 C
       SUBROUTINE FIELDM(DLAT,DLONG,ALT,X,Y,Z,F,DIP,DEC,SMODIP)
       implicit none
+      include 'cglow.h'
 ! Args:
-      real,intent(in) :: dlat,dlong,alt
-      real,intent(out):: x,y,z,f,dip,dec,smodip
+      real(kind=dp),intent(in) :: dlat,dlong,alt
+      real(kind=dp),intent(out):: x,y,z,f,dip,dec,smodip
 ! Local:
-      real H(144),XI(3),G(144),FEL1(72),FEL2(72), brh0,cp,ct,d,f1,
-     & rho,rlat,rlong,rq,s,sp,st,x1,xt,xxx,y1,yyy,z1,zzz
-      integer i,ih,ihmax,il,imax,last,m,nmax,j,k
+      real(kind=dp) H(144),XI(3),GG(144),FEL1(72),FEL2(72), brh0,cp,ct,
+     & d,f1,rho,rlat,rlong,rq,s,sp,st,x1,xt,xxx,y1,yyy,z1,zzz
+      integer(kind=8) i,ih,ihmax,il,imax,last,m,nmax,j,k
       
-      real,parameter :: UMR=.0174532952
+      real(kind=dp),parameter :: UMR=.0174532952
       DATA FEL1/0.0, 0.1506723,0.0101742, -0.0286519, 0.0092606,
      & -0.0130846, 0.0089594, -0.0136808,-0.0001508, -0.0093977,
      & 0.0130650, 0.0020520, -0.0121956, -0.0023451, -0.0208555,
@@ -60,8 +61,8 @@ C
       K=0
       DO 10 I=1,72
       K=K+1
-      G(K)=FEL1(I)
- 10   G(72+K)=FEL2(I)
+      GG(K)=FEL1(I)
+ 10   GG(72+K)=FEL2(I)
       RLAT=DLAT*UMR
       CT=SIN(RLAT)
       ST=COS(RLAT)
@@ -82,7 +83,7 @@ C
       LAST=IHMAX+NMAX+NMAX
       IMAX=NMAX+NMAX-1
       DO 100 I=IHMAX,LAST
- 100  H(I)=G(I)
+ 100  H(I)=GG(I)
       DO 200 K=1,3,2
       I=IMAX
       IH=IHMAX
@@ -95,14 +96,14 @@ C
       IF((I-1).LT.0) GOTO 400
       IF((I-1).EQ.0) GOTO 500
       DO 600 M=3,I,2
-      H(IL+M+1)=G(IL+M+1)+Z1*H(IH+M+1)+X1*(H(IH+M+3)-H(IH+M-1))-
+      H(IL+M+1)=GG(IL+M+1)+Z1*H(IH+M+1)+X1*(H(IH+M+3)-H(IH+M-1))-
      &Y1*(H(IH+M+2)+H(IH+M-2))
-      H(IL+M)=G(IL+M)+Z1*H(IH+M)+X1*(H(IH+M+2)-H(IH+M-2))+
+      H(IL+M)=GG(IL+M)+Z1*H(IH+M)+X1*(H(IH+M+2)-H(IH+M-2))+
      &Y1*(H(IH+M+3)+H(IH+M-1))
  600  CONTINUE
- 500  H(IL+2)=G(IL+2)+Z1*H(IH+2)+X1*H(IH+4)-Y1*(H(IH+3)+H(IH))
-      H(IL+1)=G(IL+1)+Z1*H(IH+1)+Y1*H(IH+4)+X1*(H(IH+3)-H(IH))
- 400  H(IL)=G(IL)+Z1*H(IH)+2.0*(X1*H(IH+1)+Y1*H(IH+2))
+ 500  H(IL+2)=GG(IL+2)+Z1*H(IH+2)+X1*H(IH+4)-Y1*(H(IH+3)+H(IH))
+      H(IL+1)=GG(IL+1)+Z1*H(IH+1)+Y1*H(IH+4)+X1*(H(IH+3)-H(IH))
+ 400  H(IL)=GG(IL)+Z1*H(IH)+2.0*(X1*H(IH+1)+Y1*H(IH+2))
  700  IH=IL
       IF(I.GE.K) GOTO 300
  200  CONTINUE

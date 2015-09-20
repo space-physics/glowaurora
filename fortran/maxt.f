@@ -27,13 +27,13 @@
       implicit none
       include 'cglow.h'
 !Args:
-      Real,Intent(Out) :: phi(NBINS)
-      Real, Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS),
+      Real(kind=dp),Intent(Out) :: phi(NBINS)
+      Real(kind=dp), Intent(In)  :: EFLUX, EZER, ENER(NBINS), dE(NBINS),
      & FMONO,EMONO
-      Integer,Intent(In):: ITAIL
+      Integer(kind=8),Intent(In):: ITAIL
 !Local:
-      Real B,TE, PHIMAX, ERAT
-      Integer K
+      Real(kind=dp) B,TE, PHIMAX, ERAT
+      Integer(kind=8) K
 
       TE = 0.
 C

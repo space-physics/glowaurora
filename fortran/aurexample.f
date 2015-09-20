@@ -33,18 +33,18 @@ C
       implicit none
       include 'cglow.h'
 
-      real Z(JMAX),ap,f107p,ef,ec,emono,fmono
-      real D(8), T(2), SW(25), OUTF(11,JMAX), OARR(30), TPI(NMAJ),dipd,
-     > rz12,stl,szad,totpi,totsi
-      integer i,iday,ijf,j,j200,jmag,mmdd,ns,itail,iw
+      real(kind=dp) Z(JMAX),ap,f107p,ef,ec,emono,fmono
+      real(kind=dp) D(8), T(2), SW(25), OUTF(11,JMAX), OARR(30), 
+     & TPI(NMAJ),dipd, rz12,stl,szad,totpi,totsi
+      integer(kind=8) i,iday,ijf,j,j200,jmag,mmdd,ns,itail,iw
 
       LOGICAL JF(12)
       DATA SW/25*1./
 
-      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+      integer(kind=8) IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
 
-      real UT, GLAT, GLONG,
+      real(kind=dp) UT, GLAT, GLONG,
      >    F107, F107A, hlybr, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),

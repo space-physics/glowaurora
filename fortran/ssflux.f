@@ -120,19 +120,20 @@
       include 'cglow.h'
 
 ! Args:
-      integer,intent(in) :: iscale
-      real,intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,XUVFAC,heiew
-      real,intent(out),dimension(Lmax)   :: wave1,wave2,sflux
+      integer(kind=8),intent(in) :: iscale
+      real(kind=dp),intent(in)    :: f107, f107a,HLYBR, FEXVIR,HLYA,
+     & XUVFAC,heiew
+      real(kind=dp),intent(out),dimension(Lmax)   :: wave1,wave2,sflux
 ! Local:
-      real WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
+      real(kind=dp) WAVEL(LMAX), WAVES(LMAX), RFLUX(LMAX), UFLUX(LMAX),
      >          SCALE1(LMAX), SCALE2(LMAX), A(LMAX),p107,r1,r2
-      integer l
-      real,parameter :: epsil=1.0E-6
+      integer(kind=8) l
+      real(kind=dp),parameter :: epsil=1.0E-6
 !      integer :: islast=-1  !this didn't work right in f2py
 
 
 ! regression coefficients which reduce to solar min. spectrum:
-      real :: B1(NMAJ),B2(NMAJ)
+      real(kind=dp) :: B1(NMAJ),B2(NMAJ)
       DATA B1/1.0, 0.0138, 0.005/
       DATA B2/1.0, 0.59425, 0.3811/
 

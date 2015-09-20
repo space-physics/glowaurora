@@ -55,12 +55,12 @@ C
       include 'cglow.h'
 
 ! Args:
-      real,intent(in) :: ENER(NBINS),DEL(NBINS)
+      real(kind=dp),intent(in) :: ENER(NBINS),DEL(NBINS)
 ! Local:
-      integer inv !function
-      integer  IIMAXX(NBINS)
-      real  AE,sigion
-      real  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
+      integer(kind=8) inv !function
+      integer(kind=8)  IIMAXX(NBINS)
+      real(kind=dp)  AE,sigion
+      real(kind=dp)  SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS),
      &    WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
@@ -69,19 +69,19 @@ C
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
      >                GAMS(NEI,NMAJ), GAMB(NEI,NMAJ)
 
-      real SIGI(NBINS), T12(NBINS),
+      real(kind=dp) SIGI(NBINS), T12(NBINS),
      > RATIO(NBINS), EC(31,NMAJ), CC(31,NMAJ), CE(31,NMAJ), CI(31,NMAJ),
      > detj,e1,e2,eta,etj,ex,fac,ff,gama,sigg,t0,tmax,tmt,wag,we,wth1
-      integer i,i1,i2,i3,ibz,ie,iee,ii,ij,itmax,iv,j,jy,k,kk,kuk,kuk1,
-     > ml
+      integer(kind=8) i,i1,i2,i3,ibz,ie,iee,ii,ij,itmax,iv,j,jy,k,kk,
+     & kuk,kuk1, ml
 
       COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       COMMON /CXPARS/ WW, AO, OMEG, ANU, BB, AUTO,THI, AK, AJ,
      >                TS, TA, TB, GAMS, GAMB
 
-      real,parameter :: QQN=6.51E-14
-      integer NNN(NMAJ), NINN(NMAJ), NUM(NMAJ)
+      real(kind=dp),parameter :: QQN=6.51E-14
+      integer(kind=8) NNN(NMAJ), NINN(NMAJ), NUM(NMAJ)
 
       DATA NNN/8,7,8/
       DATA NINN/3,7,6/
@@ -371,7 +371,7 @@ C
       IF (ITMAX .GE. KUK1) KUK1 = ITMAX + 1
       TMT = ENER(1) + DEL(1) / 2.0
       IF (TMAX .LT. TMT) TMT = TMAX
-      SIGI(1) = SIGION(I,ML,ETJ,0.0,TMT,T12(1)) / RATIO(JY)
+      SIGI(1) = SIGION(I,ML,ETJ,0.0D0,TMT,T12(1)) / RATIO(JY)
       TMT = ENER(1) + DEL(1) / 2.
       IF (TMAX .GT. TMT) THEN
         IF (TMAX .LE. ENER(2)) ITMAX = 2
@@ -433,22 +433,22 @@ C
 C Function SIGION calculates ionization cross section for species I,
 C state ML, primary energy E, secondary energy from E1 to E2 
 C
-      real FUNCTION SIGION(I,ML,E,E1,E2,T12)
+      Double Precision FUNCTION SIGION(I,ML,E,E1,E2,T12)
 !      use cglow,only: nei,nmaj,dp
       implicit none
       include 'cglow.h'
 ! Args:
-      integer,intent(in) :: i,ml
-      real,intent(in) :: E,E1
+      integer(kind=8),intent(in) :: i,ml
+      real(kind=dp),intent(in) :: E,E1
 ! yes this is out
-      real,intent(out) :: T12 
+      real(kind=dp),intent(out) :: T12 
 ! the out value isn't actually used, but needed to allow internal modif.
-      real,intent(inout) :: E2 
+      real(kind=dp),intent(inout) :: E2 
 ! Local:
       Real(kind=dp)  ABB, ABC, ABD, AK1, AJ1, TS1, TA1, TB1,GAMS1,GAMB1
-      Real S,A,TZ,GG,TTL,AL2,AL1,TTL1
+      Real(kind=dp) S,A,TZ,GG,TTL,AL2,AL1,TTL1
 
-      real WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
+      real(kind=dp) WW(NEI,NMAJ), AO(NEI,NMAJ), OMEG(NEI,NMAJ),
      >                ANU(NEI,NMAJ), BB(NEI,NMAJ), AUTO(NEI,NMAJ),
      >                THI(NEI,NMAJ),  AK(NEI,NMAJ),   AJ(NEI,NMAJ),
      >                TS(NEI,NMAJ),   TA(NEI,NMAJ),   TB(NEI,NMAJ),
@@ -458,7 +458,7 @@ C
      >                TS, TA, TB, GAMS, GAMB
 
 
-      real,parameter:: QQ=1.E-16
+      real(kind=dp),parameter:: QQ=1.E-16
 C
 C
       IF (E .LE. THI(ML,I)) GOTO 30
@@ -496,16 +496,16 @@ C
 C Function INV finds the bin number closest to energy ETA on grid ENER.
 C Bin INV or INV-1 will contain ETA.
 C
-      pure integer FUNCTION INV (ETA, JY, ENER)
+      pure integer(8) FUNCTION INV (ETA, JY, ENER)
 !      use cglow,only: nbins
       implicit none
       include 'cglow.h'
 !
 ! Args:
-      real,intent(in) :: ETA,ENER(NBINS)
-      integer,intent(in) :: JY
+      real(kind=dp),intent(in) :: ETA,ENER(NBINS)
+      integer(kind=8),intent(in) :: JY
 ! Local:
-      integer iv
+      integer(kind=8) iv
       
       IF (ETA .LT. 0.) THEN
         INV = -1
@@ -545,13 +545,13 @@ C   Saksena et al., Int. Jour. of Mass Spec. & Ion Proc., 171, L1, 1997.
       include 'cglow.h'
 !
 ! Args:
-      real,intent(in) :: ENER(NBINS),SIGIX(NEI,NMAJ,NBINS)
-      real,intent(out) :: RATIO(NBINS)
+      real(kind=dp),intent(in) :: ENER(NBINS),SIGIX(NEI,NMAJ,NBINS)
+      real(kind=dp),intent(out) :: RATIO(NBINS)
 !
 ! Local:
-      real  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
-      integer  k,i,kg
-      real :: TERPOO !function
+      real(kind=dp)  TOTX(NBINS), TOTNEW(NBINS), EGR(13), SGR(13)
+      integer(kind=8)  k,i,kg
+      real(kind=dp) :: TERPOO !function
       DATA EGR/1.E4,      2.E4,      5.E4,      1.E5,      2.E5,
      >         3.E5,      5.E5,      1.E6,      2.E6,      5.E6,
      >         1.E7,      1.E8,      1.E9/
@@ -598,10 +598,11 @@ C         IF (RATIO(K) .GT. 1.) RATIO(K) = 1.
 
 
 
-      pure real FUNCTION TERPOO(X,X1,X2,Y1,Y2)
+      pure Double Precision FUNCTION TERPOO(X,X1,X2,Y1,Y2)
       implicit none
+      include 'cglow.h'
 ! Args:
-      real,intent(in) :: x,x1,x2,y1,y2
+      real(kind=dp),intent(in) :: x,x1,x2,y1,y2
 
       TERPOO = EXP ( log(Y1) + log(X/X1)*log(Y2/Y1)/log(X2/X1) )
       END function terpoo

@@ -23,13 +23,13 @@ C
       implicit none
       include 'cglow.h'
       
-      integer, intent(in) :: IDATE
-      real,intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
-      real,intent(out):: ZNO(JMAX)
+      integer(kind=8), intent(in) :: IDATE
+      real(kind=dp),intent(in) :: GLAT,GLONG,F107,AP,Z(JMAX),ZTN(JMAX)
+      real(kind=dp),intent(out):: ZNO(JMAX)
       
-      Real ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
+      Real(kind=dp) ZG(16),XMLATNO(33), ZMNO(33,16), ZMNOI(16),rat,xkp,
      & xmlat,xmlong,h
-      integer iday,j,klat1,klat2,kz1,kz2
+      integer(kind=8) iday,j,klat1,klat2,kz1,kz2
       
 
 C Find magnetic latitude:

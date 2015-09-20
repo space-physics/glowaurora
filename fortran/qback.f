@@ -20,16 +20,17 @@ C
       implicit none
       include 'cglow.h'
 !Args:
-      real, intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),ZVCD(NMAJ,jmax)
+      real(kind=dp), intent(in) :: ZMAJ(NMAJ,jmax),ZNO(jmax),
+     & ZVCD(NMAJ,jmax)
       !PHOTI and PHONO should be INOUT
-      real,intent(inout)::PHOTOI(NST,NMAJ,jmax), PHONO(NST,jmax)
+      real(kind=dp),intent(inout)::PHOTOI(NST,NMAJ,jmax),PHONO(NST,jmax)
 !Local:
-      real,parameter :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9,
+      real(kind=dp),parameter :: FIONT=5.0E7, FLYBT=1.0E7, FLYAT=1.0E9,
      & SIGIO=1.0E-17,
      & SIGIO2=2.0E-17, SIGIN2=2.0E-17, SLBAO2=1.6E-18, SLBIO2=1.0E-18,
      & SLAAO2=1.0E-20, SLAINO=2.0E-18
-      real taui, taulya,taulyb, fion
-      integer j
+      real(kind=dp) taui, taulya,taulyb, fion
+      integer(kind=8) j
 C
 C Calculate ionization rates at each altitude:
 C

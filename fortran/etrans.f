@@ -78,9 +78,9 @@ C
 
       logical isfinite
 
-      integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+      integer(kind=8)  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
-      real   UT, GLAT, GLONG,
+      real(kind=dp)   UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -108,15 +108,15 @@ C
      >                DELZ(JMAX), DEL2(JMAX), DELA(JMAX), DELP(JMAX),
      >                DELM(JMAX), DELS(JMAX), DEN(JMAX), FAC
 
-      real    PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), TSA(NMAJ),
-     >          PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
+      real(kind=dp) PROD(JMAX), EPROD(JMAX), T1(JMAX), T2(JMAX), 
+     >          TSA(NMAJ), PRODUP(JMAX,NBINS), PRODWN(JMAX,NBINS),
      >          PHIUP(JMAX), PHIDWN(JMAX), TSIGNE(JMAX), TAUE(JMAX),
      >          SECION(JMAX), SECP(NMAJ,JMAX), R1(JMAX), EXPT2(JMAX),
      >          PRODUA(JMAX), PRODDA(JMAX), PHIINF(NBINS)
 
-      real  APROD,DAG,EDEP,EET,ein,eout,epe,ephi,et,fluxj,phiout,
-     &     rmusin, sindip
-      integer  i,ib,ibb,ii,im,iq,iv,j,jj,jjj4,k,kk,ll,n
+      real(kind=dp)  APROD,DAG,EDEP,EET,ein,eout,epe,ephi,et,fluxj,
+     &    phiout, rmusin, sindip
+      integer(kind=8)  i,ib,ibb,ii,im,iq,iv,j,jj,jjj4,k,kk,ll,n
 
       COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -135,10 +135,10 @@ C
       COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI,DELZ, DEL2, DELA, DELP,
      >                DELM, DELS, DEN, FAC
 
-      integer :: IFIRST=1
-      real,parameter :: AVMU=0.5
+      integer(kind=8) :: IFIRST=1
+      real(kind=dp),parameter :: AVMU=0.5
 
-      real potion(nmaj)
+      real(kind=dp) potion(nmaj)
       DATA POTION/16.,16.,18./
 
       IERR = 0
@@ -307,7 +307,7 @@ C
      >     PRODUP(I,J),PROD(I-1),PROD(I),PROD(I+1),
      >     T1(I),T2(I),ALPHA(I),
      >     DEL2(I)
-         stop 'etran: non-finite GAMA'
+         stop 'etrans: non-finite GAMA'
         end if
       End DO
 C
@@ -502,14 +502,14 @@ C
       Implicit None
       include 'cglow.h'
 !Args:
-      Real, Intent(In) :: FLUXJ
+      Real(kind=dp), Intent(In) :: FLUXJ
 !Local:
       logical isfinite
-      Real fac,dem
-      real,dimension(jmax) :: alpha, beta, gama, psi, delz, del2, dela,
-     > delp,delm,dels,den,
+      Real(kind=dp) fac,dem
+      real(kind=dp),dimension(jmax) :: alpha, beta, gama, psi, delz, 
+     > del2, dela, delp,delm,dels,den,
      > K, L, A, B, C, D
-      Integer i,i1,jk,kk
+      Integer(kind=8) i,i1,jk,kk
 
       COMMON /CIMPIT/ ALPHA, BETA, GAMA, PSI, DELZ, DEL2, DELA, DELP,
      >                DELM, DELS, DEN, FAC
@@ -563,8 +563,9 @@ C
 
       logical Function isfinite(x)
       implicit none
+      include 'cglow.h'
 
-      real,intent(in) :: x
+      real(kind=dp),intent(in) :: x
 
       if (abs(x) <= huge(x)) then
         isfinite = .true.

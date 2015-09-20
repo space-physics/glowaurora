@@ -24,16 +24,16 @@
       implicit none
       include 'cglow.h'
 !Args:
-      real, intent(in) :: chi,zz(jmax),ZMAJ(NMAJ,JMAX),TN(JMAX)
-      real, intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
+      real(kind=dp), intent(in) :: chi,zz(jmax),ZMAJ(NMAJ,JMAX),TN(JMAX)
+      real(kind=dp), intent(out) :: ZVCD(NMAJ,JMAX),ZCOL(NMAJ,JMAX)
 !Local:
-      integer,PARAMETER :: NM=3,NU=4
+      integer(kind=8),PARAMETER :: NM=3,NU=4
 
-      real  ZCG(NM),ghrg,ghz,tng
-      real  ZUS(nu), TNUS(nu),zcus(nm,nu)
-      integer i,j, jg
+      real(kind=dp)  ZCG(NM),ghrg,ghz,tng
+      real(kind=dp)  ZUS(nu), TNUS(nu),zcus(nm,nu)
+      integer(kind=8) i,j, jg
 
-      real :: chap !function
+      real(kind=dp) :: chap !function
 
       DATA ZUS/0.0, 1.5E6, 5.E6, 9.E6/
       DATA TNUS/288., 217., 271., 187./
@@ -96,16 +96,16 @@ C
       END SUBROUTINE RCOLUM
 
 
-      real FUNCTION CHAP (CHI, Z, T, I)
+      Double Precision FUNCTION CHAP (CHI, Z, T, I)
 !      use cglow,only: nmaj,pi,Re,G
       implicit none
       include 'cglow.h'
 !Args:
-      real,intent(in) :: chi,z,t
-      integer,intent(in) :: I
+      real(kind=dp),intent(in) :: chi,z,t
+      integer(kind=8),intent(in) :: I
 !Local:
-      real AM(nmaj)
-      real gr,hn,hg,hf,sqhf,SPERFC 
+      real(kind=dp)AM(nmaj)
+      real(kind=dp) gr,hn,hg,hf,sqhf,SPERFC 
 
       DATA AM/16., 32., 28./
 
@@ -118,9 +118,10 @@ C
       End Function CHAP
 
 
-      pure real FUNCTION SPERFC(DUMMY) 
+      pure Double Precision FUNCTION SPERFC(DUMMY) 
       implicit none
-      real,intent(in) :: dummy
+      include 'cglow.h'
+      real(kind=dp),intent(in) :: dummy
       IF (DUMMY .LE. 8.) THEN
         SPERFC = (1.0606963+0.55643831*DUMMY) /
      >           (1.0619896+1.7245609*DUMMY+DUMMY*DUMMY)
@@ -136,11 +137,11 @@ C
       implicit none
       include 'cglow.h'
 ! Args:
-      real,intent(in) :: zz(jmax),zmaj(NMAJ,JMAX)
-      real,intent(out) :: ZVCD(NMAJ,JMAX)
+      real(kind=dp),intent(in) :: zz(jmax),zmaj(NMAJ,JMAX)
+      real(kind=dp),intent(out) :: ZVCD(NMAJ,JMAX)
 ! Local:
-      real rat
-      integer i, j
+      real(kind=dp) rat
+      integer(kind=8) i, j
 
       DO 200 I=1,NMAJ
       ZVCD(I,JMAX) =   ZMAJ(I,JMAX)

@@ -16,11 +16,11 @@
       implicit none
       include 'cglow.h'
 ! Args:
-      integer,intent(in) :: idate
-      real,intent(in) :: UT,glat,glong
-      real,intent(out):: sza
+      integer(kind=8),intent(in) :: idate
+      real(kind=dp),intent(in) :: UT,glat,glong
+      real(kind=dp),intent(out):: sza
 ! Local:  
-      real sdec,srasn,gst,rlat,rh,cossza,rlong
+      real(kind=dp) sdec,srasn,gst,rlat,rh,cossza,rlong
 
       RLAT = GLAT * PI/180.
       RLONG = GLONG * PI/180.
@@ -41,12 +41,12 @@
       implicit none
       include 'cglow.h'
 ! Args:
-      integer,intent(in) :: idate
-      real,intent(in) :: UT
-      real,intent(out):: SDEC,SRASN,GST
+      integer(kind=8),intent(in) :: idate
+      real(kind=dp),intent(in) :: UT
+      real(kind=dp),intent(out):: SDEC,SRASN,GST
 ! Local:
-      real fday,vl,slp,slong,sind,obliq,GG,DJ,cosd,T
-      integer iyr,iday
+      real(kind=dp) fday,vl,slp,slong,sind,obliq,GG,DJ,cosd,T
+      integer(kind=8) iyr,iday
 
       FDAY=UT/86400.
       IYR=IDATE/1000

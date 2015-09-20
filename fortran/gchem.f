@@ -191,10 +191,10 @@ C
       implicit none
       include 'cglow.h'
 
-      integer,PARAMETER :: NR=50
+      integer(kind=8),PARAMETER :: NR=50
 
-      integer idate,iscale,jlocal,kchem,ierr
-      real  UT, GLAT, GLONG, 
+      integer(kind=8) idate,iscale,jlocal,kchem,ierr
+      real(kind=dp)  UT, GLAT, GLONG, 
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),
@@ -219,7 +219,7 @@ C
      >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, E, DEN, ZETA, ZCETA, VCB
 
-      real A(NR), B(NR), BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
+      real(kind=dp) A(NR), B(NR), BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
      >          P(NEX,JMAX), L(NEX,JMAX),
@@ -229,7 +229,7 @@ C
      >          AA(JMAX), BB(JMAX), CC(JMAX), DD(JMAX), EE(JMAX),
      >          FF(JMAX), GG(JMAX), HH(JMAX),dz,gh
 
-      integer i,ic,iter,iw,ix,j200,n    
+      integer(kind=8) i,ic,iter,iw,ix,j200,n    
     
       real(kind=dp) :: COEF(JMAX,5), ROOT(JMAX)
 
@@ -562,7 +562,7 @@ C
       CALL VQUART (COEF, ROOT, J200)
 C
       DO 250 I=1,J200
-      E(I) =real(ROOT(I))
+      E(I) =real(ROOT(I),kind=dp)
   250 CONTINUE
 C
       E(J200+1) = E(J200) * ( E(J200+3) / E(J200) )
@@ -670,7 +670,7 @@ C
 C
 C O(1S):
 C
-      BZ(1,I) = 0.12 + 0.02 * ALOG10 (E(I)/ZO(I)*(300./ZTE(I))**0.7)
+      BZ(1,I) = 0.12 + 0.02 * LOG10 (E(I)/ZO(I)*(300./ZTE(I))**0.7)
       IF (BZ(1,I) .LT. 0.03) BZ(1,I)=0.03
       P(11,I)= AGLW(2,1,I)
      >       + BZ(1,I) * KZ(24,I) * DEN(6,I)  * E(I)

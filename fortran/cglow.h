@@ -14,17 +14,18 @@
       integer,parameter :: NF=4
 
       integer, parameter :: dp = kind(1.0D0)
-      integer, parameter :: sp = kind(1.0)
-      real, parameter    :: pi = 4.*ATAN(1.)
-
-      real, parameter    :: Re = 6.371e8  !radius of earh in centimeters
-      real, parameter    :: G  = 978.1    !gravitational constant dynes
+!      integer, parameter :: sp = kind(1.0)
+      real(kind=dp), parameter    :: pi = 4.*ATAN(1.)
+!radius of earth in centimeters
+      real(kind=dp), parameter    :: Re = 6.371e8  
+!gravitational constant dynes
+      real(kind=dp), parameter    :: G  = 978.1    
 
 ! Standard parameters for photoelectron or aurora runs (up to 50 keV):
       integer, PARAMETER :: JMAX=120
-!      integer, PARAMETER :: NBINS=190
+      integer, PARAMETER :: NBINS=190
 !
 ! Parameters for high energy aurora (up to 100 MeV):
 !      integer,PARAMETER :: JMAX=170
-      integer,PARAMETER :: NBINS=343
+!      integer,PARAMETER :: NBINS=343
 

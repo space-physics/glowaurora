@@ -11,15 +11,15 @@
       implicit none
       include 'cglow.h'
 ! Args:
-      Real, Intent(Out) :: ENER(Nbins), DEL(Nbins)
+      Real(kind=dp), Intent(Out) :: ENER(Nbins), DEL(Nbins)
 ! Local:
-      Integer N
+      Integer(kind=8) N
 
       DO 20 N=1,NBINS
         IF (N .LE. 21) THEN
-          ENER(N) = 0.5 * REAL(N)
+          ENER(N) = 0.5 * REAL(N,kind=dp)
         ELSE
-          ENER(N) = EXP (0.05 * REAL(N+26))
+          ENER(N) = EXP (0.05 * REAL(N+26,kind=dp))
         ENDIF
    20 CONTINUE
       DEL(1) = 0.5

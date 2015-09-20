@@ -35,26 +35,26 @@ C
       implicit none
       include 'cglow.h'
 
-      Integer, Intent(In) :: idate_
-      Real,Intent(In) :: Z(JMAX),ut_, glat_, glong_, f107a_, f107_,
-     &                  f107p, ap, PyPhitop(nbins,3)
+      Integer(kind=8), Intent(In) :: idate_
+      Real(kind=dp),Intent(In) :: Z(JMAX),ut_, glat_, glong_, f107a_, 
+     &              f107_,f107p, ap, PyPhitop(nbins,3)
 ! it's 3, not nmaj
-      Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
+      Real(kind=dp), Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
      & Pyecalc(jmax),Pypi(jmax),Pysi(jmax)
 
-      real D(8), T(2), SW(25),
+      real(kind=dp) D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ),dipd,emono,fmono,
      > rz12,stl,szad,totpi,totsi
-      integer i,iday,ijf,itail,j,j200,jmag,mmdd,ns
+      integer(kind=8) i,iday,ijf,itail,j,j200,jmag,mmdd,ns
 
       LOGICAL JF(12)
 
       DATA SW/25*1./
 
-      integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
+      integer(kind=8) IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      & IIMAXX(NBINS)
 
-      real UT, GLAT, GLONG,
+      real(kind=dp) UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
      >    ZNS(JMAX), ZND(JMAX), ZRHO(JMAX), ZE(JMAX),

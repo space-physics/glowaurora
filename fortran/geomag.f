@@ -13,15 +13,16 @@ C LATITUDE:-90 TO 90. LONGITUDE:0 TO 360 EAST.
 C
       SUBROUTINE GEOMAG(ART,LONG,LATI,MLONG,MLAT)
       implicit none
+      include 'cglow.h'
 
-      INTEGER,intent(in) :: ART
+      INTEGER(kind=8),intent(in) :: ART
 !inout to allow internal modif.
-      REAL,intent(inout)  :: LONG,LATI
-      real,intent(out) :: MLONG,MLAT    
+      REAL(kind=dp),intent(inout)  :: LONG,LATI
+      real(kind=dp),intent(out) :: MLONG,MLAT    
 
 !Local:
-      real,parameter :: FAKTOR=.0174532952
-      real cbg,cbm,ci,clg,clm,sbg,sbm,si,slg,slm,ylg,zpi
+      real(kind=dp),parameter :: FAKTOR=.0174532952
+      real(kind=dp) cbg,cbm,ci,clg,clm,sbg,sbm,si,slg,slm,ylg,zpi
 
       ZPI=FAKTOR*360.
       CBG=11.4*FAKTOR
