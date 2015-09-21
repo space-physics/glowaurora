@@ -301,13 +301,13 @@ C
      >                   /PRODWN(I,J)/DEL2(I))
      >             - PRODUP(I,J) * T1(I)
         if (.not.isfinite(GAMA(I))) then
-         print *,'GAMA PRODWNn1 PRODWN PRODWNp1 PRODUP',
+         write (0,*),'GAMA PRODWNn1 PRODWN PRODWNp1 PRODUP',
      >     ' PRODn1 PROD PRODp1 T1 T2 ALPHA DEL2',
      >     GAMA(I),PRODWN(I-1,J),PRODWN(I,J),PRODWN(I+1,J),
      >     PRODUP(I,J),PROD(I-1),PROD(I),PROD(I+1),
      >     T1(I),T2(I),ALPHA(I),
      >     DEL2(I)
-         stop 'etran: non-finite GAMA'
+         write (0,*) 'etran: non-finite GAMA'
         end if
       End DO
 C
@@ -528,8 +528,9 @@ C
       K(2) = (D(2) - C(2)*DEN(1)) / B(2)
       L(2) = A(2) / B(2)
       if (.not.isfinite(k(2))) then
-         print *,'K(2) D(2) C(2) DEN(1) B(2)',K(2),D(2),C(2),DEN(1),B(2)
-         stop 'etrans:impit non-finite K(2)'
+      write(0,*) '***********    **********'
+      write(0,*) 'K(2) D(2) C(2) DEN(1) B(2)',K(2),D(2),C(2),DEN(1),B(2)
+       write(0,*) 'etrans:impit non-finite K(2)'
       end if
 !      if (isnan(k(2))) stop 'etrans:impit NaN in K(2)'
 
@@ -540,8 +541,8 @@ C
         L(I) = A(I) / DEM
 
         if (isnan(K(i))) then
-         print *,k
-         stop'etrans:impit NaN in K(i)'
+         write(0,*) k
+         write(0,*) 'etrans:impit NaN in K(i)'
         end if
 !        if (isnan(L(i))) stop'etrans:impit NaN in L(i)'
       End DO   
@@ -555,7 +556,9 @@ C
       Do KK = 1, JMAX-3
         JK = I1 - KK
         DEN(JK) = K(JK) - L(JK) * DEN(JK + 1)
-        if (isnan(den(jk))) stop 'etrans:impit: NaN in DEN'
+        if (.not.isfinite(den(jk))) then 
+          write(0,*) 'etrans:impit: non-finite DEN'
+        end if
       End Do
 
       END Subroutine IMPIT
