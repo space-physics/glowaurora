@@ -147,6 +147,10 @@ C
           ZRHO(J) = D(6)
           ZNS(J) = D(8)
           ZTN(J) = T(2)
+          if (isnan(zo(j)))  stop 'NaN in O+ density'
+          if (isnan(zn2(j))) stop 'NaN in N2+ density'
+          if (isnan(zo2(j))) stop 'NaN in O2+ density'
+          if (isnan(ztn(j))) stop 'NaN in Tn'
         END DO
 C
 C
@@ -184,6 +188,9 @@ C
         ZXDEN(3,J) = ZE(J) * OUTF(5,J)/100.
         ZXDEN(6,J) = ZE(J) * OUTF(8,J)/100.
         ZXDEN(7,J) = ZE(J) * OUTF(9,J)/100.
+        if (isnan(ze(j))) stop 'NaN in Ne'
+        if (isnan(zti(j)))stop 'NaN in Ti'
+        if (isnan(zte(j)))stop 'NaN in Te'
       END DO
 C
 C
@@ -204,6 +211,7 @@ C
 C Set electron densities to calculated values below 200 km, constant
 C above:
 C
+      J200=0
       DO J=JMAX,1,-1
         IF (Z(J) .GT. 200.01) J200=J-1
       END DO
