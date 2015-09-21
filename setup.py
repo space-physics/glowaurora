@@ -27,7 +27,7 @@ with open('README.rst') as f:
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
                f2py_options=['--quiet'],
-               extra_f77_compile_args=['-finit-local-zero']
+               #extra_f77_compile_args=['-finit-local-zero'] #not needed
 )]
                #include_dirs=[root],
                #library_dirs=[root])]
@@ -48,11 +48,12 @@ setup(name='glowaurora',
                   ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
 
-	  install_requires=['msise00','pymap3d', 'histutils','pyiri90',
+	  install_requires=[#'msise00','pyiri90', #future
+                         'pymap3d', 'histutils',
                          'numpy','pandas','astropy'],
-      dependency_links = ['https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
+      dependency_links = [#'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
+                          #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90'
                           'https://github.com/scienceopen/histutils/tarball/master#egg=histutils',
                           'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d',
-                          'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90'
                             ],
       )
