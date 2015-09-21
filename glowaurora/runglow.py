@@ -6,6 +6,7 @@ code wrapping in Python by Michael Hirsch
 from __future__ import division,absolute_import
 from itertools import chain
 from matplotlib.pyplot import figure, subplots,tight_layout
+from matplotlib.ticker import LogFormatterMathtext, MultipleLocator
 from pandas import DataFrame
 from numpy import hstack,asarray,rollaxis
 from os import chdir
@@ -19,6 +20,9 @@ import glowaurora
 from glowaurora import glowfort
 #
 glowpath=glowaurora.__path__[0]
+
+dymaj=100
+dymin=20
 
 def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     chdir(glowpath)
@@ -71,6 +75,12 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     return ver,photIon,isrparam,phitop,zceta
 #%% plot
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
+    def _nicez(ax):
+        ax.set_ylim(top=350,bottom=80)
+        ax.yaxis.set_major_locator(MultipleLocator(dymaj))
+        ax.yaxis.set_minor_locator(MultipleLocator(dymin))
+        ax.grid(True,which='major',linewidth=1.)
+        ax.grid(True,which='minor',linewidth=0.5)
 #%% incident flux at top of ionosphere
     ax = figure().gca()
     ax.plot(phitop.index,phitop['diffnumflux'])
@@ -90,9 +100,9 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.plot(ver.values,ver.index)
     ax.set_xlabel('VER for $E_0={}$'.format(E0),fontsize='large')
     ax.set_ylabel('altitude [km]',fontsize='large')
-    ax.set_ylim(top=400,bottom=ver.index[0])
+    _nicez(ax)
     ax.set_xscale('log')
-    ax.set_xlim(left=1e-4)
+    ax.set_xlim(left=1e-5)
     ax.legend(ver.columns)
     ax.set_title('Volume emission rate',fontsize='x-large')
 
@@ -101,7 +111,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.set_xlabel('ionization',fontsize='large')
     ax.set_xscale('log')
     ax.set_xlim(left=1e-1)
-    ax.set_ylim(top=400)
+    _nicez(ax)
     ax.legend(photIon.columns[:2])
     ax.set_title('Photo and e$^-$ impact ionization for $E_0={}$'.format(E0),fontsize='x-large')
 
@@ -111,7 +121,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.set_xlabel('Density',fontsize='large')
     ax.set_xscale('log')
     ax.set_xlim(left=1e-3)
-    ax.set_ylim(top=400)
+    _nicez(ax)
     ax.legend(photIon.columns[2:])
     ax.set_title('Electron and Ion Densities for $E_0={}$'.format(E0),fontsize='x-large')
 
@@ -119,7 +129,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     ax.semilogx(isr[['Te','Ti']], isr.index)
     ax.set_xlabel('Temperature [K]',fontsize='large')
     ax.legend(isr.columns[1:])
-    ax.set_ylim(top=400)
+    _nicez(ax)
     ax.set_title('Particle Temperature for $E_0={}$'.format(E0),fontsize='x-large')
 
     for a in axs:
@@ -146,7 +156,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
     sion = DataFrame(index=ver.index,data=sion.T,columns=['O','O2','N2'])
     ax.plot(sion,ver.index)
     ax.set_xscale('log')
-    ax.set_xlim(left=1e-6)
+    ax.set_xlim(left=1e-4)
     ax.set_xlabel('e$^-$ impact ioniz. rate',fontsize='large')
     ax.set_title('electron impact ioniz. rates for $E_0={}$'.format(E0),fontsize='x-large')
     #ax.legend(True)

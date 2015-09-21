@@ -2,12 +2,12 @@
 # Michael Hirsch
 
 #cleanup from old build (force recompilation)
-rm -rf build dist glowaurora.egg-info
+[[ -z $2 ]] && { echo "removing old fortran .so"; rm -rf build dist glowaurora.egg-info; }
 
 # call f2py to compile fortran and copy into install directory
 python$1 setup.py install
 
-if [[ $? -eq 0 ]]; then
+if [[ $? -eq 0 ]] && [[ -z $2 ]]; then
 # FIXME manual monkeypatch of fortran data due to missing path
     (
     cd $HOME
@@ -15,7 +15,7 @@ if [[ $? -eq 0 ]]; then
 
     mv -v $modpath/../glowfort.* $modpath/
     )
-else
+elif [[ -z $2 ]]; then
     echo error in compiling GLOW package
     exit 1
 fi
