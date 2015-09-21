@@ -75,7 +75,8 @@ C
       COMMON /CXSECT/ SIGS, PE, PIN, SIGA, SEC, SIGEX, SIGIX, IIMAXX
 
       ! 120 values for Z -> Jmax=120 in cglow.h
-      DATA Z/     80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
+      DATA Z/              72.4, 73., 74., 75., 76., 77., 78., 79.,
+     &            80., 81., 82., 83., 84., 85., 86., 87., 88., 89.,
      >            90., 91., 92., 93., 94., 95., 96., 97., 98., 99.,
      >           100.,101.,102.,103.,104.,105.,106.,107.,108.,109.,
      >           110.,111.5,113.,114.5,116.,118.,120.,122.,124.,126.,
@@ -131,6 +132,12 @@ C
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
+          ! If altitude under 100km and O number density there < 1e7 cm^-3,
+          ! replace O density with O2 density there
+!**********************************
+!very important for not getting all-NaN output below 72.50 km!!!
+          IF (ZO(J) .LT. 1.E7 .AND. Z(J) .LT. 100.) ZO(J) = D(4)*1.E-7
+!***********************************
           ZN2(J) = D(3)
           ZO2(J) = D(4)
           ZRHO(J) = D(6)
@@ -220,13 +227,13 @@ C
       WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
-!
+ 
 C Output total energy deposition,
 C photoionization, electron impact ionization,
 C electron density, and ion densities:
-!
+ 
       write (6,690)
-  690 format ('   Z     Edep    Photoion   EIion    Ecalc     ',
+  690 format ('   Z      Edep    Photoion   EIion    Ecalc     ',
      >        'O+(2P)    '
      >        'O+(2D)    O+(4S)     N+         N2+       O2+       NO+')
 !    >        '     O        O2         N2        NO')
