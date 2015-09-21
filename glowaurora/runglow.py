@@ -5,11 +5,12 @@ code wrapping in Python by Michael Hirsch
 """
 from __future__ import division,absolute_import
 from itertools import chain
-from matplotlib.pyplot import figure, subplots,tight_layout
+from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import LogFormatterMathtext, MultipleLocator
 from pandas import DataFrame
-from numpy import hstack,asarray,rollaxis
+from numpy import hstack,asarray,rollaxis,degrees
 from os import chdir
+from os.path import join
 try:
     import seaborn
 except:
@@ -21,8 +22,9 @@ from glowaurora import glowfort
 #
 glowpath=glowaurora.__path__[0]
 
-dymaj=100
-dymin=20
+dymaj=50
+dymin=10
+dpi = 100
 
 def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     chdir(glowpath)
@@ -72,99 +74,138 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
                        columns=['diffnumflux'])
     zceta = glowfort.cglow.zceta.T
 
-    return ver,photIon,isrparam,phitop,zceta
+    sza = degrees(glowfort.cglow.sza)
+
+    return ver,photIon,isrparam,phitop,zceta,sza
 #%% plot
-def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,E0):
-    def _nicez(ax):
-        ax.set_ylim(top=350,bottom=80)
+def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,makeplot,odir=''):
+    if makeplot is None:
+        return
+
+    def _nicez(ax,zlim):
+        ax.set_ylim(zlim)
         ax.yaxis.set_major_locator(MultipleLocator(dymaj))
         ax.yaxis.set_minor_locator(MultipleLocator(dymin))
         ax.grid(True,which='major',linewidth=1.)
         ax.grid(True,which='minor',linewidth=0.5)
+#%% neutral background (MSIS) and Te,Ti (IRI-90)
+    ind = ['nO','nO2','nN2','nNO']
+    fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
+    fg.suptitle('{} ({},{})  $E_0={:.1f}$ keV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0/1e3,sza))
+
+    ax = axs[0]
+    ax.semilogx(photIon[ind], photIon.index)
+    ax.set_xlabel('Number Density')
+    ax.set_xscale('log')
+    ax.set_xlim(left=1e1)
+    ax.set_ylabel('Altitude [km]')
+    _nicez(ax,zminmax)
+    ax.legend(ind)
+
+    ind=['Te','Ti']
+    ax = axs[1]
+    ax.semilogx(isr[ind], isr.index)
+    ax.set_xlabel('Temperature [K]')
+    ax.legend(ind)
+    _nicez(ax,zminmax)
+    ax.set_title('Background Temperature')
+
+    writeplots(fg,'bg_',E0,makeplot,odir)
 #%% incident flux at top of ionosphere
-    ax = figure().gca()
-    ax.plot(phitop.index,phitop['diffnumflux'])
-    ax.set_title('Incident Flux for $E_0={}$'.format(E0),fontsize='x-large')
-    ax.set_xlabel('Beam Energy [eV]',fontsize='large')
-    ax.set_ylabel('Flux',fontsize='large')
+    fg = figure()
+    ax = fg.gca()
+    ax.plot(phitop.index,phitop['diffnumflux'],marker='.')
+    ax.set_title('Incident Flux, Total Flux={:.1f},  $E_0={:.1f}$ keV'.format(flux,E0/1e3))
+    ax.set_xlabel('Beam Energy [eV]')
+    ax.set_ylabel('Flux [erg sr$^{-1}$ s$^{-1}$]')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    ax.set_ylim(bottom=1e-4)
+    ax.set_ylim(1e-4,1e6)
     ax.tick_params(axis='both',which='major',labelsize='medium')
+
+    writeplots(fg,'incflux_',E0,makeplot,odir)
 #%% results of impacts
-    fg,axs = subplots(1,4,sharey=True, figsize=(15,8))
-    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='x-large')
+    fg,axs = subplots(1,3,sharey=True, figsize=(15,8))
+    fg.suptitle('{} ({},{})  $E_0={:.1f}$ keV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0/1e3,sza))
     tight_layout(pad=3.2, w_pad=0.3)
 
     ax = axs[0]
     ax.plot(ver.values,ver.index)
-    ax.set_xlabel('VER for $E_0={}$'.format(E0),fontsize='large')
-    ax.set_ylabel('altitude [km]',fontsize='large')
-    _nicez(ax)
+    ax.set_xlabel('Volume Emission Rate')
+    ax.set_ylabel('altitude [km]')
+    _nicez(ax,zminmax)
     ax.set_xscale('log')
-    ax.set_xlim(left=1e-5)
+    ax.set_xlim(1e-5,1e3)
     ax.legend(ver.columns)
-    ax.set_title('Volume emission rate',fontsize='x-large')
-
+    ax.set_title('Volume emission rate')
+#
+    ind=['photoIoniz','eImpactIoniz']
     ax = axs[1]
-    ax.plot(photIon[['photoIoniz','eImpactIoniz']],photIon.index)
-    ax.set_xlabel('ionization',fontsize='large')
+    ax.plot(photIon[ind],photIon.index)
+    ax.set_xlabel('ionization')
     ax.set_xscale('log')
     ax.set_xlim(left=1e-1)
-    _nicez(ax)
-    ax.legend(photIon.columns[:2])
-    ax.set_title('Photo and e$^-$ impact ionization for $E_0={}$'.format(E0),fontsize='x-large')
+    _nicez(ax,zminmax)
+    ax.legend(ind)
+    ax.set_title('Photo and e$^-$ impact ionization')
 
+    ind=['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+']
     ax = axs[2]
-    ax.semilogx(photIon[['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
-                    'nO','nO2','nN2','nNO']], photIon.index)
-    ax.set_xlabel('Density',fontsize='large')
+    ax.semilogx(photIon[ind], photIon.index)
+    ax.set_xlabel('Density')
     ax.set_xscale('log')
     ax.set_xlim(left=1e-3)
-    _nicez(ax)
-    ax.legend(photIon.columns[2:])
-    ax.set_title('Electron and Ion Densities for $E_0={}$'.format(E0),fontsize='x-large')
+    _nicez(ax,zminmax)
+    ax.legend(ind)
+    ax.set_title('Electron and Ion Densities')
 
-    ax = axs[3]
-    ax.semilogx(isr[['Te','Ti']], isr.index)
-    ax.set_xlabel('Temperature [K]',fontsize='large')
-    ax.legend(isr.columns[1:])
-    _nicez(ax)
-    ax.set_title('Particle Temperature for $E_0={}$'.format(E0),fontsize='x-large')
-
-    for a in axs:
-        a.grid(True)
-        a.tick_params(axis='both',which='major',labelsize='medium')
-
+    writeplots(fg,'effects_',E0,makeplot,odir)
 #%% total energy deposition vs. altitude
     fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
-    fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='x-large')
+    fg.suptitle('{} ({},{})  $E_0={:.1f}$ keV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0/1e3,sza))
     tight_layout(pad=3.2, w_pad=0.3)
 
     ax = axs[0]
     tez = glowfort.cglow.tez
     ax.plot(tez,ver.index)
     ax.set_xscale('log')
-    ax.set_xlim(left=1e-1)
-    ax.set_ylim(top=ver.index[-1],bottom=ver.index[0])
-    ax.set_xlabel('Energy Deposited',fontsize='large')
-    ax.set_ylabel('Altitude [km]',fontsize='large')
-    ax.set_title('Total Energy Depostiion for $E_0={}$'.format(E0),fontsize='x-large')
+    ax.set_xlim(1e-1,1e6)
+    _nicez(ax,zminmax)
+    ax.set_xlabel('Energy Deposited')
+    ax.set_ylabel('Altitude [km]')
+    ax.set_title('Total Energy Depostiion')
 #%% e^- impact ionization rates from ETRANS
+    ind=['O','O2','N2']
     ax = axs[1]
     sion = glowfort.cglow.sion
-    sion = DataFrame(index=ver.index,data=sion.T,columns=['O','O2','N2'])
+    sion = DataFrame(index=ver.index,data=sion.T,columns=ind)
     ax.plot(sion,ver.index)
     ax.set_xscale('log')
-    ax.set_xlim(left=1e-4)
-    ax.set_xlabel('e$^-$ impact ioniz. rate',fontsize='large')
-    ax.set_title('electron impact ioniz. rates for $E_0={}$'.format(E0),fontsize='x-large')
-    #ax.legend(True)
+    ax.set_xlim(1e-5,1e4)
+    _nicez(ax,zminmax)
+    ax.set_xlabel('e$^-$ impact ioniz. rate')
+    ax.set_title('electron impact ioniz. rates')
+    ax.legend(ind)
+
+    writeplots(fg,'enerdep_',E0,makeplot,odir)
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
 
     ax = figure().gca()
     for zc in rollaxis(zceta,1):
         ax.plot(ver.index,zc)
-    ax.set_xlabel('emission constituants for $E_0={}$'.format(E0),fontsize='large')
+    ax.set_xlabel('emission constituants, $E_0={:.1f}$ keV'.format(E0/1e3))
     #ax.legend(True)
+
+    writeplots(fg,'constit_',E0,makeplot,odir)
+
+def writeplots(fg,plotprefix,E0,method,odir):
+    draw() #Must have this here or plot doesn't update in animation multiplot mode!
+    #TIF was not faster and was 100 times the file size!
+    #PGF is slow and big file,
+    #RAW crashes
+    #JPG no faster than PNG
+    if 'png' in method:
+        cn = join(odir,(plotprefix + 'beam{:.0f}.png'.format(E0)))
+        print('write {}'.format(cn))
+        fg.savefig(cn,bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async
