@@ -126,6 +126,7 @@ C
           ! If altitude under 100km and O number density there < 1e7 cm^-3,
           ! replace O density with O2 density there
           IF (ZO(J) .LT. 1.E7 .AND. Z(J) .LT. 100.) ZO(J) = D(4)*1.E-7
+
           ZN2(J) = D(3)
           ZO2(J) = D(4)
           ZRHO(J) = D(6)
@@ -196,10 +197,10 @@ C
       WRITE (6,445) SZAD, STL, DIPD, EFRAC, IERR
   445 FORMAT (' SZA=',F5.1,' LST=',F5.2,' Dip=',F5.1,
      >        ' Ec=',F6.3,' Ie=',I1)
-C
+ 
 C
 C Output total energy deposition, and electron impact ionization rates:`
-C
+ 
       write (6,690)
   690 format ('   Z     Edep      Itot     I(O)      I(O2)',
      >        '     I(N2)')
