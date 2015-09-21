@@ -23,8 +23,8 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     chdir(glowpath)
     yd,utsec = datetime2yd(dt)[:2]
 
-    z = range(80,110+1,1)
-    #z = list(range(30,110+1,1))
+    #z = range(80,110+1,1)
+    z = list(range(30,110+1,1))
     z += (
          [111.5,113.,114.5,116.] +
          list(range(118,150+2,2) + range(153,168+3,3) + range(172,180+4,4) +
