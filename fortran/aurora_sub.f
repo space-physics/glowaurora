@@ -48,7 +48,6 @@ C
       integer i,iday,ijf,itail,j,j200,jmag,mmdd,ns
 
       LOGICAL JF(12)
-
       DATA SW/25*1./
 
       integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
@@ -98,7 +97,7 @@ C
 C Set other parameters and switches:
 C
       JLOCAL = 0
-      KCHEM=4
+      KCHEM = 4
       ISCALE = 1
       XUVFAC = 3.
       HLYBR = 0.
@@ -116,13 +115,19 @@ C
       IF (STL .GT. 24.) STL = STL - 24.
 C
 C
-C Call MSIS-2K to get neutral densities and temperature:
+C Call MSIS to get neutral densities and temperature:
 C
         CALL TSELEC(SW)
 
         DO J=1,JMAX
           CALL GTD7(IDATE,UT,Z(J),GLAT,GLONG,STL,F107A,F107P,AP,48,D,T)
           ZO(J) = D(2)
+          ! If altitude under 100km and O number density there < 1e7 cm^-3,
+          ! replace O density with O2 density there
+!**********************************
+!very important for not getting all-NaN output below 72.50 km!!!
+          IF (ZO(J) .LT. 1.E7 .AND. Z(J) .LT. 100.) ZO(J) = D(4)*1.E-7
+!***********************************
           ZN2(J) = D(3)
           ZO2(J) = D(4)
           ZRHO(J) = D(6)
@@ -152,8 +157,7 @@ C
       END DO
 
       JF(5) = .FALSE.
-!no disk output for iri90
-      JF(12) = .FALSE.
+      JF(12) = .FALSE. !no disk output for iri90
       JMAG = 0
       RZ12 = -F107A
       IDAY = IDATE - IDATE/1000*1000
