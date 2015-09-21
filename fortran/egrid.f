@@ -15,18 +15,21 @@
 ! Local:
       Integer N
 
-      DO 20 N=1,NBINS
+      DO N=1,NBINS
         IF (N .LE. 21) THEN
           ENER(N) = 0.5 * REAL(N)
         ELSE
           ENER(N) = EXP (0.05 * REAL(N+26))
         ENDIF
-   20 CONTINUE
+      end do
+
       DEL(1) = 0.5
-      DO 40 N=2,NBINS
+      DO N=2,NBINS
         DEL(N) = ENER(N)-ENER(N-1)
-   40 CONTINUE
-      DO 60 N=1,NBINS
+      End Do
+
+      DO N=1,NBINS
         ENER(N) = ENER(N) - DEL(N)/2.0
-   60 CONTINUE
+      End Do
+
       End Subroutine Egrid

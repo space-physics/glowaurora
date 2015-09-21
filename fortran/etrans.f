@@ -186,10 +186,11 @@ C
 C
 C Divide downward flux at top of atmos. by average pitch angle cosine:
 C
-      DO 120 J=1,NBINS
+      DO  J=1,NBINS
         PHIINF(J) = PHITOP(J) / AVMU
-        if (isnan(phiinf(j))) stop 'etrans: NaN in PhiInf'
-  120 CONTINUE
+        if(debug .and. .not.isfinite(phiinf(j)))
+     &              write(0,*)'etrans: nonfinite PhiInf'
+      End Do
 C
 C
 C Calcualte delta z's:
@@ -300,7 +301,7 @@ C
      >                - (PRODWN(I+1,J) - PRODWN(I-1,J))
      >                   /PRODWN(I,J)/DEL2(I))
      >             - PRODUP(I,J) * T1(I)
-        if (.not.isfinite(GAMA(I))) then
+        if (debug .and. .not.isfinite(GAMA(I))) then
          write (0,*),'GAMA PRODWNn1 PRODWN PRODWNp1 PRODUP',
      >     ' PRODn1 PROD PRODp1 T1 T2 ALPHA DEL2',
      >     GAMA(I),PRODWN(I-1,J),PRODWN(I,J),PRODWN(I+1,J),
@@ -321,7 +322,8 @@ C
       CALL IMPIT(FLUXJ)
       DO I = 1, JMAX
         PHIDWN(I) = DEN(I)
-        if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN (jlocal != 1)'
+        if(debug .and..not.isfinite(phidwn(i))) 
+     &       write(0,*)'etrans: nonfinite PHIDWN (jlocal != 1)'
       End Do
 C
 C
@@ -337,7 +339,8 @@ C
   900 CONTINUE
       DO I=2,JMAX
         PHIUP(I) = R1(I) + (PHIUP(I-1)-R1(I)) * EXPT2(I)        
-        if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP  (jlocal != 1)'
+        if (debug .and. .not.isfinite(phiup(i))) 
+     &           write(0,*) 'etrans: nonfinite PHIUP  (jlocal != 1)'
       End DO
 
       GOTO 930
@@ -353,8 +356,10 @@ C
         ENDIF
         PHIUP(I) = (PROD(I)/2.0 + PRODUP(I,J)) / (T2(I) - T1(I))
         PHIDWN(I) = (PROD(I)/2.0 + PRODWN(I,J)) / (T2(I) - T1(I))
-        if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP  (jlocal=1)'
-        if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN (jlocal=1)'
+        if (debug .and. .not. isfinite(phiup(i))) 
+     &       write(0,*) 'etrans: nonfinite PHIUP  (jlocal=1)'
+        if (debug .and. .not. isfinite(phidwn(i))) 
+     &       write(0,*) 'etrans: nonfinite PHIDWN (jlocal=1)'
       End Do
 C
   930 CONTINUE  ! if jlocal != 1
@@ -435,11 +440,12 @@ C
 !            if (isnan(zmaj(n,i))) stop 'etrans: NaN in ZMAJ'
 !            if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP'
 !            if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN'
-            if (isnan(secp(n,i))) stop 'etrans: NaN in SECP'
+          if (debug .and. .not.isfinite(secp(n,i)))
+     &             write(0,*)'etrans: nonfinit SECP'
             SION(N,I) = SION(N,I) + SECP(N,I) * DEL(K)
             
-            if (isnan(sion(n,i))) 
-     >        stop 'etrans: NaN in impact ionization SION'
+            if (debug .and. .not.isfinite(sion(n,i))) 
+     &        write(0,*) 'etrans: nonfinite impact ionization SION'
 
             SECION(I) = SECION(I) + SECP(N,I) * DEL(K)
             PRODUP(I,K) = PRODUP(I,K) + (SECP(N,I)*.5*RMUSIN)
@@ -521,13 +527,15 @@ C
         B(I) = -2. * PSI(I) / DELS(I) + BETA(I)
         C(I) = PSI(I) / DELM(I) - ALPHA(I) / DEL2(I)
         D(I) = GAMA(I)
-        if (isnan(c(i))) stop 'etrans:impit NaN in C(I)'
-        if (isnan(d(i))) stop 'etrans:impit NaN in D(I)'
+       if(debug .and. .not.isfinite(c(i)))
+     &              write(0,*)'etrans:impit nonfinite C(I)'
+       if(debug .and. .not.isfinite(d(i)))
+     &              write(0,*)'etrans:impit nonfinite D(I)'
       End Do
 
       K(2) = (D(2) - C(2)*DEN(1)) / B(2)
       L(2) = A(2) / B(2)
-      if (.not.isfinite(k(2))) then
+      if (debug .and. .not.isfinite(k(2))) then
       write(0,*) '***********    **********'
       write(0,*) 'K(2) D(2) C(2) DEN(1) B(2)',K(2),D(2),C(2),DEN(1),B(2)
        write(0,*) 'etrans:impit non-finite K(2)'
@@ -536,11 +544,12 @@ C
 
       DO I = 3, I1
         DEM = B(I) - C(I) * L(I-1)
-        if (isnan(dem)) stop 'etrans:impit NaN in DEM'
+        if (debug .and. .not.isfinite(dem)) 
+     &               write(0,*)'etrans:impit nonfinite DEM'
         K(I) = (D(I) - C(I)*K(I-1)) / DEM
         L(I) = A(I) / DEM
 
-        if (isnan(K(i))) then
+        if (debug .and. .not. isfinite(K(i))) then
          write(0,*) k
          write(0,*) 'etrans:impit NaN in K(i)'
         end if
@@ -550,13 +559,14 @@ C
       DEN(I1) = (K(I1) - L(I1)*FLUXJ) / (1. + L(I1)*FAC)
 !      if (isnan(K(i1))) stop'etrans:impit NaN in K(i1)'
 !      if (isnan(L(i1))) stop'etrans:impit NaN in L(i1)'
-      if (isnan(den(i1))) stop 'etrans:impit: NaN in DEN(I1)'
+      if(debug .and. .not.isfinite(den(i1)))
+     &           write(0,*)'impit nonfinite DEN(I1)'
       DEN(JMAX) = DEN(I1)
       
       Do KK = 1, JMAX-3
         JK = I1 - KK
         DEN(JK) = K(JK) - L(JK) * DEN(JK + 1)
-        if (.not.isfinite(den(jk))) then 
+        if (debug .and. .not.isfinite(den(jk))) then 
           write(0,*) 'etrans:impit: non-finite DEN'
         end if
       End Do

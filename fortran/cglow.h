@@ -4,6 +4,8 @@
 ! If not a tgcm run, JMAX is set in the namelist input file
 !
 !  integer :: JMAX
+      logical,parameter :: debug=.false.
+
       integer,parameter :: lmax=123
       integer,parameter :: NMAJ=3
       integer,parameter :: NEI=10
@@ -22,9 +24,9 @@
 
 ! Standard parameters for photoelectron or aurora runs (up to 50 keV):
       integer, PARAMETER :: JMAX=120
-!      integer, PARAMETER :: NBINS=190
+      integer, PARAMETER :: NBINS=190
 !
 ! Parameters for high energy aurora (up to 100 MeV):
 !      integer,PARAMETER :: JMAX=170
-      integer,PARAMETER :: NBINS=343
+!      integer,PARAMETER :: NBINS=343
 
