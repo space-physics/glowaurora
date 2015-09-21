@@ -7,6 +7,8 @@ usage in the Fortran77 code. Stan Solomon is upgrading the GLOW code to Fortran 
 so I will perhaps try again with dynamic bin size for altitude and energy when
 that code is available.
 
+f10.7 and ap available from ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
+
 Michael Hirsch
 Sept 2015
 """
