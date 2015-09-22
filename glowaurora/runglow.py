@@ -13,6 +13,7 @@ from os import chdir
 from os.path import join
 try:
     import seaborn
+    seaborn.set_set_context('poster')
 except:
     pass
 #
@@ -57,8 +58,7 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 
     ver = DataFrame(index=z,
                     data=zeta[:,:11],
-                    columns=[3371, 4278, 5200, 5577, 6300,7320,10400,3466,
-                             7774, 8446,3726])
+                    columns=[3371, 4278, 5200, 5577, 6300,7320,10400,3466,7774, 8446,3726])
     photIon = DataFrame(index=z,
                    data=hstack((photI[:,None],ImpI[:,None],ecalc[:,None],ion)),
                     columns=['photoIoniz','eImpactIoniz','ne',
@@ -88,11 +88,13 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
         ax.yaxis.set_minor_locator(MultipleLocator(dymin))
         ax.grid(True,which='major',linewidth=1.)
         ax.grid(True,which='minor',linewidth=0.5)
+        ax.tick_params(axis='both',which='major',labelsize='medium')
+
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
-    ind = ['nO','nO2','nN2','nNO']
     fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
     fg.suptitle('{} ({},{})  $E_0={:.1f}$ keV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0/1e3,sza))
 
+    ind = ['nO','nO2','nN2','nNO']
     ax = axs[0]
     ax.semilogx(photIon[ind], photIon.index)
     ax.set_xlabel('Number Density')
@@ -101,6 +103,7 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
     ax.set_ylabel('Altitude [km]')
     _nicez(ax,zminmax)
     ax.legend(ind)
+    ax.set_title('Neutral Number Density')
 
     ind=['Te','Ti']
     ax = axs[1]
@@ -121,36 +124,39 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_ylim(1e-4,1e6)
-    ax.tick_params(axis='both',which='major',labelsize='medium')
 
     writeplots(fg,'incflux_',E0,makeplot,odir)
-#%% results of impacts
-    fg,axs = subplots(1,3,sharey=True, figsize=(15,8))
+#%% volume emission rate
+    fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
     fg.suptitle('{} ({},{})  $E_0={:.1f}$ keV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0/1e3,sza))
     tight_layout(pad=3.2, w_pad=0.3)
 
+    ind= [4278, 5200, 5577, 6300]
     ax = axs[0]
-    ax.plot(ver.values,ver.index)
+    ax.plot(ver[ind].values,ver.index)
     ax.set_xlabel('Volume Emission Rate')
     ax.set_ylabel('altitude [km]')
     _nicez(ax,zminmax)
     ax.set_xscale('log')
     ax.set_xlim(1e-5,1e3)
-    ax.legend(ver.columns)
-    ax.set_title('Volume emission rate')
-#
-    ind=['photoIoniz','eImpactIoniz']
-    ax = axs[1]
-    ax.plot(photIon[ind],photIon.index)
-    ax.set_xlabel('ionization')
-    ax.set_xscale('log')
-    ax.set_xlim(left=1e-1)
-    _nicez(ax,zminmax)
     ax.legend(ind)
-    ax.set_title('Photo and e$^-$ impact ionization')
+    ax.set_title('Volume Emission Rate: Visible')
 
+    ind = [3371,7320,10400,3466,7774, 8446,3726]
+    ax = axs[1]
+    ax.plot(ver[ind].values,ver.index)
+    ax.set_xlabel('Volume Emission Rate')
+    _nicez(ax,zminmax)
+    ax.set_xscale('log')
+    ax.set_xlim(1e-5,1e3)
+    ax.legend(ind)
+    ax.set_title('Volume Emission Rate: IR & UV')
+
+    writeplots(fg,'ver_',E0,makeplot,odir)
+#%% Ne, Ni
     ind=['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+']
-    ax = axs[2]
+    fg=figure()
+    ax = fg.gca()
     ax.semilogx(photIon[ind], photIon.index)
     ax.set_xlabel('Density')
     ax.set_xscale('log')
@@ -161,22 +167,32 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
 
     writeplots(fg,'effects_',E0,makeplot,odir)
 #%% total energy deposition vs. altitude
-    fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
+    fg,axs = subplots(1,3,sharey=True, figsize=(15,8))
     fg.suptitle('{} ({},{})  $E_0={:.1f}$ keV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0/1e3,sza))
     tight_layout(pad=3.2, w_pad=0.3)
 
-    ax = axs[0]
+    ax = axs[2]
     tez = glowfort.cglow.tez
     ax.plot(tez,ver.index)
     ax.set_xscale('log')
     ax.set_xlim(1e-1,1e6)
     _nicez(ax,zminmax)
     ax.set_xlabel('Energy Deposited')
-    ax.set_ylabel('Altitude [km]')
     ax.set_title('Total Energy Depostiion')
-#%% e^- impact ionization rates from ETRANS
-    ind=['O','O2','N2']
+
+# e^- impact ionization rates from ETRANS
+    ind=['photoIoniz','eImpactIoniz']
     ax = axs[1]
+    ax.plot(photIon[ind],photIon.index)
+    ax.set_xlabel('ionization')
+    ax.set_xscale('log')
+    ax.set_xlim(left=1e-1)
+    _nicez(ax,zminmax)
+    ax.legend(ind)
+    ax.set_title('Photo and e$^-$ impact ionization')
+
+    ind=['O','O2','N2']
+    ax = axs[0]
     sion = glowfort.cglow.sion
     sion = DataFrame(index=ver.index,data=sion.T,columns=ind)
     ax.plot(sion,ver.index)
@@ -184,14 +200,15 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
     ax.set_xlim(1e-5,1e4)
     _nicez(ax,zminmax)
     ax.set_xlabel('e$^-$ impact ioniz. rate')
+    ax.set_ylabel('Altitude [km]')
     ax.set_title('electron impact ioniz. rates')
     ax.legend(ind)
 
-    writeplots(fg,'enerdep_',E0,makeplot,odir)
+    writeplots(fg,'ioniz_',E0,makeplot,odir)
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
-
-    ax = figure().gca()
+    fg = figure()
+    ax = fg.gca()
     for zc in rollaxis(zceta,1):
         ax.plot(ver.index,zc)
     ax.set_xlabel('emission constituants, $E_0={:.1f}$ keV'.format(E0/1e3))

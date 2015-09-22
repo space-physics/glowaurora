@@ -31,10 +31,7 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
         ver,photIon,isr,phitop,zceta,sza = runglowaurora(flux,e0,
                                               dt,glat,glon,
                                               f107a,f107,f107p,ap)
-
         vers.append(ver)
-
-        print('energy bins used {}'.format(phitop.index))
 
         plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
 
