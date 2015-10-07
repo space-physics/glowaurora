@@ -1,4 +1,4 @@
-#!/bin/bash
+./#!/bin/bash
 # Michael Hirsch
 
 #cleanup from old build (force recompilation)
@@ -12,6 +12,7 @@ if [[ $? -eq 0 ]] && [[ -z $2 ]]; then
     (
     cd $HOME
     modpath=$(python$1 -c "import glowaurora; print(glowaurora.__path__[0])")
+    echo "modpath = $modpath"
 
     mv -v $modpath/../glowfort.* $modpath/
     )

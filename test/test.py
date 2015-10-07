@@ -8,9 +8,10 @@ f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rco
 """
 from __future__ import division,absolute_import
 from datetime import datetime
+from itertools import chain
 from numpy import array,zeros,float32,log,arange,append,isclose,nan
 from numpy.testing import assert_allclose
-from os import chdir,environ
+from os import chdir,environ,getcwd
 #
 from histutils.fortrandates import datetime2yd,datetime2gtd
 from msise00.runmsis import rungtd1d
@@ -20,11 +21,23 @@ chdir(environ['HOME'])
 import glowaurora
 from glowaurora import glowfort
 chdir(glowaurora.__path__[0])
+print(getcwd())
 #################################
 #%% test inputs
-z = arange(80,110+1,1)
-z = append(z,array([111.5,113.,114.5,116.,118.,120.,122.,124.,126., 128.,130.,132.,134.,136.,138.,140.,142.,144.,146., 148.,150.,153.,156.,159.,162.,165.,168.,172.,176., 180.,185.,190.,195.,200.,205.,211.,217.,223.,230.,237.,244.,252.,260.,268.,276.,284.,292.,300.,309., 318.,327.,336.,345.,355.,365.,375.,385.,395.,406., 417.,428.,440.,453.,467.,482.,498.,515.,533.,551., 570.,590.,610.,630.,650.,670.,690.,710.,730.,750., 770.,790.,810.,830.,850.,870.,890.,910.,930.,950.]))
-nbins = 190; jmax=120 #glow.h
+z = list(range(30,110+1,1))
+z += (
+         [111.5,113.,114.5,116.] +
+         list(chain(range(118,150+2,2),range(153,168+3,3),range(172,180+4,4),
+                    range(185,205+5,5),range(211,223+6,6),range(230,244+7,7),
+                    range(252,300+8,8),range(309,345+9,9),range(355,395+10,10),
+                    range(406,428+11,11))) +
+         [440,453,467,482,498,515,533,551] +
+         list(range(570,950+20,20))
+         )
+z = array(z)
+
+nbins = 190; jmax=170 #glow.h
+
 eflux = 1.
 e0 = 1e3
 maxind = 112
@@ -37,7 +50,7 @@ yd,utsec = datetime2yd(dtime)[:2]
 
 def test_egrid_maxt():
     ener,dE = glowfort.egrid()
-    assert_allclose(ener[[maxind,maxind+10,-1]],[1017.7124,1677.9241,47825.418])
+    assert_allclose(ener[[maxind,maxind+10,-1]],[1017.7124,1677.9241,1.004643e+08],rtol=1e-5)
 #%% test of maxt
     phi = glowfort.maxt(eflux,e0,ener, dE, itail=0, fmono=nan, emono=nan)
     assert phi.argmax() == maxind
@@ -73,14 +86,14 @@ def test_snoemint():
     densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
 # (nighttime background ionization)
     znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
-    assert_allclose(znoint[[28,63]], (1.94578016e+08,   2.72089675e+06))
+    assert_allclose(znoint[[28,143]], (1.262170e+08,  3.029169e+01),rtol=1e-5) #arbitrary
     return znoint
 
 def test_fieldm():
     xdip,ydip,zdip,totfield,dipang,decl,smodip = glowfort.fieldm(glat,glon%360,z[50])
-    assert isclose(xdip,0.10206934809684753)
-    assert isclose(totfield,0.4908745586872101)
-    assert isclose(dipang,77.73369598388672)
+    assert isclose(xdip,0.1049523800611496)
+    assert isclose(totfield,0.5043528079986572)
+    assert isclose(dipang,77.72911071777344)
 
 def test_ssflux():
     iscale=1; hlybr=0.; hlya=0.; fexvir=0.; heiew=0.; xuvfac=3.
@@ -95,7 +108,7 @@ def test_rcolum_qback():
     zcol,zvcd = glowfort.rcolum(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'])
 # FIXME these tests were numerically unstable (near infinity values)
     assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
-    assert isclose(zvcd[2,5],5.6740474e+25,rtol=1e-2) #TODO changes a bit between python 2 / 3
+    assert isclose(zvcd[2,5],5.97157e+28,rtol=1e-2) #TODO changes a bit between python 2 / 3
 #%% skipping EPHOTO since we care about night time more for now
     znoint = test_snoemint()
     # zeros because nighttime
@@ -105,8 +118,9 @@ def test_rcolum_qback():
                                 zno=znoint,
                                 zvcd=zvcd,
                                 photoi=photoi,phono=phono)
-    assert isclose(photoi[0,0,117],0.41662204)
-    assert isclose(phono[0,73],0.0002115165)
+    #arbitrary point check
+    assert isclose(photoi[0,0,77],1.38091e-18,rtol=1e-5)
+    assert isclose(phono[0,73],0.0,rtol=1e-5)
 
 def test_glow():
     # electron precipitation

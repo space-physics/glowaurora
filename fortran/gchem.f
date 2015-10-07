@@ -802,24 +802,25 @@ C
 C
 C Calculate vertical column brightnesses:
 C
-      DO 450 IW=1,NW
-      VCB(IW) = 0.
-  450 CONTINUE
+      DO IW=1,NW
+        VCB(IW) = 0.
+      End Do
 C
-      DO 550 I=1,JMAX
-      IF (I .EQ. JMAX) THEN
-        DZ = (ZZ(I) - ZZ(I-1))
-      ELSE
-        IF (I .EQ. 1) THEN
-          DZ = (ZZ(I+1) - ZZ(I))
-        ELSE
-          DZ = (ZZ(I+1) - ZZ(I-1)) / 2.0
-        ENDIF
-      ENDIF
-      DO 500 IW=1,NW
-      VCB(IW) = VCB(IW) + ZETA(IW,I) * DZ
-  500 CONTINUE
-  550 CONTINUE
+      DO I=1,JMAX
+          IF (I .EQ. JMAX) THEN
+            DZ = (ZZ(I) - ZZ(I-1))
+          ELSE
+            IF (I .EQ. 1) THEN
+              DZ = (ZZ(I+1) - ZZ(I))
+            ELSE
+              DZ = (ZZ(I+1) - ZZ(I-1)) / 2.0
+            ENDIF
+          ENDIF
+
+          DO IW=1,NW
+            VCB(IW) = VCB(IW) + ZETA(IW,I) * DZ
+          End Do
+      End Do
 C
 C
 C Convert brightnesses to Rayleighs:
