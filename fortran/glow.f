@@ -223,9 +223,9 @@ C
         DO 245 I=1,NMAJ
           PIA(I,J) = 0.0
   245   CONTINUE
-        DO 250 N=1,NBINS
+        DO N=1,NBINS
           SESPEC(N,J) = 0.0
-  250   CONTINUE
+        end do
   255 CONTINUE
 
 C Add background ionization to photoionization:
@@ -238,9 +238,9 @@ C electron transport and electron impact excitation rates, unless
 C there are no energetic electrons, in which case zero arrays:
 C
       TEFLUX = 0.
-      DO 260 N=1,NBINS
+      DO N=1,NBINS
         TEFLUX = TEFLUX + PHITOP(N)
-  260 CONTINUE
+      end do
 C
       IF (TEFLUX.GT.0.001 .OR. SZA.LT.2.) THEN
         CALL ETRANS
