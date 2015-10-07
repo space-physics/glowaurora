@@ -233,6 +233,7 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
         #ax.legend(True)
 
         writeplots(fg,'constit_',E0,makeplot,odir)
+
 #%%
 def writeplots(fg,plotprefix,E0,method,odir):
     draw() #Must have this here or plot doesn't update in animation multiplot mode!
