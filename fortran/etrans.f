@@ -196,21 +196,23 @@ C
 C Calcualte delta z's:
 C
       DELZ(1) = ZZ(2)-ZZ(1)
-      DO 167 I=2,JMAX
+      DO I=2,JMAX
         DELZ(I) = ZZ(I)-ZZ(I-1)
-  167 CONTINUE
-      DO 168 I=1,JMAX-1
+      End Do
+
+      DO I=1,JMAX-1
         DEL2(I) = DELZ(I)+DELZ(I+1)
         DELA(I) = DEL2(I)/2.
         DELP(I) = DELA(I)*DELZ(I+1)
         DELM(I) = DELA(I)*DELZ(I)
         DELS(I) = DELZ(I)*DELZ(I+1)
-  168 CONTINUE
-        DEL2(JMAX) = DEL2(JMAX-1)
-        DELA(JMAX) = DELA(JMAX-1)
-        DELP(JMAX) = DELP(JMAX-1)
-        DELM(JMAX) = DELP(JMAX-1)
-        DELS(JMAX) = DELS(JMAX-1)
+      End Do
+
+      DEL2(JMAX) = DEL2(JMAX-1)
+      DELA(JMAX) = DELA(JMAX-1)
+      DELP(JMAX) = DELP(JMAX-1)
+      DELM(JMAX) = DELP(JMAX-1)
+      DELS(JMAX) = DELS(JMAX-1)
 C
 C
 C
@@ -221,10 +223,10 @@ C
 C
 C Calculate production:
 C
-      DO 680 I = 1, JMAX
-      PROD(I) = (PESPEC(J,I)+SESPEC(J,I)) * RMUSIN / DEL(J)
-      EPROD(I) = EPROD(I) + PROD(I) * ENER(J) * DEL(J) / RMUSIN
-  680 CONTINUE
+      DO I = 1, JMAX
+          PROD(I) = (PESPEC(J,I)+SESPEC(J,I)) * RMUSIN / DEL(J)
+          EPROD(I) = EPROD(I) + PROD(I) * ENER(J) * DEL(J) / RMUSIN
+      End Do
 C
 C
 C Total energy loss cross section for each species:
