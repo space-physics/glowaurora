@@ -54,7 +54,7 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     else: #eigenprofile generation
         e0ind = find_nearest(ener,e0)[0]
         phitop = zeros_like(ener)
-        phitop[e0ind] = 1.
+        phitop[e0ind] = 1e6
 
 
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
