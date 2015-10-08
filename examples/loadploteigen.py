@@ -9,10 +9,11 @@ from os.path import expanduser
 from datetime import datetime
 from pytz import UTC
 #
-from histfeas.plotsnew import ploteig
-from transcarread.readTranscar import SimpleSim
-from RunLoop import ekpcolor
+from histfeas.plotsnew import ploteig            # obtained from https://github.com/scienceopen/histfeas
+from transcarread.readTranscar import SimpleSim  # obtained from https://github.com/scienceopen/transcarread
+from RunLoop import ekpcolor                     # in this directory, another example file
 
+#%% main program
 from argparse import ArgumentParser
 p = ArgumentParser()
 p.add_argument('-E','--eigenfn',help='generate eigenprofiles using energies in this csv file',default='~/code/transcar/transcar/BT_E1E2prev.csv')
@@ -23,7 +24,7 @@ p = p.parse_args()
 EKpcolor,e0 = ekpcolor(p.eigenfn)
 
 sim = SimpleSim(filt='none',inpath=None,reacreq='')
-
+#%% load and plot
 with h5py.File(expanduser(p.infn),'r') as f:
     if len(f['/eigenprofile'].shape) == 3:
         for i,v in enumerate(f['/eigenprofile']): #for each time
