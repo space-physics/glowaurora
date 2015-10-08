@@ -52,12 +52,15 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
 
     return DFver,photIon,isr,phitop,zceta,sza
 
+def ekpcolor(eigenfn):
+    e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
+    eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
+    return append(e0,eEnd),e0
+
 def makeeigen(eigenfn,dt,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
     makeplot.append('eig')
     flux=None
-    e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
-    eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
-    EKpcolor = append(e0,eEnd)
+    EKpcolor,e0 = ekpcolor(eigenfn)
 
     ver = None
 
