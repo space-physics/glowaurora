@@ -1,7 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codf]
-
+fortran/iri
 
 # C extensions
 *.so
