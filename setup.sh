@@ -1,4 +1,4 @@
-./#!/bin/bash
+#!/bin/bash
 # Michael Hirsch
 
 #cleanup from old build (force recompilation)
