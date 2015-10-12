@@ -4,16 +4,21 @@ Comparing solzen.f solar zenith angle with Astropy, per email discussion with UA
 Michael Hirsch
 2015
 """
-
+from __future__ import division,absolute_import
+from six.moves import getcwd
 from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel
 from matplotlib.pyplot import figure,show
-from os import chdir,environ,getcwd
+from os import chdir,environ
 # Some features may require AstroPy 1.0+
 import astropy.units as u
 from astropy.coordinates import get_sun, EarthLocation, AltAz
 from astropy.time import Time
 from time import time
+try:
+    import seaborn
+except:
+    pass
 #
 from histutils.fortrandates import datetime2yd
 #################################
@@ -22,6 +27,7 @@ chdir(environ['HOME'])
 import glowaurora
 from glowaurora import glowfort
 chdir(glowaurora.__path__[0])
+print('loaded glow from ' + getcwd())
 #################################
 #%% demo the solar zenith angle calclation vs AstroPy
 def demosolzen(dtime,glat,glon):
@@ -66,7 +72,7 @@ def demosuncor(dtime,glat,glon,alt_m):
 
 def plotsza(sza,sun,error):
     ax=figure().gca()
-    sza.plot(ax=ax,subplots=True,title='comparison of solar zenith angle [degrees]')
+    sza.plot(ax=ax,title='comparison of solar zenith angle [degrees]')
 
     ax = figure().gca()
     error.plot(ax=ax,subplots=True,title='SINGLE PRECISION Error in GLOW solar predication [degrees]')
@@ -82,8 +88,11 @@ if __name__ == '__main__':
 #%% compute angle from zenith of sun
     sza = demosolzen(dtime,lat,lon)
     sza['astropy'] = 90 - sunobs.alt.degree
-#%%
+#%% compute error
     error = sun['astropy'] - sun['glow']
     error['sza'] = sza['astropy'] - sza['glow']
+
     plotsza(sza,sun,error)
     show()
+
+    assert (error.max() < [0.35,0.75,0.005,0.003]).all()
