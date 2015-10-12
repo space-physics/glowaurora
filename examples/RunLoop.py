@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-To generate eigenprofiles, use -E option
+To generate eigenprofiles, use -E option.
+
+Poker Flat eigenprofile example from command line:
+python 2013-03-01T10:48Z -c 65 -148 -E ~/code/transcar/transcar/BT_E1E2prev.csv --f107 --f107a --ap
 
 default parameter values like those of Stan's fortran examples--yield rather similar output
 Note that the number of bins for altitude and energy are "compiled in" the Fortran.
@@ -18,7 +21,6 @@ from __future__ import division,absolute_import
 import h5py
 from dateutil.parser import parse
 from matplotlib.pyplot import show
-from os import makedirs
 from os.path import expanduser,isdir
 from numpy import loadtxt
 from pandas import DataFrame
@@ -52,8 +54,10 @@ if __name__ == '__main__':
     p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',nargs='?',default='1999-12-21T00:00:00Z')
     p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(70,0))
     p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1.)
+    #grp = parser.add_mutually_exclusive_group()
     p.add_argument('-E','--eigenprof',help='generate eigenprofiles using energies in this csv file')#'~/code/transcar/transcar/BT_E1E2prev.csv')
     p.add_argument('--e0',help='characteristic energy [eV]',type=float,nargs='+',default=(1e3,))
+
     p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=100)
     p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float,default=100)
     p.add_argument('--f107',help='F10.7 for sim. day',type=float,default=100)
