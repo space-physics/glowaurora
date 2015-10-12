@@ -21,7 +21,7 @@ chdir(environ['HOME'])
 import glowaurora
 from glowaurora import glowfort
 chdir(glowaurora.__path__[0])
-print(getcwd())
+print('loaded glow from ' + getcwd())
 #################################
 #%% test inputs
 z = list(range(30,110+1,1))
@@ -150,3 +150,4 @@ if __name__ == '__main__':
     test_rcolum_qback()
     test_glow()
 #    test_glowprog()
+    print('OK')
