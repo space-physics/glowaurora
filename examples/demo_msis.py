@@ -18,7 +18,7 @@ from histutils.fortrandates import datetime2gtd
 
 tselecopts = array([1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],float)
 
-def rungtd1d(dtime,altkm,glat,glon,f107a,f107,ap,mass):
+def rungtd1dglow(dtime,altkm,glat,glon,f107a,f107,ap,mass):
     chdir(glowpath)
     ap = atleast_1d(ap)
     if ap.size==1: ap = repeat(ap,7)
@@ -67,4 +67,10 @@ if __name__ == '__main__':
 
     print('using altitudes from {:.1f} to {:.1f} km'.format(altkm[0],altkm[-1]))
 
-    dens,temp = rungtd1d(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass)
+    glowdens,glowtemp = rungtd1dglow(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass)
+#%% now use msise00
+    from msise00.runmsis import rungtd1d
+    dens,temp = rungtd1d(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass,tselecopts)
+
+    assert (dens == glowdens).all().all()
+    assert (temp == glowtemp).all().all()
