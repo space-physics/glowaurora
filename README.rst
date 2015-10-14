@@ -40,11 +40,11 @@ Self-test f2py
 
 the self-test should give zero errors
 
-volume emission rate plots
+volume emission rate plots 
 --------------------------
-.. code:: bash
+this Terminal command will make lots of plots::
 
-  $ python examples/demo_aurora.py
+  python examples/demo_glowaurora.py
 
 this produces the plots seen here, with the volume emission rate and intermediate
 processes modeled for the given primary electron precipitation input.
