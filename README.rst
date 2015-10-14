@@ -33,7 +33,6 @@ Examples
 
 Self-test f2py
 --------------
-.. code:: bash
   
   $ cd test
   $ nosetests -v test.py
