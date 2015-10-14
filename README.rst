@@ -34,8 +34,9 @@ Examples
 Self-test f2py
 --------------
 .. code:: bash
-
-  $ python test/test.py
+  
+  $ cd test
+  $ nosetests -v test.py
 
 the self-test should give zero errors
 
