@@ -4,43 +4,25 @@ this program demos the customized MSIS-E00 used by GLOW
 """
 from __future__ import division,print_function
 import logging
-from numpy import repeat,empty,array
-from pandas import DataFrame
 from dateutil.parser import parse
-from numpy import arange, atleast_1d
-from os import chdir
+from numpy import arange,array
 #
-import glowaurora
-from glowaurora.glowfort import gtd7,tselec,csw,meters
-glowpath=glowaurora.__path__[0]
+from glowaurora.runmsisGLOW import rungtdGLOW
 #
-from histutils.fortrandates import datetime2gtd
-
 tselecopts = array([1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],float)
 
-def rungtd1dglow(dtime,altkm,glat,glon,f107a,f107,ap,mass):
-    chdir(glowpath)
-    ap = atleast_1d(ap)
-    if ap.size==1: ap = repeat(ap,7)
-    species = ['He','O','N2','O2','Ar','Total','H','N','AnomalousO']
-    ttypes = ['exotemp','heretemp']
+def test_glowmsis(dtime,altkm,glat,glon,f107a,f107,ap,mass):
 
-    tselec(tselecopts) #like the msis_driver example
-    logging.debug('tselec options used:   {}'.format(csw.sw)) #don't use tretrv, it doesn't work
+    glowdens,glowtemp = rungtdGLOW(dtime,altkm,glat,glon,f107a,f107,ap,mass,tselecopts)
+#%% now use msise00
+    from msise00.runmsis import rungtd1d
+    dens,temp = rungtd1d(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass,tselecopts)
 
-    iyd,utsec,stl = datetime2gtd(dtime,glon)
+    assert (dens == glowdens).all().all()
+    assert (temp == glowtemp).all().all()
+    print('OK')
 
-    altkm = atleast_1d(altkm)
-    dens = empty((altkm.size,9)); temp=empty((altkm.size,2))
-
-    meters(1) # makes output in m^-3 and kg/m^-3
-    for i,a in enumerate(altkm):
-        dens[i,:],temp[i,:] = gtd7(iyd,utsec,a,glat,glon,stl, f107a,f107, ap,mass)
-
-    densd = DataFrame(dens, index=altkm, columns=species)
-    tempd = DataFrame(temp, index=altkm, columns=ttypes)
-    return densd,tempd
-
+    return glowdens,glowtemp
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -67,10 +49,4 @@ if __name__ == '__main__':
 
     print('using altitudes from {:.1f} to {:.1f} km'.format(altkm[0],altkm[-1]))
 
-    glowdens,glowtemp = rungtd1dglow(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass)
-#%% now use msise00
-    from msise00.runmsis import rungtd1d
-    dens,temp = rungtd1d(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass,tselecopts)
-
-    assert (dens == glowdens).all().all()
-    assert (temp == glowtemp).all().all()
+    dens,temp = test_glowmsis(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass)
