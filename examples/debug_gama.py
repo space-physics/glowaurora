@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 """
-Created on Sun Sep 20 17:49:18 2015
-
-@author: rollo
+simulates single float problem in existing Fortran code
 """
 from __future__ import division
-from numpy import float32
+from numpy import float32,isfinite
 
 Prodwnn1 = float32(-1.15867674E+09)
 PROdwn= float32(1.00000000E-30)
@@ -29,3 +27,5 @@ gama = (
                   * ( -Alpha - T2 - (Prodwnp1 - Prodwnn1) /PROdwn / Del2 )
                   - PROdup * T1
        )
+
+assert isfinite(gama)  #simulates single float problem in existing Fortran code

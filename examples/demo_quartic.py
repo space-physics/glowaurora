@@ -2,9 +2,10 @@
 """
 http://www.netlib.org/toms/493.gz
 before running this, type in Terminal (one-time):
-cd fortran
-f2py -m quartic -h quartic.pyf 493.f
-f2py -c quartic.pyf 493.f
+
+cd ../fortran
+f2py -m quartic -c quartic.pyf 493.f
+
 -----------------------
 >>> print quartic.rpoly.__doc__
 zeror,zeroi,fail = rpoly(op,degree)
@@ -24,24 +25,38 @@ fail : int
 
 
 """
-from numpy import zeros,array
+from __future__ import division,print_function
+from numpy import zeros,repeat,array
 import sys
 sys.path.append('../fortran')
 #
-from quartic import rpoly
+from glowaurora import glowfort
+try:
+    from quartic import rpoly
+except Exception as e:
+    print(e)
+    print('in Terminal, type: ')
+    print('f2py -m quartic -c 493.f')
 
-Lin=101
+Lrpoly = 101 #493.f
+Lin=170 #must match compiled cglow.h
+nj=20 #arbitrary
+nc=5 #per vquart.f
 
-def runquartic(pin):
+def runvquart(pin):
+    polyin = repeat(pin[:,None],nc,1) #this is what vquart.f expects
+    return glowfort.vquart(polyin,pin.size)
 
-    polyin = zeros(Lin)
-    polyin[:pin.size] = pin
-    return rpoly(polyin,pin.size)
-
-
+def runrpoly(pin):
+    return rpoly(pin,pin.size)
 
 if __name__ == '__main__':
     pin = array([1,0,0,1])
-    r,i,f = runquartic(pin)
+    polyin = zeros(Lin)
+    polyin[:pin.size] = pin
+#%% defective glow routine
+    root = runvquart(polyin)[:pin.size]
+#%% correct 493.f routine
+    r,i,f = runrpoly(polyin[:Lrpoly])
 
     print('real {}  \nimag {}'.format(r[:pin.size],i[:pin.size]))
