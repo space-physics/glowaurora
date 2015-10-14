@@ -8,7 +8,7 @@ from __future__ import division,absolute_import
 from six.moves import getcwd
 from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel
-from matplotlib.pyplot import figure,show
+from matplotlib.pyplot import show
 from os import chdir,environ
 # Some features may require AstroPy 1.0+
 import astropy.units as u
@@ -71,11 +71,9 @@ def demosuncor(dtime,glat,glon,alt_m):
 
 
 def plotsza(sza,sun,error):
-    ax=figure().gca()
-    sza.plot(ax=ax,title='comparison of solar zenith angle [degrees]')
+    sza.plot(title='comparison of solar zenith angle [degrees]')
 
-    ax = figure().gca()
-    error.plot(ax=ax,subplots=True,title='SINGLE PRECISION Error in GLOW solar predication [degrees]')
+    error.plot(subplots=True,title='SINGLE PRECISION Error in GLOW solar predication [degrees]')
 
 if __name__ == '__main__':
     dtime = date_range('2013-04-01','2013-04-02',
@@ -96,3 +94,4 @@ if __name__ == '__main__':
     show()
 
     assert (error.max() < [0.35,0.75,0.005,0.003]).all()
+    print('OK')
