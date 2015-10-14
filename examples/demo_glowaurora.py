@@ -8,17 +8,17 @@ from matplotlib.pyplot import show
 #
 from glowaurora.runglow import runglowaurora,plotaurora
 
-def E0aurora(dt,glatlon,flux,e0,f107a,f107,f107p,ap):
+def E0aurora(dt,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 
     (glat,glon) = glatlon
 
-    ver,photIon,isr,phitop,zceta = runglowaurora(flux,e0,
+    ver,photIon,isr,phitop,zceta,sza = runglowaurora(flux,e0,
                                               dt,glat,glon,
                                               f107a,f107,f107p,ap)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon)
+    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,makeplot=makeplot)
 
-    return ver,photIon,isr,phitop,zceta
+    return ver,photIon,isr,phitop,zceta,sza
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -32,10 +32,11 @@ if __name__ == '__main__':
     p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float,default=100)
     p.add_argument('--f107',help='F10.7 for sim. day',type=float,default=100)
     p.add_argument('--ap',help='daily ap',type=float,default=4)
+    p.add_argument('-m','--makeplot',help='show to show plots, png to save pngs of plots',nargs='+',default=['show'])
     p = p.parse_args()
 
     dtime = parse(p.simtime)
 
-    ver,photIon,isr,phitop,zceta = E0aurora(dtime,p.latlon,p.flux,p.e0,p.f107a,p.f107,p.f107p,p.ap)
+    ver,photIon,isr,phitop,zceta,sza = E0aurora(dtime,p.latlon,p.flux,p.e0,p.f107a,p.f107,p.f107p,p.ap,p.makeplot)
 
     show()
