@@ -7,6 +7,7 @@ f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rco
 
 """
 from __future__ import division,absolute_import
+import logging
 from datetime import datetime
 from itertools import chain
 from numpy import array,zeros,float32,log,arange,append,isclose,nan
@@ -14,7 +15,12 @@ from numpy.testing import assert_allclose
 from os import chdir,environ,getcwd
 #
 from histutils.fortrandates import datetime2yd,datetime2gtd
-from msise00.runmsis import rungtd1d
+try:
+    from msise00.runmsis import rungtd1d
+    DOMSIS=True
+except Exception as e:
+    logging.warning('external MSISE00 install not found, skipping MSISE00 verification')
+    DOMSIS=False
 #################################
 #TODO hack for module data path issue
 chdir(environ['HOME'])
@@ -83,11 +89,12 @@ def test_snoem():
     return nozm
 
 def test_snoemint():
-    densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
-# (nighttime background ionization)
-    znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
-    assert_allclose(znoint[[28,143]], (1.262170e+08,  3.029169e+01),rtol=1e-5) #arbitrary
-    return znoint
+    if DOMSIS:
+        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
+    # (nighttime background ionization)
+        znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
+        assert_allclose(znoint[[28,143]], (1.262170e+08,  3.029169e+01),rtol=1e-5) #arbitrary
+        return znoint
 
 def test_fieldm():
     xdip,ydip,zdip,totfield,dipang,decl,smodip = glowfort.fieldm(glat,glon%360,z[50])
@@ -101,31 +108,34 @@ def test_ssflux():
     assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 
 def test_rcolum_qback():
-    densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
+    if DOMSIS:
+        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
 
-    """ VCD: Vertical Column Density """
-    sza = test_solzen()
-    zcol,zvcd = glowfort.rcolum(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'])
-# FIXME these tests were numerically unstable (near infinity values)
-    assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
-    assert isclose(zvcd[2,5],5.97157e+28,rtol=1e-2) #TODO changes a bit between python 2 / 3
-#%% skipping EPHOTO since we care about night time more for now
-    znoint = test_snoemint()
-    # zeros because nighttime
-    photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
-    phono = zeros((nst,jmax),dtype=float32,order='F')
-    glowfort.qback(zmaj=densd[['O','O2','N2']].values.T,
-                                zno=znoint,
-                                zvcd=zvcd,
-                                photoi=photoi,phono=phono)
-    #arbitrary point check
-    assert isclose(photoi[0,0,77],1.38091e-18,rtol=1e-5)
-    assert isclose(phono[0,73],0.0,rtol=1e-5)
+        """ VCD: Vertical Column Density """
+        sza = test_solzen()
+        zcol,zvcd = glowfort.rcolum(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'])
+    # FIXME these tests were numerically unstable (near infinity values)
+        assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
+        assert isclose(zvcd[2,5],5.97157e+28,rtol=1e-2) #TODO changes a bit between python 2 / 3
+    #%% skipping EPHOTO since we care about night time more for now
+        znoint = test_snoemint()
+        # zeros because nighttime
+        photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
+        phono = zeros((nst,jmax),dtype=float32,order='F')
+        glowfort.qback(zmaj=densd[['O','O2','N2']].values.T,
+                                    zno=znoint,
+                                    zvcd=zvcd,
+                                    photoi=photoi,phono=phono)
+        #arbitrary point check
+        assert isclose(photoi[0,0,77],1.38091e-18,rtol=1e-5)
+        assert isclose(phono[0,73],0.0,rtol=1e-5)
+    else:
+        logging.warning('skipped rcolum qback due to missing external msise00')
 
 def test_glow():
     # electron precipitation
-    """ First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others
-    """
+    #First enact "glow" subroutine, which calls QBACK, ETRANS and GCHEM among others
+
     glowfort.glow() #no args
 
     #%% ver and constituants
@@ -150,4 +160,3 @@ if __name__ == '__main__':
     test_rcolum_qback()
     test_glow()
 #    test_glowprog()
-    print('OK')
