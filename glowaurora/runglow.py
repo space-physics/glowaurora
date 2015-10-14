@@ -86,9 +86,15 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 
     return ver,photIon,isrparam,phitop,zceta,sza
 #%% plot
-def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,makeplot,odir=''):
+def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,
+               E0=None,flux=None,sza=None,zminmax=(None,None),makeplot=None,odir=''):
     if makeplot is None:
         return
+
+    if E0 and sza:
+        titlend = '$E_0={:.0f}$ eV  SZA={:.1f}$^\circ$'.format(E0,sza)
+    else:
+        titlend = ''
 
     def _nicez(ax,zlim):
         ax.set_ylim(zlim)
@@ -101,7 +107,7 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
-        fg.suptitle('{} ({},{})  $E_0={:.0f}$ eV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0,sza))
+        fg.suptitle('{} ({},{}) '.format(dtime,glat,glon)+ titlend)
 
         ind = ['nO','nO2','nN2','nNO']
         ax = axs[0]
@@ -125,7 +131,7 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
-    fg.suptitle('{} ({},{})  $E_0={:.0f}$ eV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0,sza))
+    fg.suptitle('{} ({},{}) '.format(dtime,glat,glon) + titlend)
     tight_layout(pad=3.2, w_pad=0.6)
 
 # incident flux at top of ionosphere
@@ -185,7 +191,7 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
 #%% total energy deposition vs. altitude
     if not 'eig' in makeplot:
         fg,axs = subplots(1,3,sharey=True, figsize=(15,8))
-        fg.suptitle('{} ({},{})  $E_0={:.0f}$ eV  SZA={:.1f}$^\circ$'.format(dtime,glat,glon,E0,sza))
+        fg.suptitle('{} ({},{})  '.format(dtime,glat,glon) + titlend)
         tight_layout(pad=3.2, w_pad=0.3)
 
         ax = axs[2]
@@ -229,7 +235,7 @@ def plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,E0,zminmax,
         ax = fg.gca()
         for zc in rollaxis(zceta,1):
             ax.plot(ver.index,zc)
-        ax.set_xlabel('emission constituants, $E_0={:.0f}$ eV'.format(E0))
+        ax.set_xlabel('emission constituants  ' + titlend)
         #ax.legend(True)
 
         writeplots(fg,'constit_',E0,makeplot,odir)
