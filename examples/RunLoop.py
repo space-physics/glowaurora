@@ -27,7 +27,7 @@ from pytz import UTC
 from dateutil import rrule
 from dateutil.parser import parse
 from matplotlib.pyplot import show
-from os.path import expanduser,isdir
+from os.path import expanduser
 from numpy import loadtxt,append,asarray
 from pandas import DataFrame,Panel
 #
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 #%% plotting
     if p.eigenprof:
         sim = SimpleSim(filt='none',inpath=None,reacreq='')
-        for v in ver: #for each time
-            ploteig(EKpcolor,asarray(v.index),v.columns,(None,)*6,sim,dtime)
+        for t in ver: #for each time
+            ploteig(EKpcolor,asarray(ver.major_axis),ver[t],(None,)*6,sim,t)
         show()
 
