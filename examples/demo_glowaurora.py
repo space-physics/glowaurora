@@ -16,8 +16,7 @@ def E0aurora(dt,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
                                                                  dt,glat,glon,
                                                                  f107a,f107,f107p,ap)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
-               makeplot=makeplot)
+    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,makeplot=makeplot)
 
     return ver,photIon,isr,phitop,zceta,sza
 

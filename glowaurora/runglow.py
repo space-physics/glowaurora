@@ -7,7 +7,7 @@ from __future__ import division,absolute_import
 from itertools import chain
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
-from pandas import DataFrame
+from pandas import DataFrame,Panel
 from numpy import hstack,asarray,rollaxis,degrees,zeros_like
 from os import chdir
 from os.path import join
@@ -83,7 +83,26 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 
     sza = degrees(glowfort.cglow.sza)
 
-    return ver,photIon,isrparam,phitop,zceta,sza,prate,lrate
+#%% production and loss rates
+    prate = prate.T; lrate=lrate.T #fortran to C ordering 2x170x20, only first 12 columns are used
+
+    #column labels by inspection of fortran/gchem.f staring after "DO 150 I=1,JMAX" (thanks Stan!)
+    prateDF = Panel(items=['pre','final'],
+                    major_axis=z,
+                    minor_axis=['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
+                                 'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)'],
+                    data=prate[...,:12], #columns 12:20 are identically zero
+                        )
+
+    lrateDF = Panel(items=['pre','final'],
+                    major_axis=z,
+                    minor_axis=['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
+                                 'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)'],
+                    data=lrate[...,:12], #columns 12:20 are identically zero
+                        )
+
+
+    return ver,photIon,isrparam,phitop,zceta,sza,prateDF,lrateDF
 #%% plot
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
                E0=None,flux=None,sza=None,zminmax=(None,None),makeplot=None,odir=''):
