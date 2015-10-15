@@ -105,7 +105,7 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     return ver,photIon,isrparam,phitop,zceta,sza,prateDF,lrateDF
 #%% plot
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
-               E0=None,flux=None,sza=None,zminmax=(None,None),makeplot=None,odir=''):
+               E0=None,flux=None,sza=None,zlim=(None,None),makeplot=None,odir=''):
     if makeplot is None:
         return
 
@@ -122,6 +122,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         ax.grid(True,which='minor',linewidth=0.5)
         ax.tick_params(axis='both',which='major',labelsize='medium')
 
+    z=ver.index.values #[km], for convenience
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
@@ -129,24 +130,63 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 
         ind = ['nO','nO2','nN2','nNO']
         ax = axs[0]
-        ax.semilogx(photIon[ind], photIon.index)
+        ax.semilogx(photIon[ind], z)
         ax.set_xlabel('Number Density')
         ax.set_xscale('log')
         ax.set_xlim(left=1e1)
         ax.set_ylabel('Altitude [km]')
-        _nicez(ax,zminmax)
+        _nicez(ax,zlim)
         ax.legend(ind)
         ax.set_title('Neutral Number Density')
 
         ind=['Te','Ti']
         ax = axs[1]
-        ax.semilogx(isr[ind], isr.index)
+        ax.semilogx(isr[ind], z)
         ax.set_xlabel('Temperature [K]')
         ax.legend(ind)
-        _nicez(ax,zminmax)
+        _nicez(ax,zlim)
         ax.set_title('Background Temperature')
 
         writeplots(fg,'bg_',E0,makeplot,odir)
+#%% production and loss rates for species
+    if not 'eig' in makeplot:
+        fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
+        fg.suptitle('Volume Production Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
+        ax[0].plot(prate['pre'].values,z)
+        ax[0].legend(prate.minor_axis,loc='best')
+        ax[0].set_title('pre e^- density correction')
+        _nicez(ax[0],zlim)
+        ax[0].set_xlabel('Volume Production Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[0].set_xscale('log')
+        ax[0].set_ylabel('altitude [km]')
+
+        ax[1].plot(prate['final'].values,z)
+        ax[1].legend(prate.minor_axis,loc='best')
+        ax[1].set_title('post (final) e^- density correction')
+        _nicez(ax[1],zlim)
+        ax[1].set_xlabel('Volume Production Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[1].set_xscale('log')
+        ax[1].set_ylabel('altitude [km]')
+
+# loss rates
+        fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
+        fg.suptitle('Volume Loss Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
+        ax[0].plot(lrate['pre'].values,z)
+        ax[0].legend(lrate.minor_axis,loc='best')
+        ax[0].set_title('pre e^- density correction')
+        _nicez(ax[0],zlim)
+        ax[0].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[0].set_xscale('log')
+        ax[0].set_ylabel('altitude [km]')
+
+        ax[1].plot(lrate['final'].values,z)
+        ax[1].legend(lrate.minor_axis,loc='best')
+        ax[1].set_title('post (final) e^- density correction')
+        _nicez(ax[1],zlim)
+        ax[1].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[1].set_xscale('log')
+        ax[1].set_ylabel('altitude [km]')
+
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(dtime,glat,glon) + titlend)
@@ -173,7 +213,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
     ax.plot(ver[ind].values,ver.index)
     ax.set_xlabel('Volume Emission Rate')
     ax.set_ylabel('altitude [km]')
-    _nicez(ax,zminmax)
+    _nicez(ax,zlim)
     ax.set_xscale('log')
     if not 'eig' in makeplot:
         ax.set_xlim(1e-5,1e3)
@@ -184,7 +224,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
     ax = axs[2]
     ax.plot(ver[ind].values,ver.index)
     ax.set_xlabel('Volume Emission Rate')
-    _nicez(ax,zminmax)
+    _nicez(ax,zlim)
     ax.set_xscale('log')
     if not 'eig' in makeplot:
         ax.set_xlim(1e-5,1e3)
@@ -201,7 +241,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         ax.set_xlabel('Density')
         ax.set_xscale('log')
         ax.set_xlim(left=1e-3)
-        _nicez(ax,zminmax)
+        _nicez(ax,zlim)
         ax.legend(ind)
         ax.set_title('Electron and Ion Densities')
 
@@ -217,7 +257,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         ax.plot(tez,ver.index)
         ax.set_xscale('log')
         ax.set_xlim(1e-1,1e6)
-        _nicez(ax,zminmax)
+        _nicez(ax,zlim)
         ax.set_xlabel('Energy Deposited')
         ax.set_title('Total Energy Depostiion')
 
@@ -228,7 +268,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         ax.set_xlabel('ionization')
         ax.set_xscale('log')
         ax.set_xlim(left=1e-1)
-        _nicez(ax,zminmax)
+        _nicez(ax,zlim)
         ax.legend(ind)
         ax.set_title('Photo and e$^-$ impact ionization')
 
@@ -239,7 +279,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         ax.plot(sion,ver.index)
         ax.set_xscale('log')
         ax.set_xlim(1e-5,1e4)
-        _nicez(ax,zminmax)
+        _nicez(ax,zlim)
         ax.set_xlabel('e$^-$ impact ioniz. rate')
         ax.set_ylabel('Altitude [km]')
         ax.set_title('electron impact ioniz. rates')
