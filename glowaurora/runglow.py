@@ -31,7 +31,7 @@ dpi = 100
 def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     chdir(glowpath)
     yd,utsec = datetime2yd(dt)[:2]
-
+#%% (0) define altitude grid [km] (here i liberally copied that used by Stan)
     #z = range(80,110+1,1)
     z = list(range(30,110+1,1))
     z += (
@@ -56,10 +56,9 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
         phitop = zeros_like(ener)
         phitop[e0ind] = 1e6
 
-
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
 #%% (2) msis,iri,glow model
-    ion,ecalc,photI,ImpI,isr = glowfort.aurora(z,yd,utsec,glat,glon%360,
+    ion,ecalc,photI,ImpI,isr,prate,lrate = glowfort.aurora(z,yd,utsec,glat,glon%360,
                                              f107a,f107,f107p,ap,phi)
 #%% handle the outputs including common blocks
     zeta=glowfort.cglow.zeta.T #columns 11:20 are identically zero
@@ -84,9 +83,9 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 
     sza = degrees(glowfort.cglow.sza)
 
-    return ver,photIon,isrparam,phitop,zceta,sza
+    return ver,photIon,isrparam,phitop,zceta,sza,prate,lrate
 #%% plot
-def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,
+def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
                E0=None,flux=None,sza=None,zminmax=(None,None),makeplot=None,odir=''):
     if makeplot is None:
         return

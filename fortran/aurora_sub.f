@@ -27,9 +27,10 @@ C NST     number of states produced by photoionization/dissociation
 C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
-      SUBROUTINE AURORA(Z,Pyion,Pyecalc,Pypi,Pysi,Pyisr,
-     &                  idate_, ut_, glat_, glong_, f107a_, f107_,
-     &                  f107p,ap,PyPhitop)
+      SUBROUTINE AURORA(Z,idate_, ut_, glat_, glong_, f107a_, f107_,
+     &                  f107p,ap,PyPhitop,
+     &                  Pyion,Pyecalc,Pypi,Pysi,Pyisr,
+     &                  prate,lrate)
 
 !      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
       implicit none
@@ -39,8 +40,12 @@ C
       Real,Intent(In) :: Z(JMAX),ut_, glat_, glong_, f107a_, f107_,
      &                  f107p, ap, PyPhitop(nbins,3)
 ! it's 3, not nmaj
+
       Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
-     & Pyecalc(jmax),Pypi(jmax),Pysi(jmax)
+     & Pyecalc(jmax),Pypi(jmax),Pysi(jmax),
+     & PRATE(NEX,JMAX,2), LRATE(NEX,JMAX,2)
+!PRATE and LRATE are from GCHEM called by GLOW
+!***********************************************************************
 
       real D(8), T(2), SW(25),
      >          OUTF(11,JMAX), OARR(30), TPI(NMAJ),dipd,emono,fmono,
@@ -191,8 +196,8 @@ C
 C Call GLOW to calculate ionized and excited species, airglow emission
 C rates, and vertical column brightnesses:
 C
-      CALL GLOW
-C
+      CALL GLOW(PRATE(:,:,1),LRATE(:,:,1))
+
 C
 C Set electron densities to calculated values below 200 km, constant
 C above:
@@ -211,7 +216,7 @@ C
 C
 C Call GLOW again:
 C
-      CALL GLOW
+      CALL GLOW(PRATE(:,:,2),LRATE(:,:,2))
 C
 C
 C Output section:

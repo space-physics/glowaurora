@@ -186,12 +186,14 @@ C NR      number of rate coefficients, branching ratios, A and G factors
 C NF      number of available types of auroral fluxes
 C
 C
-      SUBROUTINE GCHEM
+      SUBROUTINE GCHEM(P,L)
 !      use cglow, only: jmax,lmax,nmaj,nf,nei,nw,nc,nbins,nst,nex,RE,dp
       implicit none
       include 'cglow.h'
 
       integer,PARAMETER :: NR=50
+
+      real, intent(OUT) :: P(NEX,JMAX), L(NEX,JMAX)
 
       integer idate,iscale,jlocal,kchem,ierr
       real  UT, GLAT, GLONG, 
@@ -222,7 +224,6 @@ C
       real A(NR), B(NR), BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
-     >          P(NEX,JMAX), L(NEX,JMAX),
      >          T1(JMAX), T2(JMAX), T3(JMAX), T4(JMAX), T5(JMAX),
      >          QQ(JMAX), RR(JMAX), SS(JMAX), TT(JMAX), UU(JMAX),
      >          VV(JMAX), WW(JMAX), XX(JMAX),
