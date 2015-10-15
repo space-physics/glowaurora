@@ -118,10 +118,12 @@ C NEI     number of states produced by electron impact
 C NF      obsolete
 C
 C
-      SUBROUTINE GLOW
+      SUBROUTINE GLOW(PRATE,LRATE)
 !      use cglow,only: nmaj,nex,nw,nc,nst,nei,nf,jmax,nbins,lmax,pi
       implicit none
       include 'cglow.h'
+
+      real, intent(out) :: PRATE(NEX,JMAX), LRATE(NEX,JMAX)
 
       integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,
      &   i,iei,ist,j,n
@@ -267,6 +269,6 @@ C Call subroutine GCHEM to calculate the densities of excited and
 C ionized consituents, airglow emission rates, and vertical column
 C brightnesses:
 C
-      CALL GCHEM
+      CALL GCHEM(PRATE,LRATE)
 
       END Subroutine GLOW
