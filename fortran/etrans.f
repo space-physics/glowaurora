@@ -1,5 +1,7 @@
 C Subroutine ETRANS
 C
+! M.H.: this appears to calculate electron precipitation impact outcomes on various species
+C
 C This software is part of the GLOW model.  Use is governed by the Open Source
 C Academic Research License Agreement contained in the file glowlicense.txt.
 C For more information see the file glow.txt.
@@ -34,10 +36,10 @@ C EPROD  energy of "; eV cm-3
 C T1     elastic collision term; cm-1
 C T2     elastic + inelastic collision term; cm-1
 C TSA    total energy loss cross section for each species; cm2
-C PRODUP upward cascade + secondary production; cm-3 s-1 eV-1
-C PRODWN downward "
-C PHIUP  upward flux; cm-2 s-1 eV-1
-C PHIDWN downward "
+C PRODUP upward   cascade + secondary production; cm-3 s-1 eV-1
+C PRODWN downward cascade + secondary production; cm-3 s-1 eV-1
+C PHIUP  upward   flux; cm-2 s-1 eV-1
+C PHIDWN downward flux; cm-2 s-1 eV-1
 C TSIGNE thermal electron collision term; cm-1
 C SECION total ionization rate; cm-3 s-1
 C SECP   secondary electron production; cm-3 s-1 eV-1
@@ -168,14 +170,14 @@ C
       GAMA(1) = 0.
       PHIOUT = 0.0
 C
-      DO 300 I = 1, JMAX
+      DO I = 1, JMAX
         EHEAT(I) = 0.0
         EPROD(I) = 0.0
         SECION(I) = 0.0
         DO N = 1, NMAJ
           SION(N,I) = 0.0
         End Do
-  300 CONTINUE
+      End Do
 C
       DO 500 JJ = 1, NBINS
         DO 500 I = 1, JMAX
@@ -240,9 +242,9 @@ C
             TSA(I) = TSA(I) + SIGA(I,K,J) * (DEL(J-K)/DEL(J))
   760   CONTINUE
       ELSE
-        DO 770 I=1,NMAJ
+        DO I=1,NMAJ
           TSA(I) = TSA(I) + SIGA(I,1,J) + 1.E-18
-  770   CONTINUE
+        End Do
       ENDIF
 C
 C
@@ -271,10 +273,10 @@ C
       DO 870 I = 1, JMAX
         T1(I) = 0.0
         T2(I) = 0.0
-        DO 850 IV = 1, NMAJ
+        DO IV = 1, NMAJ
           T1(I) = T1(I) + ZMAJ(IV,I) * SIGS(IV,J) * PE(IV,J)
           T2(I) = T2(I) + ZMAJ(IV,I) * (SIGS(IV,J)*PE(IV,J) + TSA(IV))
-  850   CONTINUE
+        End Do
         T1(I) = T1(I) * RMUSIN
         T2(I) = T2(I) * RMUSIN + TSIGNE(I)
   870 CONTINUE
@@ -416,9 +418,9 @@ C
 C Electron heating rate:
 C
       DAG = DEL(J)
-      DO 1030 I = 1, JMAX
+      DO I = 1, JMAX
         EHEAT(I) = EHEAT(I) + TSIGNE(I) * (PHIUP(I)+PHIDWN(I)) * DAG**2
- 1030 CONTINUE
+      End Do
 C
 C
 C Electron impact excitation rates:
@@ -489,9 +491,9 @@ C
         APROD = SQRT(EPROD(I)*EPROD(I - 1))
         EPE = EPE + APROD * DELZ(I)
  1440 CONTINUE
-      DO 1450 JJ = 1, NBINS
+      DO JJ = 1, NBINS
         EPHI = EPHI + PHIINF(JJ) * ENER(JJ) * DEL(JJ) / RMUSIN
- 1450 CONTINUE
+      End Do
       EIN = EPHI + EPE
       PHIOUT = PHIOUT / RMUSIN
       EOUT = EDEP + PHIOUT
