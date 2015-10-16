@@ -79,7 +79,7 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
     phitop = DataFrame(index=phi[:,0], #eV
                        data=phi[:,2],  #diffnumflux
                        columns=['diffnumflux'])
-    zceta = glowfort.cglow.zceta.T
+    zceta = glowfort.cglow.zceta.T  #Nalt x Nwavelengths  xNproductionEmissions
 
     sza = degrees(glowfort.cglow.sza)
 
@@ -154,38 +154,36 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         fg.suptitle('Volume Production Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
         ax[0].plot(prate['pre'].values,z)
         ax[0].legend(prate.minor_axis,loc='best')
-        ax[0].set_title('pre e^- density correction')
+        ax[0].set_title('pre e$^-$ density correction')
         _nicez(ax[0],zlim)
-        ax[0].set_xlabel('Volume Production Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[0].set_xlabel('Volume Production Rates [cm$^{-3}$ s$^{-1}$]')
         ax[0].set_xscale('log')
         ax[0].set_ylabel('altitude [km]')
 
         ax[1].plot(prate['final'].values,z)
         ax[1].legend(prate.minor_axis,loc='best')
-        ax[1].set_title('post (final) e^- density correction')
+        ax[1].set_title('post (final) e$^-$ density correction')
         _nicez(ax[1],zlim)
-        ax[1].set_xlabel('Volume Production Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[1].set_xlabel('Volume Production Rates [cm$^{-3}$ s$^{-1}$]')
         ax[1].set_xscale('log')
-        ax[1].set_ylabel('altitude [km]')
 
 # loss rates
         fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
         fg.suptitle('Volume Loss Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
         ax[0].plot(lrate['pre'].values,z)
         ax[0].legend(lrate.minor_axis,loc='best')
-        ax[0].set_title('pre e^- density correction')
+        ax[0].set_title('pre e$^-$ density correction')
         _nicez(ax[0],zlim)
-        ax[0].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[0].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$^{-1}$]')
         ax[0].set_xscale('log')
         ax[0].set_ylabel('altitude [km]')
 
         ax[1].plot(lrate['final'].values,z)
         ax[1].legend(lrate.minor_axis,loc='best')
-        ax[1].set_title('post (final) e^- density correction')
+        ax[1].set_title('post (final) e$^-$ density correction')
         _nicez(ax[1],zlim)
-        ax[1].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$Y{-1}$')
+        ax[1].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$^{-1}$]')
         ax[1].set_xscale('log')
-        ax[1].set_ylabel('altitude [km]')
 
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
@@ -244,6 +242,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         _nicez(ax,zlim)
         ax.legend(ind)
         ax.set_title('Electron and Ion Densities')
+        ax.set_ylabel('Altitude [km]')
 
         writeplots(fg,'effects_',E0,makeplot,odir)
 #%% total energy deposition vs. altitude
@@ -289,12 +288,15 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
     if not 'eig' in makeplot:
-        fg = figure()
-        ax = fg.gca()
-        for zc in rollaxis(zceta,1):
-            ax.plot(ver.index,zc)
-        ax.set_xlabel('emission constituants  ' + titlend)
-        #ax.legend(True)
+        ind=[3371, 4278, 5200, 5577, 6300, 7320, 10400, 3466, 7774, 8446, 3726]
+        fg,axs = subplots(3,4,sharey=True,figsize=(15,8))
+        for ax,zc,i in zip(axs.ravel(),rollaxis(zceta,1)[:11,...],ind):
+            ax.plot(zc,z)
+            ax.set_xscale('log')
+            #ax.set_xlabel('emission constituants  ' + titlend)
+            ax.set_ylabel('Altitude [km]')
+            ax.set_title('{} angstrom'.format(i))
+            #ax.legend(True)
 
         writeplots(fg,'constit_',E0,makeplot,odir)
 
