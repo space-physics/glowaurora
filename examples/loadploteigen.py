@@ -16,7 +16,7 @@ from RunLoop import ekpcolor                     # in this directory, another ex
 #%% main program
 from argparse import ArgumentParser
 p = ArgumentParser()
-p.add_argument('-E','--eigenfn',help='generate eigenprofiles using energies in this csv file',default='~/code/transcar/transcar/BT_E1E2prev.csv')
+p.add_argument('-E','--eigenfn',help='generate eigenprofiles using energies in this csv file',default='../../gridaurora/zettflux.csv')
 p.add_argument('-i','--infn',help='input hdf5 to read',default='~/data/transcareigen.h5')
 p = p.parse_args()
 
