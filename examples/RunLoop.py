@@ -32,7 +32,7 @@ from numpy import loadtxt,append,asarray
 from pandas import DataFrame,Panel
 #
 from glowaurora.runglow import runglowaurora#,plotaurora
-from glowaurora.loadtranscargrid import loadregress
+from gridaurora.loadtranscargrid import loadregress
 from histfeas.plotsnew import ploteig
 from transcarread.readTranscar import SimpleSim
 
