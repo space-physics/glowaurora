@@ -29,7 +29,7 @@ from dateutil.parser import parse
 from matplotlib.pyplot import show
 from os.path import expanduser
 from numpy import loadtxt,append,asarray
-from pandas import DataFrame,Panel
+from pandas import DataFrame,Panel,read_hdf
 #
 from glowaurora.runglow import runglowaurora#,plotaurora
 from gridaurora.loadtranscargrid import loadregress
@@ -57,8 +57,16 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
     return DFver,photIon,isr,phitop,zceta,sza
 
 def ekpcolor(eigenfn):
-    e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
-    eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
+    if eigenfn.endswith('.csv'):
+        e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
+        eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
+    elif eigenfn.endswith('.h5'):
+        bins = read_hdf(expanduser(eigenfn))
+        e0 = bins['low']
+        eEnd = bins['high'][-1]
+    else:
+        raise ValueError('I do not understand what file you want me to read {}'.format(eigenfn))
+
     return append(e0,eEnd),e0
 
 def makeeigen(eigenfn,dt,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
