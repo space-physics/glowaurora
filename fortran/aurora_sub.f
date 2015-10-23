@@ -248,10 +248,9 @@ C
         totpi = tpi(1) + tpi(2) + tpi(3) + phono(1,j)
         totsi = sion(1,j) + sion(2,j) + sion(3,j)
 
-        if (isnan(totpi)) stop 'NaN in photoionization'
+        if (isnan(totpi)) write(0,*) 'NaN in photoionization'
         if (isnan(totsi)) then
-         print *,'at altitude',z(j) 
-         stop 'NaN in impact ionization'
+         write(0,*) 'NaN in impact ionization at altitude',z(j) 
         end if
 
         Pypi(j) = totpi
