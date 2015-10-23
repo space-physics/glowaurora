@@ -11,7 +11,7 @@ from pytz import UTC
 #
 from histfeas.plotsnew import ploteig            # obtained from https://github.com/scienceopen/histfeas
 from transcarread.readTranscar import SimpleSim  # obtained from https://github.com/scienceopen/transcarread
-from RunLoop import ekpcolor                     # in this directory, another example file
+from glowaurora.eigenprof import ekpcolor
 
 #%% main program
 from argparse import ArgumentParser
@@ -21,7 +21,7 @@ p.add_argument('-i','--infn',help='input hdf5 to read',default='~/data/transcare
 p = p.parse_args()
 
 
-EKpcolor,e0 = ekpcolor(p.eigenfn)
+EKpcolor,e0,diffnumflux = ekpcolor(p.eigenfn)
 
 sim = SimpleSim(filt='none',inpath=None,reacreq='')
 #%% load and plot
