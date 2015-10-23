@@ -5,8 +5,13 @@ To generate eigenprofiles, use -E option.
 Poker Flat eigenprofile example from command line:
 python 2013-03-01T10:48Z -c 65 -148 -E ~/code/transcar/transcar/BT_E1E2prev.csv --f107 --f107a --ap
 
-example mar 1 2011
-python3 RunLoop.py -t 2011-03-01T00:00Z 2011-03-01T23:00Z -E ~/data/100MeVtop.h5 -c 65 -147.5 --f107 115 --f107p 115 --f107a 96 --ap 7
+Example mar 1 2011:
+------------------
+1) create unit input flux spectrum with gridaurora/MakeEigenprofileFluxInput.py
+2) run this program:
+python3 RunLoop.py -t 2011-03-01T00:00Z -E ~/data/100MeVtop.h5 -c 65 -147.5 --f107 115 --f107p 115 --f107a 96 --ap 7 -o ~/data/rates.h5
+
+
 
 default parameter values like those of Stan's fortran examples--yield rather similar output
 Note that the number of bins for altitude and energy are "compiled in" the Fortran.
@@ -140,7 +145,7 @@ if __name__ == '__main__':
             d=f.create_dataset('/Ebins',data=ver.minor_axis)
             d=f.create_dataset('/ut1_unix',data=ut1_unix)
             #prod
-#            f['/state'] = prates[0].columns.tolist()
+            f['/state'] = prates[0].columns.tolist()
             d=f.create_dataset('/production',data=asarray([P.values for P in prates]),compression='gzip')
             d=f.create_dataset('/loss',data=asarray([P.values for P in lrates]),compression='gzip')
 #%% plotting
