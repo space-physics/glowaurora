@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 default parameter values like those of Stan's fortran examples--yield rather similar output
+
+Note, this simulation uses a specific input differential number flux spectrum
 """
 from __future__ import division,absolute_import
 from dateutil.parser import parse
@@ -8,15 +10,15 @@ from matplotlib.pyplot import show
 #
 from glowaurora.runglow import runglowaurora,plotaurora
 
-def E0aurora(dt,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
+def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 
     (glat,glon) = glatlon
 
     ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e0,
-                                                                 dt,glat,glon,
+                                                                 t0,glat,glon,
                                                                  f107a,f107,f107p,ap)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,makeplot=makeplot)
+    plotaurora(phitop,ver,zceta,photIon,isr,t0,glat,glon,prate,lrate,makeplot=makeplot)
 
     return ver,photIon,isr,phitop,zceta,sza
 
@@ -35,8 +37,8 @@ if __name__ == '__main__':
     p.add_argument('-m','--makeplot',help='show to show plots, png to save pngs of plots',nargs='+',default=['show'])
     p = p.parse_args()
 
-    dtime = parse(p.simtime)
+    t0 = parse(p.simtime)
 
-    ver,photIon,isr,phitop,zceta,sza = E0aurora(dtime,p.latlon,p.flux,p.e0,p.f107a,p.f107,p.f107p,p.ap,p.makeplot)
+    ver,photIon,isr,phitop,zceta,sza = E0aurora(t0,p.latlon,p.flux,p.e0,p.f107a,p.f107,p.f107p,p.ap,p.makeplot)
 
     show()

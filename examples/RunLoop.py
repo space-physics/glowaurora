@@ -33,60 +33,28 @@ from dateutil import rrule
 from dateutil.parser import parse
 from matplotlib.pyplot import show
 from os.path import expanduser
-from numpy import loadtxt,append,asarray
-from pandas import DataFrame,Panel,read_hdf
+from numpy import asarray
+from pandas import Panel
 #
-from glowaurora.runglow import runglowaurora,plotprodloss
+from glowaurora.runglow import plotprodloss
+from glowaurora.eigenprof import verprodloss,ekpcolor
 from histfeas.plotsnew import ploteig
 from transcarread.readTranscar import SimpleSim
 
 epoch = datetime(1970,1,1,tzinfo=UTC)
 
-def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
-
-    (glat,glon) = glatlon
-
-    DFver = DataFrame(); prates=[]; lrates=[]
-    for e0 in E0:
-        print('{} E0: {:.0f}'.format(dt,e0))
-
-        ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e0,
-                                                              dt,glat,glon,
-                                                              f107a,f107,f107p,ap)
-        prates.append(prate['final'])
-        lrates.append(lrate['final'])
-        #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
-
-        DFver[e0] = ver.sum(axis=1)
-
-    return DFver,photIon,isr,phitop,zceta,sza,prates,lrates
-
-def ekpcolor(eigenfn):
-    if eigenfn.endswith('.csv'):
-        e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
-        eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
-    elif eigenfn.endswith('.h5'):
-        bins = read_hdf(expanduser(eigenfn))
-        e0 = bins['low']
-        eEnd = bins['high'].iloc[-1]
-    else:
-        raise ValueError('I do not understand what file you want me to read {}'.format(eigenfn))
-
-    return append(e0,eEnd),e0
-
-def makeeigen(eigenfn,dt,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
+def makeeigen(eigenfn,T,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
     makeplot.append('eig')
-    flux=None
-    EKpcolor,e0 = ekpcolor(eigenfn)
+    EKpcolor,EK,diffnumflux = ekpcolor(eigenfn)
 
     ver = None
 
-    for t in dt:
-        v,photIon,isr,phitop,zceta,sza,prates,lrates = E0aurora(t,p.latlon,flux,e0,
-                                            p.f107a,p.f107,p.f107p,p.ap,
-                                            p.makeplot,p.odir,p.zlim)
+    for t in T:
+        v,photIon,isr,phitop,zceta,sza,prates,lrates = verprodloss(t,p.latlon,diffnumflux,EK,
+                                                                   p.f107a,p.f107,p.f107p,p.ap,
+                                                                   p.makeplot,p.odir,p.zlim)
         if ver is None:
-            ver = Panel(items=dt,major_axis=v.index,minor_axis=v.columns)
+            ver = Panel(items=T,major_axis=v.index,minor_axis=v.columns)
 
         ver.loc[t,:,:] = v
 
@@ -114,24 +82,22 @@ if __name__ == '__main__':
     p = p.parse_args()
 
     if len(p.simtime) == 1:
-        dtime = [parse(p.simtime[0])]
+        T = [parse(p.simtime[0])]
     elif len(p.simtime) == 2:
-        dtime = list(rrule.rrule(rrule.HOURLY,
+        T = list(rrule.rrule(rrule.HOURLY,
                                  dtstart=parse(p.simtime[0]),
                                  until =parse(p.simtime[1])))
 
     makeplot = p.makeplot
 
-    if p.eigenprof:
-        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates = makeeigen(p.eigenprof,dtime,p.latlon,
-                                                             p.f107a,p.f107,p.f107p,p.ap,
-                                                             p.makeplot,p.odir,p.zlim)
-    else:
-        flux=p.flux; e0=p.e0
-
-        ver,photIon,isr,phitop,zceta,sza = E0aurora(dtime,p.latlon,flux,e0,
-                                                p.f107a,p.f107,p.f107p,p.ap,
-                                                p.makeplot,p.odir,p.zlim)
+    if p.eigenprof: #loop over energy and optionally time
+        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates = makeeigen(p.eigenprof,T,p.latlon,
+                                                                             p.f107a,p.f107,p.f107p,p.ap,
+                                                                             p.makeplot,p.odir,p.zlim)
+    else: #single time
+        ver,photIon,isr,phitop,zceta,sza,prates,lrates = verprodloss(T[0],p.latlon,p.flux,p.e0,
+                                                                       p.f107a,p.f107,p.f107p,p.ap,
+                                                                       p.makeplot,p.odir,p.zlim)
 
     if p.odir.endswith('.h5'):
         h5fn = expanduser(p.odir)
@@ -161,9 +127,8 @@ if __name__ == '__main__':
             if False:
                 for prate,lrate,E0 in zip(prates,lrates,EKpcolor):
                     #production eigenprofiles
-                    plotprodloss(z,prate,dtime,glat,glon,zlim,'Volume Production',' E0: {:.0f}'.format(E0),makeplot)
+                    plotprodloss(z,prate,T,glat,glon,zlim,'Volume Production',' E0: {:.0f}'.format(E0),makeplot)
                     #loss eigenprofiles
-                    plotprodloss(z,prate,dtime,glat,glon,zlim,'Volume Loss',' E0: {:.0f}'.format(E0),makeplot)
+                    plotprodloss(z,prate,T,glat,glon,zlim,'Volume Loss',' E0: {:.0f}'.format(E0),makeplot)
 
-        show()
-
+    show()

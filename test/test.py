@@ -5,6 +5,8 @@ Michael Hirsch
 
 f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
 
+nosetests -v test.py
+
 """
 from __future__ import division,absolute_import
 import logging
