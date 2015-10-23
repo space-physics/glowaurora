@@ -55,7 +55,7 @@ This requires two steps:
 1. Generate unit input differential number flux vs. energy
 2. Compute ionospheric energy deposition and hence production/loss rates for the modeled kinetic chemistries (12 in total)
 
-This is handled by the script ``MakeIonoEigenprofile.py``
+This is handled by the script ``gridaurora/MakeIonoEigenprofile.py``
 
 Papers
 ======
