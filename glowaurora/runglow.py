@@ -169,8 +169,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
-    plotprodloss(z,prate,dtime,glat,glon,zlim,'Volume Production',titlend,makeplot)
-    plotprodloss(z,lrate,dtime,glat,glon,zlim,'Volume Loss',titlend,makeplot)
+    plotprodloss(z,prate,lrate,dtime,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(dtime,glat,glon) + titlend)
@@ -286,23 +285,25 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 
         writeplots(fg,'constit_',E0,makeplot,odir)
 
-def plotprodloss(z,rate,dtime,glat,glon,zlim,titlbeg,titlend,makeplot):
+def plotprodloss(z,prod,loss,dtime,glat,glon,zlim,titlbeg,titlend):
     fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
-    fg.suptitle(titlbeg + ' Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
+    fg.suptitle(titlbeg + ' Volume Production/Loss Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
 
-    ax[0].set_title('pre e$^-$ density correction')
+    ax[0].set_title('Volume Production Ratescd')
     ax[0].set_ylabel('altitude [km]')
-    if isfinite(rate['pre'].values).any(): #renderer crashes at final render(try/except doesn't help) if all nan
-        ax[0].plot(rate['pre'].values,z)
+    prodval = prod.values.squeeze()
+    if prodval.ndim in (2,3) and isfinite(prod.values).any(): #renderer crashes at final render(try/except doesn't help) if all nan
+        ax[0].plot(prodval,z)
 
-    ax[1].set_title('post (final) e$^-$ density correction')
-    if isfinite(rate['final'].values).any():
-        ax[1].plot(rate['final'].values,z)
+    ax[1].set_title('Volume Loss Rates')
+    lossval = loss.values.squeeze()
+    if prodval.ndim in (2,3) and isfinite(lossval).any():
+        ax[1].plot(lossval,z)
 
     for a in ax:
         a.set_xscale('log')
         a.set_xlabel(titlbeg +' Rates [cm$^{-3}$ s$^{-1}$]')
-        a.legend(rate.minor_axis,loc='best')
+        a.legend(prod.minor_axis,loc='best') #prod/loss have same axes
         _nicez(a,zlim)
 
 #%%
