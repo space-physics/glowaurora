@@ -20,34 +20,42 @@ glow-aurora
 
 Installation
 ============
-.. code:: bash
+::
 
-  $ git clone --depth 1 https://github.com/scienceopen/glowaurora
-  $ cd glowaurora
-  $ conda install --file requirements.txt
-  $ ./setup.sh
-
+  git clone --depth 1 https://github.com/scienceopen/glowaurora
+  cd glowaurora
+  conda install --file requirements.txt
+  ./setup.sh
 
 Examples
 ========
 
 Self-test f2py
 --------------
-.. code::
+::
   
-  $ cd test
-  $ nosetests -v test.py
+  cd test
+  nosetests -v test.py
 
 the self-test should give zero errors
 
 volume emission rate plots 
 --------------------------
-this Terminal command will make lots of plots::
+::
 
   python examples/demo_glowaurora.py
 
 this produces the plots seen here, with the volume emission rate and intermediate
 processes modeled for the given primary electron precipitation input.
+
+production/loss rate eigenprofiles
+----------------------------------
+This requires two steps:
+
+1. Generate unit input differential number flux vs. energy
+2. Compute ionospheric energy deposition and hence production/loss rates for the modeled kinetic chemistries (12 in total)
+
+This is handled by the script ``MakeIonoEigenprofile.py``
 
 Papers
 ======
@@ -61,34 +69,34 @@ Appendix (Not necessary for the typical user)
 =============================================
 Download the GLOW v0.973 source code from Stan Solomon
 -------------------------------------------------
-.. code:: bash
+::
 
-  $ wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
+  wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
 Download Stan's copy of IRI files
 ---------------------------------
-.. code:: bash
+::
 
-  $ wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
+  wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
 
 compile the Fortran code by itself
 ----------------------------------
-.. code:: bash
+::
 
-  $ cd fortran
-  $ make
+  cd fortran
+  make
 
 F2PY compile the Fortran code for use from Python
 -------------------------------------------------
-.. code:: bash
+::
 
- $ f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
+ f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
 
 
 Fortran self-test
 -----------------
-after compiling, from Terminal::
+::
 
   ./auroraexample < aurexample.in > aurtest.out
 
@@ -101,7 +109,6 @@ On Windows, consider `factors like <https://scivision.co/f2py-running-fortran-co
 
 Licensing
 =========
-
 original Fortran code in directory ``fortran/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/:
 
 "This software is part of the GLOW model.  Use is governed by the Open Source Academic Research License
