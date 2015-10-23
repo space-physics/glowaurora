@@ -1,0 +1,49 @@
+from __future__ import division,absolute_import
+from numpy import loadtxt,append
+from pandas import DataFrame,read_hdf
+from os.path import expanduser
+#
+from .runglow import runglowaurora
+
+def verprodloss(t,glatlon,flux,EK,f107a,f107,f107p,ap,makeplot,odir,zlim):
+    """ for a single time, computes VER, production, and loss vs. unit input flux
+    inputs:
+    -------
+    t: a single datetime() when the eigenprofiles should be computed (solar zenith angle computed in Fortran code)
+    glatlon: geographic coordinates of site (magnetic coordinates computed in Fortran code)
+    flux: a scalar that you define to be the total energy flux input to the top of the ionosphere summed over all energies
+    E0: a vector of energies [eV] to compute unit responses
+
+    """
+
+    (glat,glon) = glatlon
+
+    DFver = DataFrame(); prates=[]; lrates=[]
+    for e in EK:
+        print('{} E0: {:.0f}'.format(t,e))
+
+        ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e,
+                                                                  t,glat,glon,
+                                                                  f107a,f107,f107p,ap)
+        prates.append(prate['final'])
+        lrates.append(lrate['final'])
+        #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
+
+        DFver[e] = ver.sum(axis=1)
+
+    return DFver,photIon,isr,phitop,zceta,sza,prates,lrates
+
+def ekpcolor(eigenfn):
+    if eigenfn.endswith('.csv'):
+        e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
+        eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
+        diffnumflux = None
+    elif eigenfn.endswith('.h5'):
+        bins = read_hdf(expanduser(eigenfn))
+        e0 = bins['low']
+        eEnd = bins['high'].iloc[-1]
+        diffnumflux = bins['flux']
+    else:
+        raise ValueError('I do not understand what file you want me to read {}'.format(eigenfn))
+
+    return append(e0,eEnd),e0,diffnumflux

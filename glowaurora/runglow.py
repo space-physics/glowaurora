@@ -5,11 +5,13 @@ code wrapping in Python by Michael Hirsch
 """
 from __future__ import division,absolute_import
 import logging
+from datetime import datetime
+from six import integer_types,string_types
 from itertools import chain
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
 from pandas import DataFrame,Panel
-from numpy import hstack,asarray,rollaxis,degrees,zeros_like,isfinite
+from numpy import hstack,asarray,rollaxis,degrees,zeros_like,isfinite,ndarray,atleast_1d
 from os import chdir
 from os.path import join
 try:
@@ -29,9 +31,21 @@ dymaj=50
 dymin=10
 dpi = 100
 
-def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
-    chdir(glowpath)
-    yd,utsec = datetime2yd(dt)[:2]
+def runglowaurora(eflux,e0,t0,glat,glon,f107a,f107,f107p,ap):
+#%% (-1) check/process user inputs
+    assert isinstance(eflux,(float,integer_types,ndarray))
+    assert isinstance(e0,   (float,integer_types))
+    assert isinstance(t0,   (datetime,string_types))
+    assert isinstance(glat, (float,integer_types))
+    assert isinstance(glon, (float,integer_types))
+    assert isinstance(f107a,(float,integer_types))
+    assert isinstance(f107, (float,integer_types))
+    assert isinstance(f107p,(float,integer_types))
+    assert isinstance(ap,   (float,integer_types))
+
+    eflux = atleast_1d(eflux)
+    chdir(glowpath) #FIXME: hack for path issue
+    yd,utsec = datetime2yd(t0)[:2]
 #%% (0) define altitude grid [km] (here i liberally copied that used by Stan)
     #z = range(80,110+1,1)
     z = list(range(30,110+1,1))
@@ -49,13 +63,17 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 #%% (1) setup flux at top of ionosphere
     ener,dE = glowfort.egrid()
 
-    if eflux:
+    if len(eflux)==1:
+        logging.info('generating maxwellian input differential number flux spectrum')
         # maxwellian input PhiTop at top of ionosphere
         phitop = glowfort.maxt(eflux,e0,ener, dE, itail=0, fmono=0, emono=0)
-    else: #eigenprofile generation
-        e0ind = find_nearest(ener,e0)[0]
+    elif len(eflux)>1: #eigenprofile generation, one non-zero bin at a time
+        logging.info('running in eigenprofile mode')
+        e0ind = find_nearest(ener,e0)[0] #FIXME should we interpolate instead? Maybe not, as long as we're consistent ref. Semeter 2006
         phitop = zeros_like(ener)
-        phitop[e0ind] = 1e6
+        phitop[e0ind] = eflux[e0ind]
+    else:
+        return TypeError('I do not understand your electron flux input. Should be scalar or vector')
 
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
 #%% (2) msis,iri,glow model
