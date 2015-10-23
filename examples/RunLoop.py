@@ -6,7 +6,7 @@ Poker Flat eigenprofile example from command line:
 python 2013-03-01T10:48Z -c 65 -148 -E ~/code/transcar/transcar/BT_E1E2prev.csv --f107 --f107a --ap
 
 example mar 1 2011
-python3 RunLoop.py -t 2011-03-01T00:00Z 2013-03-01T23:00Z -E ~/code/transcar/transcar/BT_E1E2prev.csv -c 65 -148 --f107 115 --f107p 115 --f107a 96 --ap 7
+python3 RunLoop.py -t 2011-03-01T00:00Z 2013-03-01T23:00Z -E ~/data/100MeVtop.h5 -c 65 -147.5 --f107 115 --f107p 115 --f107a 96 --ap 7
 
 default parameter values like those of Stan's fortran examples--yield rather similar output
 Note that the number of bins for altitude and energy are "compiled in" the Fortran.
@@ -46,7 +46,7 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
     for e0 in E0:
         print('char. energy {}'.format(e0))
 
-        ver,photIon,isr,phitop,zceta,sza = runglowaurora(flux,e0,
+        ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e0,
                                               dt,glat,glon,
                                               f107a,f107,f107p,ap)
 
@@ -54,7 +54,7 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
 
         DFver[e0] = ver.sum(axis=1)
 
-    return DFver,photIon,isr,phitop,zceta,sza
+    return DFver,photIon,isr,phitop,zceta,sza,prate,lrate
 
 def ekpcolor(eigenfn):
     if eigenfn.endswith('.csv'):
@@ -63,7 +63,7 @@ def ekpcolor(eigenfn):
     elif eigenfn.endswith('.h5'):
         bins = read_hdf(expanduser(eigenfn))
         e0 = bins['low']
-        eEnd = bins['high'][-1]
+        eEnd = bins['high'].iloc[-1]
     else:
         raise ValueError('I do not understand what file you want me to read {}'.format(eigenfn))
 
@@ -77,14 +77,14 @@ def makeeigen(eigenfn,dt,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
     ver = None
 
     for t in dt:
-        v,photIon,isr,phitop,zceta,sza = E0aurora(dtime,p.latlon,flux,e0,
+        v,photIon,isr,phitop,zceta,sza,prate,lrate = E0aurora(dtime,p.latlon,flux,e0,
                                             p.f107a,p.f107,p.f107p,p.ap,
                                             p.makeplot,p.odir,p.zlim)
         if ver is None:
             ver = Panel(items=dt,major_axis=v.index,minor_axis=v.columns)
         ver.loc[t,:,:] = v
 
-    return ver,photIon,isr,phitop,zceta,sza,EKpcolor
+    return ver,photIon,isr,phitop,zceta,sza,EKpcolor,prate,lrate
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -93,7 +93,9 @@ if __name__ == '__main__':
     p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(70,0))
     p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1.)
     #grp = parser.add_mutually_exclusive_group()
-    p.add_argument('-E','--eigenprof',help='generate eigenprofiles using energies in this csv file')#'~/code/transcar/transcar/BT_E1E2prev.csv')
+
+    #'~/code/transcar/transcar/BT_E1E2prev.csv')  #~/data/100MeVtop.h5
+    p.add_argument('-E','--eigenprof',help='generate eigenprofiles using energies in this HDF5 or CSV file')
     p.add_argument('--e0',help='characteristic energy [eV]',type=float,nargs='+',default=(1e3,))
 
     p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=100)
@@ -115,7 +117,7 @@ if __name__ == '__main__':
     makeplot = p.makeplot
 
     if p.eigenprof:
-        ver,photIon,isr,phitop,zceta,sza,EKpcolor = makeeigen(p.eigenprof,dtime,p.latlon,
+        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prate,lrate = makeeigen(p.eigenprof,dtime,p.latlon,
                                                              p.f107a,p.f107,p.f107p,p.ap,
                                                              p.makeplot,p.odir,p.zlim)
     else:
