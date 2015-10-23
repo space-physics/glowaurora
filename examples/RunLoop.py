@@ -34,31 +34,13 @@ from dateutil.parser import parse
 from matplotlib.pyplot import show
 from os.path import expanduser
 from numpy import asarray
-from pandas import Panel
 #
-from glowaurora.runglow import plotprodloss
-from glowaurora.eigenprof import verprodloss,ekpcolor
+from glowaurora.runglow import plotprodloss,plotaurora
+from glowaurora.eigenprof import verprodloss,makeeigen
 from histfeas.plotsnew import ploteig
 from transcarread.readTranscar import SimpleSim
 
 epoch = datetime(1970,1,1,tzinfo=UTC)
-
-def makeeigen(eigenfn,T,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
-    makeplot.append('eig')
-    EKpcolor,EK,diffnumflux = ekpcolor(eigenfn)
-
-    ver = None
-
-    for t in T:
-        v,photIon,isr,phitop,zceta,sza,prates,lrates = verprodloss(t,p.latlon,diffnumflux,EK,
-                                                                   p.f107a,p.f107,p.f107p,p.ap,
-                                                                   p.makeplot,p.odir,p.zlim)
-        if ver is None:
-            ver = Panel(items=T,major_axis=v.index,minor_axis=v.columns)
-
-        ver.loc[t,:,:] = v
-
-    return ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -130,5 +112,7 @@ if __name__ == '__main__':
                     plotprodloss(z,prate,T,glat,glon,zlim,'Volume Production',' E0: {:.0f}'.format(E0),makeplot)
                     #loss eigenprofiles
                     plotprodloss(z,prate,T,glat,glon,zlim,'Volume Loss',' E0: {:.0f}'.format(E0),makeplot)
+    else:
+        plotaurora(phitop,ver,zceta,photIon,isr,T[0],p.latlon[0],p.latlon[1],prates,lrates,makeplot=makeplot)
 
     show()

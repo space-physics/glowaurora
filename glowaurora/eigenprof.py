@@ -1,6 +1,6 @@
 from __future__ import division,absolute_import
 from numpy import loadtxt,append
-from pandas import DataFrame,read_hdf
+from pandas import DataFrame,Panel,read_hdf
 from os.path import expanduser
 #
 from .runglow import runglowaurora
@@ -11,22 +11,25 @@ def verprodloss(t,glatlon,flux,EK,f107a,f107,f107p,ap,makeplot,odir,zlim):
     -------
     t: a single datetime() when the eigenprofiles should be computed (solar zenith angle computed in Fortran code)
     glatlon: geographic coordinates of site (magnetic coordinates computed in Fortran code)
-    flux: a scalar that you define to be the total energy flux input to the top of the ionosphere summed over all energies
+    flux: a vector of scaled differential number flux for each energy bin, scaled to "unit" energy flux for your eigenprofile input
     E0: a vector of energies [eV] to compute unit responses
 
     """
 
     (glat,glon) = glatlon
 
-    DFver = DataFrame(); prates=[]; lrates=[]
+    DFver = DataFrame(); prates=None; lrates=None
     for e in EK:
         print('{} E0: {:.0f}'.format(t,e))
 
         ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e,
                                                                   t,glat,glon,
                                                                   f107a,f107,f107p,ap)
-        prates.append(prate['final'])
-        lrates.append(lrate['final'])
+        if prates is None:
+            prates=Panel(items=EK, major_axis=prate.major_axis, minor_axis=prate.minor_axis)
+            lrates=Panel(items=EK, major_axis=lrate.major_axis, minor_axis=lrate.minor_axis)
+
+        prates[e]=prate['final']
         #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
 
         DFver[e] = ver.sum(axis=1)
@@ -47,3 +50,20 @@ def ekpcolor(eigenfn):
         raise ValueError('I do not understand what file you want me to read {}'.format(eigenfn))
 
     return append(e0,eEnd),e0,diffnumflux
+
+def makeeigen(eigenfn,T,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
+    makeplot.append('eig')
+    EKpcolor,EK,diffnumflux = ekpcolor(eigenfn)
+
+    ver = None
+
+    for t in T:
+        v,photIon,isr,phitop,zceta,sza,prates,lrates = verprodloss(t,glatlon,diffnumflux,EK,
+                                                                   f107a,f107,f107p,ap,
+                                                                   makeplot,odir,zlim)
+        if ver is None:
+            ver = Panel(items=T,major_axis=v.index,minor_axis=v.columns)
+
+        ver.loc[t,:,:] = v
+
+    return ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates
