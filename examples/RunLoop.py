@@ -6,7 +6,7 @@ Poker Flat eigenprofile example from command line:
 python 2013-03-01T10:48Z -c 65 -148 -E ~/code/transcar/transcar/BT_E1E2prev.csv --f107 --f107a --ap
 
 example mar 1 2011
-python3 RunLoop.py -t 2011-03-01T00:00Z 2013-03-01T23:00Z -E ~/data/100MeVtop.h5 -c 65 -147.5 --f107 115 --f107p 115 --f107a 96 --ap 7
+python3 RunLoop.py -t 2011-03-01T00:00Z 2011-03-01T23:00Z -E ~/data/100MeVtop.h5 -c 65 -147.5 --f107 115 --f107p 115 --f107a 96 --ap 7
 
 default parameter values like those of Stan's fortran examples--yield rather similar output
 Note that the number of bins for altitude and energy are "compiled in" the Fortran.
@@ -31,8 +31,7 @@ from os.path import expanduser
 from numpy import loadtxt,append,asarray
 from pandas import DataFrame,Panel,read_hdf
 #
-from glowaurora.runglow import runglowaurora#,plotaurora
-from gridaurora.loadtranscargrid import loadregress
+from glowaurora.runglow import runglowaurora,plotprodloss
 from histfeas.plotsnew import ploteig
 from transcarread.readTranscar import SimpleSim
 
@@ -42,19 +41,20 @@ def E0aurora(dt,glatlon,flux,E0,f107a,f107,f107p,ap,makeplot,odir,zlim):
 
     (glat,glon) = glatlon
 
-    DFver = DataFrame()
+    DFver = DataFrame(); prates=[]; lrates=[]
     for e0 in E0:
-        print('char. energy {}'.format(e0))
+        print('{} E0: {:.0f}'.format(dt,e0))
 
         ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e0,
-                                              dt,glat,glon,
-                                              f107a,f107,f107p,ap)
-
+                                                              dt,glat,glon,
+                                                              f107a,f107,f107p,ap)
+        prates.append(prate['final'])
+        lrates.append(lrate['final'])
         #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
 
         DFver[e0] = ver.sum(axis=1)
 
-    return DFver,photIon,isr,phitop,zceta,sza,prate,lrate
+    return DFver,photIon,isr,phitop,zceta,sza,prates,lrates
 
 def ekpcolor(eigenfn):
     if eigenfn.endswith('.csv'):
@@ -77,14 +77,15 @@ def makeeigen(eigenfn,dt,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
     ver = None
 
     for t in dt:
-        v,photIon,isr,phitop,zceta,sza,prate,lrate = E0aurora(dtime,p.latlon,flux,e0,
+        v,photIon,isr,phitop,zceta,sza,prates,lrates = E0aurora(t,p.latlon,flux,e0,
                                             p.f107a,p.f107,p.f107p,p.ap,
                                             p.makeplot,p.odir,p.zlim)
         if ver is None:
             ver = Panel(items=dt,major_axis=v.index,minor_axis=v.columns)
+
         ver.loc[t,:,:] = v
 
-    return ver,photIon,isr,phitop,zceta,sza,EKpcolor,prate,lrate
+    return ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -117,7 +118,7 @@ if __name__ == '__main__':
     makeplot = p.makeplot
 
     if p.eigenprof:
-        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prate,lrate = makeeigen(p.eigenprof,dtime,p.latlon,
+        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates = makeeigen(p.eigenprof,dtime,p.latlon,
                                                              p.f107a,p.f107,p.f107p,p.ap,
                                                              p.makeplot,p.odir,p.zlim)
     else:
@@ -132,14 +133,32 @@ if __name__ == '__main__':
         print('writing to '+h5fn)
         ut1_unix = [(t-epoch).total_seconds() for t in ver.items.to_pydatetime()]
         with h5py.File(h5fn,'w',libver='latest') as f:
-            d=f.create_dataset('/eigenprofile',data=ver.values)
+            f['/sensorloc'] = p.latlon
+            #VER
+            d=f.create_dataset('/eigenprofile',data=ver.values,compression='gzip')
             d=f.create_dataset('/altitude',data=ver.major_axis)
             d=f.create_dataset('/Ebins',data=ver.minor_axis)
             d=f.create_dataset('/ut1_unix',data=ut1_unix)
+            #prod
+#            f['/state'] = prates[0].columns.tolist()
+            d=f.create_dataset('/production',data=asarray([P.values for P in prates]),compression='gzip')
+            d=f.create_dataset('/loss',data=asarray([P.values for P in lrates]),compression='gzip')
 #%% plotting
     if p.eigenprof:
         sim = SimpleSim(filt='none',inpath=None,reacreq='')
+        zlim=(None,None)
+        glat=p.latlon[0]; glon=p.latlon[1]
+        z=ver.major_axis.values
         for t in ver: #for each time
-            ploteig(EKpcolor,asarray(ver.major_axis),ver[t],(None,)*6,sim,t)
+            #VER eigenprofiles
+            ploteig(EKpcolor,z,ver[t].values,(None,)*6,sim,str(t)+' Vol. Emis. Rate ')
+
+            if False:
+                for prate,lrate,E0 in zip(prates,lrates,EKpcolor):
+                    #production eigenprofiles
+                    plotprodloss(z,prate,dtime,glat,glon,zlim,'Volume Production',' E0: {:.0f}'.format(E0),makeplot)
+                    #loss eigenprofiles
+                    plotprodloss(z,prate,dtime,glat,glon,zlim,'Volume Loss',' E0: {:.0f}'.format(E0),makeplot)
+
         show()
 

@@ -4,11 +4,12 @@ Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
 from __future__ import division,absolute_import
+import logging
 from itertools import chain
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
 from pandas import DataFrame,Panel
-from numpy import hstack,asarray,rollaxis,degrees,zeros_like
+from numpy import hstack,asarray,rollaxis,degrees,zeros_like,isfinite
 from os import chdir
 from os.path import join
 try:
@@ -103,7 +104,16 @@ def runglowaurora(eflux,e0,dt,glat,glon,f107a,f107,f107p,ap):
 
 
     return ver,photIon,isrparam,phitop,zceta,sza,prateDF,lrateDF
+
 #%% plot
+def _nicez(ax,zlim):
+    ax.set_ylim(zlim)
+    ax.yaxis.set_major_locator(MultipleLocator(dymaj))
+    ax.yaxis.set_minor_locator(MultipleLocator(dymin))
+    ax.grid(True,which='major',linewidth=1.)
+    ax.grid(True,which='minor',linewidth=0.5)
+    ax.tick_params(axis='both',which='major',labelsize='medium')
+
 def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
                E0=None,flux=None,sza=None,zlim=(None,None),makeplot=None,odir=''):
     if makeplot is None:
@@ -113,14 +123,6 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         titlend = '$E_0={:.0f}$ eV  SZA={:.1f}$^\circ$'.format(E0,sza)
     else:
         titlend = ''
-
-    def _nicez(ax,zlim):
-        ax.set_ylim(zlim)
-        ax.yaxis.set_major_locator(MultipleLocator(dymaj))
-        ax.yaxis.set_minor_locator(MultipleLocator(dymin))
-        ax.grid(True,which='major',linewidth=1.)
-        ax.grid(True,which='minor',linewidth=0.5)
-        ax.tick_params(axis='both',which='major',labelsize='medium')
 
     z=ver.index.values #[km], for convenience
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
@@ -149,42 +151,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
-    if not 'eig' in makeplot:
-        fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
-        fg.suptitle('Volume Production Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
-        ax[0].plot(prate['pre'].values,z)
-        ax[0].legend(prate.minor_axis,loc='best')
-        ax[0].set_title('pre e$^-$ density correction')
-        _nicez(ax[0],zlim)
-        ax[0].set_xlabel('Volume Production Rates [cm$^{-3}$ s$^{-1}$]')
-        ax[0].set_xscale('log')
-        ax[0].set_ylabel('altitude [km]')
-
-        ax[1].plot(prate['final'].values,z)
-        ax[1].legend(prate.minor_axis,loc='best')
-        ax[1].set_title('post (final) e$^-$ density correction')
-        _nicez(ax[1],zlim)
-        ax[1].set_xlabel('Volume Production Rates [cm$^{-3}$ s$^{-1}$]')
-        ax[1].set_xscale('log')
-
-# loss rates
-        fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
-        fg.suptitle('Volume Loss Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
-        ax[0].plot(lrate['pre'].values,z)
-        ax[0].legend(lrate.minor_axis,loc='best')
-        ax[0].set_title('pre e$^-$ density correction')
-        _nicez(ax[0],zlim)
-        ax[0].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$^{-1}$]')
-        ax[0].set_xscale('log')
-        ax[0].set_ylabel('altitude [km]')
-
-        ax[1].plot(lrate['final'].values,z)
-        ax[1].legend(lrate.minor_axis,loc='best')
-        ax[1].set_title('post (final) e$^-$ density correction')
-        _nicez(ax[1],zlim)
-        ax[1].set_xlabel('Volume Loss Rates [cm$^{-3}$ s$^{-1}$]')
-        ax[1].set_xscale('log')
-
+    plotprodloss(z,prate,dtime,glat,glon,zlim,'Volume Production',titlend,makeplot)
+    plotprodloss(z,lrate,dtime,glat,glon,zlim,'Volume Loss',titlend,makeplot)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(dtime,glat,glon) + titlend)
@@ -299,6 +267,25 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
             #ax.legend(True)
 
         writeplots(fg,'constit_',E0,makeplot,odir)
+
+def plotprodloss(z,rate,dtime,glat,glon,zlim,titlbeg,titlend,makeplot):
+    fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
+    fg.suptitle(titlbeg + ' Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
+
+    ax[0].set_title('pre e$^-$ density correction')
+    ax[0].set_ylabel('altitude [km]')
+    if isfinite(rate['pre'].values).any(): #renderer crashes at final render(try/except doesn't help) if all nan
+        ax[0].plot(rate['pre'].values,z)
+
+    ax[1].set_title('post (final) e$^-$ density correction')
+    if isfinite(rate['final'].values).any():
+        ax[1].plot(rate['final'].values,z)
+
+    for a in ax:
+        a.set_xscale('log')
+        a.set_xlabel(titlbeg +' Rates [cm$^{-3}$ s$^{-1}$]')
+        a.legend(rate.minor_axis,loc='best')
+        _nicez(a,zlim)
 
 #%%
 def writeplots(fg,plotprefix,E0,method,odir):
