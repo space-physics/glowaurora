@@ -86,7 +86,7 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a,f107,f107p,ap):
 
     ver = DataFrame(index=z,
                     data=zeta[:,:11],
-                    columns=[3371, 4278, 5200, 5577, 6300,7320,10400,3466,7774, 8446,3726])
+                    columns=[3371., 4278., 5200., 5577., 6300.,7320.,10400.,3466.,7774., 8446.,3726.])
     photIon = DataFrame(index=z,
                    data=hstack((photI[:,None],ImpI[:,None],ecalc[:,None],ion)),
                     columns=['photoIoniz','eImpactIoniz','ne',
