@@ -26,6 +26,7 @@ Michael Hirsch
 Sept 2015
 """
 from __future__ import division,absolute_import
+from collections import namedtuple
 import h5py
 from datetime import datetime
 from pytz import UTC
@@ -36,9 +37,8 @@ from os.path import expanduser
 from numpy import asarray
 #
 from glowaurora.runglow import plotprodloss,plotaurora
-from glowaurora.eigenprof import verprodloss,makeeigen
-from histfeas.plotsnew import ploteig
-from transcarread.readTranscar import SimpleSim
+from glowaurora.eigenprof import verprodloss,makeeigen,ekpcolor
+from histfeas.plotsnew import ploteigver
 
 epoch = datetime(1970,1,1,tzinfo=UTC)
 
@@ -72,8 +72,11 @@ if __name__ == '__main__':
 
     makeplot = p.makeplot
 
-    if p.eigenprof: #loop over energy and optionally time
-        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates = makeeigen(p.eigenprof,T,p.latlon,
+    if p.eigenprof: #loop over time
+        makeplot.append('eig')
+        EKpcolor,EK,diffnumflux = ekpcolor(p.eigenprof)
+
+        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates = makeeigen(EK,diffnumflux,T,p.latlon,
                                                                              p.f107a,p.f107,p.f107p,p.ap,
                                                                              p.makeplot,p.odir,p.zlim)
     else: #single time
@@ -98,20 +101,20 @@ if __name__ == '__main__':
             d=f.create_dataset('/loss',data=asarray([P.values for P in lrates]),compression='gzip')
 #%% plotting
     if p.eigenprof:
-        sim = SimpleSim(filt='none',inpath=None,reacreq='')
+        z=ver.major_axis.values
+        sim = namedtuple('sim',['reacreq','opticalfilter']); sim.reacreq=sim.opticalfilter=''
         zlim=(None,None)
         glat=p.latlon[0]; glon=p.latlon[1]
         z=ver.major_axis.values
         for t in ver: #for each time
             #VER eigenprofiles
-            ploteig(EKpcolor,z,ver[t].values,(None,)*6,sim,str(t)+' Vol. Emis. Rate ')
+            ploteigver(EKpcolor,z,ver[t].values,(None,)*6,sim,str(t)+' Vol. Emis. Rate ')
 
             if False:
                 for prate,lrate,E0 in zip(prates,lrates,EKpcolor):
                     #production eigenprofiles
-                    plotprodloss(z,prate,T,glat,glon,zlim,'Volume Production',' E0: {:.0f}'.format(E0),makeplot)
+                    plotprodloss(z,prate,lrate,t,glat,glon,zlim,'Volume Production/Loss Rates',' E0: {:.0f}'.format(E0))
                     #loss eigenprofiles
-                    plotprodloss(z,prate,T,glat,glon,zlim,'Volume Loss',' E0: {:.0f}'.format(E0),makeplot)
     else:
         plotaurora(phitop,ver,zceta,photIon,isr,T[0],p.latlon[0],p.latlon[1],prates,lrates,makeplot=makeplot)
 
