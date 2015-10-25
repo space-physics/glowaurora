@@ -1,6 +1,6 @@
 from __future__ import division,absolute_import
 from numpy import loadtxt,append
-from pandas import DataFrame,Panel,read_hdf
+from pandas import DataFrame,Panel,Panel4D,read_hdf
 from os.path import expanduser
 #
 from .runglow import runglowaurora
@@ -18,52 +18,65 @@ def verprodloss(t,glatlon,flux,EK,f107a,f107,f107p,ap,makeplot,odir,zlim):
 
     (glat,glon) = glatlon
 
-    DFver = DataFrame(); prates=None; lrates=None
+    vers = None #sentinal
     for e in EK:
         print('{} E0: {:.0f}'.format(t,e))
 
-        ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e,
-                                                                  t,glat,glon,
-                                                                  f107a,f107,f107p,ap)
-        if prates is None:
+        ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez = runglowaurora(flux,e,
+                                                                          t,glat,glon,
+                                                                          f107a,f107,f107p,ap)
+        if vers is None:
             prates=Panel(items=EK, major_axis=prate.major_axis, minor_axis=prate.minor_axis)
             lrates=Panel(items=EK, major_axis=lrate.major_axis, minor_axis=lrate.minor_axis)
+            vers = Panel(items=EK, major_axis=ver.index,        minor_axis=ver.columns)
+            tezs = DataFrame(index=ver.index,columns=EK)
 
+        vers[e] = ver
         prates[e]=prate['final']
+        lrates[e]=lrate['final']
+        tezs[e]=tez
+
         #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
 
-        DFver[e] = ver.sum(axis=1)
 
-    return DFver,photIon,isr,phitop,zceta,sza,prates,lrates
+    return vers,photIon,isr,phitop,zceta,sza,prates,lrates,tezs
 
-def ekpcolor(eigenfn):
-    if eigenfn.endswith('.csv'):
-        e0 =   loadtxt(expanduser(eigenfn),usecols=[0],delimiter=',')
-        eEnd = loadtxt(expanduser(eigenfn),usecols=[1],delimiter=',')[-1]
-        diffnumflux = None
-    elif eigenfn.endswith('.h5'):
-        bins = read_hdf(expanduser(eigenfn))
-        e0 = bins['low']
-        eEnd = bins['high'].iloc[-1]
-        diffnumflux = bins['flux']
+def ekpcolor(eigen):
+    if isinstance(eigen,DataFrame):
+        e0 = eigen['low'].values
+        eEnd = eigen['high'].iloc[-1]
+        diffnumflux = eigen['flux'].values
     else:
-        raise ValueError('I do not understand what file you want me to read {}'.format(eigenfn))
+        if eigen.endswith('.csv'):
+            e0 =   loadtxt(expanduser(eigen),usecols=[0],delimiter=',')
+            eEnd = loadtxt(expanduser(eigen),usecols=[1],delimiter=',')[-1]
+            diffnumflux = None
+        elif eigen.endswith('.h5'):
+            bins = read_hdf(expanduser(eigen))
+            e0 = bins['low'].values
+            eEnd = bins['high'].iloc[-1]
+            diffnumflux = bins['flux'].values
+        else:
+            raise ValueError('I do not understand what file you want me to read {}'.format(eigen))
 
     return append(e0,eEnd),e0,diffnumflux
 
-def makeeigen(eigenfn,T,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
-    makeplot.append('eig')
-    EKpcolor,EK,diffnumflux = ekpcolor(eigenfn)
-
+def makeeigen(EK,diffnumflux,T,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
     ver = None
 
     for t in T:
-        v,photIon,isr,phitop,zceta,sza,prates,lrates = verprodloss(t,glatlon,diffnumflux,EK,
+        v,photIon,isr,phitop,zceta,sza,prate,lrate,tez = verprodloss(t,glatlon,diffnumflux,EK,
                                                                    f107a,f107,f107p,ap,
                                                                    makeplot,odir,zlim)
         if ver is None:
-            ver = Panel(items=T,major_axis=v.index,minor_axis=v.columns)
+            ver =  Panel4D(labels=T,items=v.items,    major_axis=v.major_axis,    minor_axis=v.minor_axis)
+            prates=Panel4D(labels=T,items=prate.items,major_axis=prate.major_axis,minor_axis=prate.minor_axis)
+            lrates=Panel4D(labels=T,items=lrate.items,major_axis=lrate.major_axis,minor_axis=lrate.minor_axis)
+            tezs=Panel(items=T,major_axis=tez.index,minor_axis=tez.columns)
 
-        ver.loc[t,:,:] = v
+        ver[t] = v # v is a 3-D Panel
+        prates[t]=prate
+        lrates[t]=lrate
+        tezs[t]=tez
 
-    return ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates
+    return ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs
