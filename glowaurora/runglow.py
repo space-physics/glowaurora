@@ -10,8 +10,10 @@ from six import integer_types,string_types
 from itertools import chain
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
+from matplotlib.colors import LogNorm
 from pandas import DataFrame,Panel
-from numpy import hstack,asarray,rollaxis,degrees,zeros_like,isfinite,ndarray,atleast_1d
+from numpy import hstack,asarray,rollaxis,degrees,zeros_like,ndarray,atleast_1d
+from numpy.ma import masked_invalid
 from os import chdir
 from os.path import join
 try:
@@ -71,7 +73,7 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a,f107,f107p,ap):
         logging.info('running in eigenprofile mode')
         e0ind = find_nearest(ener,e0)[0] #FIXME should we interpolate instead? Maybe not, as long as we're consistent ref. Semeter 2006
         phitop = zeros_like(ener)
-        phitop[e0ind] = eflux[e0ind]
+        phitop[e0ind] = ener[e0ind] #value in glow grid closest to zett grid
     else:
         return TypeError('I do not understand your electron flux input. Should be scalar or vector')
 
@@ -98,22 +100,25 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a,f107,f107p,ap):
     phitop = DataFrame(index=phi[:,0], #eV
                        data=phi[:,2],  #diffnumflux
                        columns=['diffnumflux'])
+
     zceta = glowfort.cglow.zceta.T  #Nalt x Nwavelengths  xNproductionEmissions
 
     sza = degrees(glowfort.cglow.sza)
+
+    tez = glowfort.cglow.tez #1-D vs. altitude
 
 #%% production and loss rates
     prate = prate.T; lrate=lrate.T #fortran to C ordering 2x170x20, only first 12 columns are used
 
     #column labels by inspection of fortran/gchem.f staring after "DO 150 I=1,JMAX" (thanks Stan!)
-    prateDF = Panel(items=['pre','final'],
+    prates = Panel(items=['pre','final'],
                     major_axis=z,
                     minor_axis=['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
                                  'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)'],
                     data=prate[...,:12], #columns 12:20 are identically zero
                         )
 
-    lrateDF = Panel(items=['pre','final'],
+    lrates = Panel(items=['pre','final'],
                     major_axis=z,
                     minor_axis=['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
                                  'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)'],
@@ -121,10 +126,11 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a,f107,f107p,ap):
                         )
 
 
-    return ver,photIon,isrparam,phitop,zceta,sza,prateDF,lrateDF
+    return ver,photIon,isrparam,phitop,zceta,sza,prates,lrates,tez
 
 #%% plot
 def _nicez(ax,zlim):
+    ax.autoscale(True,axis='both',tight=True)
     ax.set_ylim(zlim)
     ax.yaxis.set_major_locator(MultipleLocator(dymaj))
     ax.yaxis.set_minor_locator(MultipleLocator(dymin))
@@ -132,7 +138,7 @@ def _nicez(ax,zlim):
     ax.grid(True,which='minor',linewidth=0.5)
     ax.tick_params(axis='both',which='major',labelsize='medium')
 
-def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
+def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,tez,
                E0=None,flux=None,sza=None,zlim=(None,None),makeplot=None,odir=''):
     if makeplot is None:
         return
@@ -142,7 +148,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
     else:
         titlend = ''
 
-    z=ver.index.values #[km], for convenience
+    z=ver.major_axis.values #[km], for convenience
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
@@ -193,7 +199,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 # ver visible
     ind= [4278, 5200, 5577, 6300]
     ax = axs[1]
-    ax.plot(ver[ind].values,ver.index)
+    ax.plot(ver.loc[:,:,ind].values.squeeze(),z)
     ax.set_xlabel('Volume Emission Rate')
     ax.set_ylabel('altitude [km]')
     _nicez(ax,zlim)
@@ -205,7 +211,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 # ver invisible
     ind = [3371,7320,10400,3466,7774, 8446,3726]
     ax = axs[2]
-    ax.plot(ver[ind].values,ver.index)
+    ax.plot(ver.loc[:,:,ind].values.squeeze(),z)
     ax.set_xlabel('Volume Emission Rate')
     _nicez(ax,zlim)
     ax.set_xscale('log')
@@ -232,22 +238,14 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         writeplots(fg,'effects_',E0,makeplot,odir)
 #%% total energy deposition vs. altitude
     if not 'eig' in makeplot:
-        fg,axs = subplots(1,3,sharey=True, figsize=(15,8))
-        fg.suptitle('{} ({},{})  '.format(dtime,glat,glon) + titlend)
+        plotenerdep(z,tez,t,glat,glon,zlim,titlend)
+#%% e^- impact ionization rates from ETRANS
+        fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
+        fg.suptitle('{} ({},{})  '.format(t,glat,glon) + titlend)
         tight_layout(pad=3.2, w_pad=0.3)
 
-        ax = axs[2]
-        tez = glowfort.cglow.tez
-        ax.plot(tez,ver.index)
-        ax.set_xscale('log')
-        ax.set_xlim(1e-1,1e6)
-        _nicez(ax,zlim)
-        ax.set_xlabel('Energy Deposited')
-        ax.set_title('Total Energy Depostiion')
-
-#%% e^- impact ionization rates from ETRANS
         ind=['photoIoniz','eImpactIoniz']
-        ax = axs[1]
+        ax = axs[0]
         ax.plot(photIon[ind],photIon.index)
         ax.set_xlabel('ionization')
         ax.set_xscale('log')
@@ -257,10 +255,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
         ax.set_title('Photo and e$^-$ impact ionization')
 
         ind=['O','O2','N2']
-        ax = axs[0]
+        ax = axs[1]
         sion = glowfort.cglow.sion
-        sion = DataFrame(index=ver.index,data=sion.T,columns=ind)
-        ax.plot(sion,ver.index)
+        sion = DataFrame(index=z,data=sion.T,columns=ind)
+        ax.plot(sion,z)
         ax.set_xscale('log')
         ax.set_xlim(1e-5,1e4)
         _nicez(ax,zlim)
@@ -285,25 +283,39 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,
 
         writeplots(fg,'constit_',E0,makeplot,odir)
 
-def plotprodloss(z,prod,loss,dtime,glat,glon,zlim,titlbeg,titlend):
-    fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
-    fg.suptitle(titlbeg + ' Volume Production/Loss Rates   {} ({},{}) '.format(dtime,glat,glon)+ titlend)
+def plotenerdep(EKpcolor,z,tez,t,glat,glon,zlim,titlend=''):
+    fg= figure()
+    ax = fg.gca()
+    if tez.ndim==1:
+        ax.plot(tez,z)
+        ax.set_xscale('log')
+        ax.set_xlim(1e-1,1e6)
+        ax.set_xlabel('Energy Deposited')
+    else:
+        ax.set_label('Beam Energy [eV]')
+        hi=ax.pcolormesh(EKpcolor,z,masked_invalid(tez),norm=LogNorm())
+        cb=fg.colorbar(hi,ax=ax)
+        cb.set_label('Energy Deposited')
 
-    ax[0].set_title('Volume Production Ratescd')
+    _nicez(ax,zlim)
+    ax.set_title('Total Energy Depostiion')
+
+def plotprodloss(EKpcolor,z,prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
+    fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
+    fg.suptitle(titlbeg + ' Volume Production/Loss Rates   {} ({},{}) '.format(t,glat,glon)+ titlend)
+
+    ax[0].set_title('Volume Production Rates')
     ax[0].set_ylabel('altitude [km]')
-    prodval = prod.values.squeeze()
-    if prodval.ndim in (2,3) and isfinite(prod.values).any(): #renderer crashes at final render(try/except doesn't help) if all nan
-        ax[0].plot(prodval,z)
 
     ax[1].set_title('Volume Loss Rates')
-    lossval = loss.values.squeeze()
-    if prodval.ndim in (2,3) and isfinite(lossval).any():
-        ax[1].plot(lossval,z)
 
-    for a in ax:
+    for a,r in zip(ax,[prod,loss]):
+        hi=a.pcolormesh(EKpcolor,z,masked_invalid(r),norm=LogNorm()) #pcolormesh canNOT handle nan at all!
+        cb=fg.colorbar(hi,ax=a)
+        cb.set_label('[cm$^{-3}$ s$^{-1}$ eV$^{-1}$]',labelpad=0)
         a.set_xscale('log')
-        a.set_xlabel(titlbeg +' Rates [cm$^{-3}$ s$^{-1}$]')
-        a.legend(prod.minor_axis,loc='best') #prod/loss have same axes
+        a.set_xlabel('Beam Energy [eV]')
+#        a.legend(prod.minor_axis,loc='best')  # old, when plotting for each energy / input spectrum
         _nicez(a,zlim)
 
 #%%

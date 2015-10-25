@@ -14,7 +14,7 @@ def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 
     (glat,glon) = glatlon
 
-    ver,photIon,isr,phitop,zceta,sza,prate,lrate = runglowaurora(flux,e0,
+    ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez = runglowaurora(flux,e0,
                                                                  t0,glat,glon,
                                                                  f107a,f107,f107p,ap)
 
