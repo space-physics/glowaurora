@@ -27,14 +27,11 @@ Sept 2015
 """
 from __future__ import division,absolute_import
 from collections import namedtuple
-import h5py
 from datetime import datetime
 from pytz import UTC
 from dateutil import rrule
 from dateutil.parser import parse
 from matplotlib.pyplot import show
-from os.path import expanduser
-from numpy import asarray
 #
 from glowaurora.runglow import plotprodloss,plotaurora
 from glowaurora.eigenprof import verprodloss,makeeigen,ekpcolor
@@ -84,21 +81,6 @@ if __name__ == '__main__':
                                                                        p.f107a,p.f107,p.f107p,p.ap,
                                                                        p.makeplot,p.odir,p.zlim)
 
-    if p.odir.endswith('.h5'):
-        h5fn = expanduser(p.odir)
-        print('writing to '+h5fn)
-        ut1_unix = [(t-epoch).total_seconds() for t in ver.items.to_pydatetime()]
-        with h5py.File(h5fn,'w',libver='latest') as f:
-            f['/sensorloc'] = p.latlon
-            #VER
-            d=f.create_dataset('/eigenprofile',data=ver.values,compression='gzip')
-            d=f.create_dataset('/altitude',data=ver.major_axis)
-            d=f.create_dataset('/Ebins',data=ver.minor_axis)
-            d=f.create_dataset('/ut1_unix',data=ut1_unix)
-            #prod
-            f['/state'] = prates[0].columns.tolist()
-            d=f.create_dataset('/production',data=asarray([P.values for P in prates]),compression='gzip')
-            d=f.create_dataset('/loss',data=asarray([P.values for P in lrates]),compression='gzip')
 #%% plotting
     if p.eigenprof:
         z=ver.major_axis.values
