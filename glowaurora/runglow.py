@@ -138,7 +138,7 @@ def _nicez(ax,zlim):
     ax.grid(True,which='minor',linewidth=0.5)
     ax.tick_params(axis='both',which='major',labelsize='medium')
 
-def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,tez,
+def plotaurora(phitop,ver,zceta,photIon,isr,t,glat,glon,prate,lrate,tez,
                E0=None,flux=None,sza=None,zlim=(None,None),makeplot=None,odir=''):
     if makeplot is None:
         return
@@ -152,7 +152,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,tez,
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
-        fg.suptitle('{} ({},{}) '.format(dtime,glat,glon)+ titlend)
+        fg.suptitle('{} ({},{}) '.format(t,glat,glon)+ titlend)
 
         ind = ['nO','nO2','nN2','nNO']
         ax = axs[0]
@@ -175,10 +175,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,tez,
 
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
-    plotprodloss(z,prate,lrate,dtime,glat,glon,zlim,'',titlend)
+    plotprodloss(z,prate,lrate,t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
-    fg.suptitle('{} ({},{}) '.format(dtime,glat,glon) + titlend)
+    fg.suptitle('{} ({},{}) '.format(t,glat,glon) + titlend)
     tight_layout(pad=3.2, w_pad=0.6)
 
 # incident flux at top of ionosphere
@@ -271,7 +271,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon,prate,lrate,tez,
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
     if not 'eig' in makeplot:
-        ind=[3371, 4278, 5200, 5577, 6300, 7320, 10400, 3466, 7774, 8446, 3726]
+        ind=[3371., 4278., 5200., 5577., 6300., 7320., 10400., 3466., 7774., 8446., 3726.]
         fg,axs = subplots(3,4,sharey=True,figsize=(15,8))
         for ax,zc,i in zip(axs.ravel(),rollaxis(zceta,1)[:11,...],ind):
             ax.plot(zc,z)
