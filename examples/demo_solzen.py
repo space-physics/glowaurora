@@ -10,10 +10,6 @@ from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel
 from matplotlib.pyplot import show
 from os import chdir,environ
-# Some features may require AstroPy 1.0+
-import astropy.units as u
-from astropy.coordinates import get_sun, EarthLocation, AltAz
-from astropy.time import Time
 from time import time
 try:
     import seaborn
@@ -21,6 +17,7 @@ except:
     pass
 #
 from histutils.fortrandates import datetime2yd
+from gridaurora.solarangle import solarzenithangle
 #################################
 #TODO hack for module data path issue
 chdir(environ['HOME'])
@@ -40,14 +37,14 @@ def demosolzen(dtime,glat,glon):
 
     return DataFrame(index=dtime,data=sza_glow,columns=['glow'])
 
-def demosuncor(dtime,glat,glon,alt_m):
+def demosuncor(T,glat,glon,alt_m):
 #%% Solar location with GLOW
-    yd,utsec = datetime2yd(dtime)[:2]
+    yd,utsec = datetime2yd(T)[:2]
     solar = Panel( items=['glow','astropy'],
-                 major_axis=dtime,
+                 major_axis=T,
                  minor_axis=['dec','ra','gst'])
     tic = time()
-    for d,s,t in zip(yd,utsec,dtime):
+    for d,s,t in zip(yd,utsec,T):
         solar['glow'].loc[t] = glowfort.suncor(d,s)
     fortsec = time()-tic
     solar.ix['glow',:,'dec'] = degrees(solar.ix['glow',:,'dec'])
@@ -55,10 +52,7 @@ def demosuncor(dtime,glat,glon,alt_m):
     solar.ix['glow',:,'gst'] = degrees(solar.ix['glow',:,'gst'])
 #%% solar location with AstroPy
     tic=time()
-    obs = EarthLocation(lat=glat*u.deg, lon=glon*u.deg, height=alt_m*u.m)
-    times = Time(dtime, scale='ut1')
-    sun = get_sun(times)
-    sunobs = sun.transform_to(AltAz(obstime=times,location=obs))
+    sza,sun,sunobs = solarzenithangle(T,glat,glon,alt_m)
     pysec = time()-tic
     solar.ix['astropy',:,'dec'] = sun.dec.degree
     solar.ix['astropy',:,'ra'] = sun.ra.degree
@@ -66,7 +60,7 @@ def demosuncor(dtime,glat,glon,alt_m):
 
     print('in seconds, fortran time: {:.3f}   python time: {:.3f} '.format(fortsec,pysec))
 
-    return solar,sunobs
+    return solar,sza
 
 
 
@@ -82,10 +76,10 @@ if __name__ == '__main__':
     lon=-148
     alt_m = 0 #to be fair to GLOW
 #%% compute coordinates of sun
-    sun,sunobs = demosuncor(dtime,lat,lon,alt_m)
+    sun,szaastropy = demosuncor(dtime,lat,lon,alt_m)
 #%% compute angle from zenith of sun
     sza = demosolzen(dtime,lat,lon)
-    sza['astropy'] = 90 - sunobs.alt.degree
+    sza['astropy'] = szaastropy
 #%% compute error
     error = sun['astropy'] - sun['glow']
     error['sza'] = sza['astropy'] - sza['glow']

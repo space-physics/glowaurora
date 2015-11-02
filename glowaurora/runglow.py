@@ -48,20 +48,8 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a,f107,f107p,ap):
     eflux = atleast_1d(eflux)
     chdir(glowpath) #FIXME: hack for path issue
     yd,utsec = datetime2yd(t0)[:2]
-#%% (0) define altitude grid [km] (here i liberally copied that used by Stan)
-    #z = range(80,110+1,1)
-    z = list(range(30,110+1,1))
-    z += (
-         [111.5,113.,114.5,116.] +
-         list(chain(range(118,150+2,2),range(153,168+3,3),range(172,180+4,4),
-                    range(185,205+5,5),range(211,223+6,6),range(230,244+7,7),
-                    range(252,300+8,8),range(309,345+9,9),range(355,395+10,10),
-                    range(406,428+11,11))) +
-         [440,453,467,482,498,515,533,551] +
-         list(range(570,950+20,20))
-         )
-
-    z = asarray(z)
+#%% (0) define altitude grid [km]
+    z=glowalt()
 #%% (1) setup flux at top of ionosphere
     ener,dE = glowfort.egrid()
 
@@ -329,3 +317,18 @@ def writeplots(fg,plotprefix,E0,method,odir):
         cn = join(odir,(plotprefix + 'beam{:.0f}.png'.format(E0)))
         print('write {}'.format(cn))
         fg.savefig(cn,bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async
+
+def glowalt():
+        #z = range(80,110+1,1)
+    z = list(range(30,110+1,1))
+    z += (
+         [111.5,113.,114.5,116.] +
+         list(chain(range(118,150+2,2),range(153,168+3,3),range(172,180+4,4),
+                    range(185,205+5,5),range(211,223+6,6),range(230,244+7,7),
+                    range(252,300+8,8),range(309,345+9,9),range(355,395+10,10),
+                    range(406,428+11,11))) +
+         [440,453,467,482,498,515,533,551] +
+         list(range(570,950+20,20))
+         )
+
+    z = asarray(z)
