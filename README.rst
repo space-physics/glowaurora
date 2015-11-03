@@ -67,6 +67,10 @@ http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user)
 =============================================
+has been tested at various times with gfortran 4.6 - 5.2 on Windows and Linux.
+Any issues please contact me.
+
+
 Download the GLOW v0.973 source code from Stan Solomon
 -------------------------------------------------
 ::
