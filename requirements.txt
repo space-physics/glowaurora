@@ -3,10 +3,9 @@ six
 nose
 python-dateutil
 numpy
-scipy
 pandas
 matplotlib
 seaborn
 astropy
-cython
 h5py
+cython
