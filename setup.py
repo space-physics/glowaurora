@@ -20,7 +20,7 @@ root='fortran'
 fortranpaths = [join(root,f) for f in fortranfiles]
 fortdata = glob(join(root,'*.dat'))
 iridata = glob(join('iri','*.asc')) #in pyiri90
-#%%
+#%% prelim
 with open('README.rst') as f:
 	long_description = f.read()
 
