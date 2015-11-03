@@ -22,7 +22,7 @@ def verprodloss(t,glatlon,flux,EK,makeplot,odir,zlim):
     for e in EK:
         print('{} E0: {:.0f}'.format(t,e))
 
-        ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez = runglowaurora(flux,e,t,glat,glon)
+        ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = runglowaurora(flux,e,t,glat,glon)
         if vers is None:
             prates=Panel(items=EK, major_axis=prate.major_axis, minor_axis=prate.minor_axis)
             lrates=Panel(items=EK, major_axis=lrate.major_axis, minor_axis=lrate.minor_axis)
@@ -37,7 +37,7 @@ def verprodloss(t,glatlon,flux,EK,makeplot,odir,zlim):
         #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
 
 
-    return vers,photIon,isr,phitop,zceta,sza,prates,lrates,tezs
+    return vers,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion
 
 def ekpcolor(eigen):
     if isinstance(eigen,DataFrame):
@@ -63,7 +63,7 @@ def makeeigen(EK,diffnumflux,T,glatlon,makeplot,odir,zlim):
     ver = None
 
     for t in T:
-        v,photIon,isr,phitop,zceta,sza,prate,lrate,tez = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)
+        v,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)
         if ver is None:
             ver =  Panel4D(labels=T,items=v.items,    major_axis=v.major_axis,    minor_axis=v.minor_axis)
             prates=Panel4D(labels=T,items=prate.items,major_axis=prate.major_axis,minor_axis=prate.minor_axis)
@@ -75,4 +75,4 @@ def makeeigen(EK,diffnumflux,T,glatlon,makeplot,odir,zlim):
         lrates[t]=lrate
         tezs[t]=tez
 
-    return ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs
+    return ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion

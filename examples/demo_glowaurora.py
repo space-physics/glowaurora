@@ -14,11 +14,11 @@ def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 
     (glat,glon) = glatlon
 
-    ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez = runglowaurora(flux,e0,
+    ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = runglowaurora(flux,e0,
                                                                  t0,glat,glon,
                                                                  f107a,f107,f107p,ap)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,t0,glat,glon,prate,lrate,makeplot=makeplot)
+    plotaurora(phitop,ver,zceta,photIon,isr,sion,t0,glat,glon,prate,lrate,makeplot=makeplot)
 
     return ver,photIon,isr,phitop,zceta,sza
 
