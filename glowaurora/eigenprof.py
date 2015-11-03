@@ -5,7 +5,7 @@ from os.path import expanduser
 #
 from .runglow import runglowaurora
 
-def verprodloss(t,glatlon,flux,EK,f107a,f107,f107p,ap,makeplot,odir,zlim):
+def verprodloss(t,glatlon,flux,EK,makeplot,odir,zlim):
     """ for a single time, computes VER, production, and loss vs. unit input flux
     inputs:
     -------
@@ -22,9 +22,7 @@ def verprodloss(t,glatlon,flux,EK,f107a,f107,f107p,ap,makeplot,odir,zlim):
     for e in EK:
         print('{} E0: {:.0f}'.format(t,e))
 
-        ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez = runglowaurora(flux,e,
-                                                                          t,glat,glon,
-                                                                          f107a,f107,f107p,ap)
+        ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez = runglowaurora(flux,e,t,glat,glon)
         if vers is None:
             prates=Panel(items=EK, major_axis=prate.major_axis, minor_axis=prate.minor_axis)
             lrates=Panel(items=EK, major_axis=lrate.major_axis, minor_axis=lrate.minor_axis)
@@ -61,13 +59,11 @@ def ekpcolor(eigen):
 
     return append(e0,eEnd),e0,diffnumflux
 
-def makeeigen(EK,diffnumflux,T,glatlon,f107a,f107,f107p,ap,makeplot,odir,zlim):
+def makeeigen(EK,diffnumflux,T,glatlon,makeplot,odir,zlim):
     ver = None
 
     for t in T:
-        v,photIon,isr,phitop,zceta,sza,prate,lrate,tez = verprodloss(t,glatlon,diffnumflux,EK,
-                                                                   f107a,f107,f107p,ap,
-                                                                   makeplot,odir,zlim)
+        v,photIon,isr,phitop,zceta,sza,prate,lrate,tez = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)
         if ver is None:
             ver =  Panel4D(labels=T,items=v.items,    major_axis=v.major_axis,    minor_axis=v.minor_axis)
             prates=Panel4D(labels=T,items=prate.items,major_axis=prate.major_axis,minor_axis=prate.minor_axis)

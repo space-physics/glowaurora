@@ -6,8 +6,8 @@ from glob import glob
 
 # f2py -m aurora -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f aurora_sub.f
 
-# NOTE: iri90.f not included in f2py b/c we use the pyiri90 package
-# NOTE: nrlmsise00.f not included .... msise00 package
+# FUTURE: iri90.f not included in f2py b/c we use the pyiri90 package
+# FUTURE: nrlmsise00.f not included .... msise00 package
 fortranfiles=['egrid.f','maxt.f','glow.f',
               'vquart.f','gchem.f','ephoto.f','solzen.f','rcolum.f',
               'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
@@ -49,10 +49,11 @@ setup(name='glowaurora',
                   ], #must have data_files to copy *.dat to site-packages
 
 	  install_requires=[#'msise00','pyiri90', #future
-                         'pymap3d', 'histutils',
-                         'numpy','pandas','astropy'],
+                         'pymap3d', 'histutils','gridaurora',
+                         'pathlib'],
       dependency_links = [#'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
-                          #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90'
+                          #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
+                          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
                           'https://github.com/scienceopen/histutils/tarball/master#egg=histutils',
                           'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d',
                             ],
