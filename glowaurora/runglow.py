@@ -20,7 +20,7 @@ import glowaurora
 from glowaurora import glowfort
 #
 glowpath=glowaurora.__path__[0]
-oldcwd = Path.cwd()
+oldcwd = str(Path.cwd())
 
 
 def runglowaurora(eflux,e0,t0,glat,glon,f107apfn='data/RecentIndices.txt',f107a=None,f107=None,f107p=None,ap=None):
@@ -107,8 +107,10 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107apfn='data/RecentIndices.txt',f107a=
                     data=lrate[...,:12], #columns 12:20 are identically zero
                         )
 
+    sion = glowfort.cglow.sion
+
     chdir(oldcwd)
-    return ver,photIon,isrparam,phitop,zceta,sza,prates,lrates,tez
+    return ver,photIon,isrparam,phitop,zceta,sza,prates,lrates,tez,sion
 
 def glowalt():
         #z = range(80,110+1,1)
