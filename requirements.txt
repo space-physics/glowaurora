@@ -1,8 +1,12 @@
+setuptools
+six
+nose
+python-dateutil
 numpy
+scipy
 pandas
-matplotlib>=1.4
-astropy>=1.0
-dateutil
+matplotlib
+seaborn
+astropy
 cython
 h5py
-scikit-image
