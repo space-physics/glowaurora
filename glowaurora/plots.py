@@ -2,12 +2,9 @@ from __future__ import division,absolute_import
 from pathlib import Path
 from numpy import rollaxis
 from numpy.ma import masked_invalid
-from pandas import DataFrame
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
 from matplotlib.colors import LogNorm
-#
-import glowfort
 
 dymaj=50
 dymin=10
@@ -22,7 +19,7 @@ def _nicez(ax,zlim):
     ax.grid(True,which='minor',linewidth=0.5)
     ax.tick_params(axis='both',which='major',labelsize='medium')
 
-def plotaurora(phitop,ver,zceta,photIon,isr,t,glat,glon,prate,lrate,tez,
+def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
                E0=None,flux=None,sza=None,zlim=(None,None),makeplot=None,odir=''):
     if makeplot is None:
         return
@@ -140,8 +137,6 @@ def plotaurora(phitop,ver,zceta,photIon,isr,t,glat,glon,prate,lrate,tez,
 
         ind=['O','O2','N2']
         ax = axs[1]
-        sion = glowfort.cglow.sion
-        sion = DataFrame(index=z,data=sion.T,columns=ind)
         ax.plot(sion,z)
         ax.set_xscale('log')
         ax.set_xlim(1e-5,1e4)

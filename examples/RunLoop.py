@@ -73,11 +73,11 @@ if __name__ == '__main__':
         makeplot.append('eig')
         EKpcolor,EK,diffnumflux = ekpcolor(p.eigenprof)
 
-        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates = makeeigen(EK,diffnumflux,T,p.latlon,
+        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates,sion = makeeigen(EK,diffnumflux,T,p.latlon,
                                                                              p.f107a,p.f107,p.f107p,p.ap,
                                                                              p.makeplot,p.odir,p.zlim)
     else: #single time
-        ver,photIon,isr,phitop,zceta,sza,prates,lrates = verprodloss(T[0],p.latlon,p.flux,p.e0,
+        ver,photIon,isr,phitop,zceta,sza,prates,lrates,sion = verprodloss(T[0],p.latlon,p.flux,p.e0,
                                                                        p.f107a,p.f107,p.f107p,p.ap,
                                                                        p.makeplot,p.odir,p.zlim)
 
@@ -98,6 +98,6 @@ if __name__ == '__main__':
                     plotprodloss(z,prate,lrate,t,glat,glon,zlim,'Volume Production/Loss Rates',' E0: {:.0f}'.format(E0))
                     #loss eigenprofiles
     else:
-        plotaurora(phitop,ver,zceta,photIon,isr,T[0],p.latlon[0],p.latlon[1],prates,lrates,makeplot=makeplot)
+        plotaurora(phitop,ver,zceta,photIon,isr,sion,T[0],p.latlon[0],p.latlon[1],prates,lrates,makeplot=makeplot)
 
     show()
