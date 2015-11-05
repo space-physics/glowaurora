@@ -25,8 +25,10 @@ except Exception as e:
     DOMSIS=False
 #
 import glowaurora
+packpath=glowaurora.__path__[0]
+print('glowaurora loaded from '+packpath)
 from glowaurora import glowfort
-chdir(glowaurora.__path__[0])
+chdir(packpath)
 #%% test inputs
 z = list(range(30,110+1,1))
 z += (
