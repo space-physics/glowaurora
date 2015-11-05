@@ -12,9 +12,9 @@ from __future__ import division,absolute_import
 import logging
 from datetime import datetime
 from itertools import chain
-from numpy import array,zeros,float32,log,arange,append,isclose,nan
+from numpy import array,zeros,float32,log,isclose,nan
 from numpy.testing import assert_allclose
-from os import chdir,environ,getcwd
+from os import chdir
 #
 from histutils.fortrandates import datetime2yd,datetime2gtd
 try:
@@ -23,14 +23,10 @@ try:
 except Exception as e:
     logging.warning('external MSISE00 install not found, skipping MSISE00 verification')
     DOMSIS=False
-#################################
-#TODO hack for module data path issue
-chdir(environ['HOME'])
+#
 import glowaurora
 from glowaurora import glowfort
 chdir(glowaurora.__path__[0])
-print('loaded glow from ' + getcwd())
-#################################
 #%% test inputs
 z = list(range(30,110+1,1))
 z += (
