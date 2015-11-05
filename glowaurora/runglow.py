@@ -4,7 +4,7 @@ Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
 from __future__ import division,absolute_import
-from pathlib import Path
+from pathlib2 import Path
 import logging
 from datetime import datetime
 from six import integer_types,string_types
@@ -20,8 +20,7 @@ import glowaurora
 from glowaurora import glowfort
 #
 glowpath=glowaurora.__path__[0]
-oldcwd = str(Path.cwd())
-
+oldcwd = Path.cwd()
 
 def runglowaurora(eflux,e0,t0,glat,glon,f107apfn='data/RecentIndices.txt',f107a=None,f107=None,f107p=None,ap=None):
 #%% (-2) check/process user inputs
@@ -109,5 +108,5 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107apfn='data/RecentIndices.txt',f107a=
 
     sion = glowfort.cglow.sion
 
-    chdir(oldcwd)
+    chdir(str(oldcwd))
     return ver,photIon,isrparam,phitop,zceta,sza,prates,lrates,tez,sion

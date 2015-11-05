@@ -50,7 +50,7 @@ setup(name='glowaurora',
 
 	  install_requires=[#'msise00','pyiri90', #future
                          'pymap3d', 'histutils','gridaurora',
-                         'pathlib'],
+                         'pathlib2>=2.1.0'],
       dependency_links = [#'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
                           #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
                           'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
