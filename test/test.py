@@ -26,7 +26,7 @@ except Exception as e:
 #
 import glowaurora
 packpath=glowaurora.__path__[0]
-print('glowaurora loaded from '+packpath)
+logging.info('glowaurora loaded from '+packpath)
 from glowaurora import glowfort
 chdir(packpath)
 #%% test inputs
