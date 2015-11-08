@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/scienceopen/glowaurora.svg
+    :target: https://travis-ci.org/scienceopen/glowaurora
+    
 .. image:: https://codeclimate.com/github/scienceopen/glowaurora/badges/gpa.svg
    :target: https://codeclimate.com/github/scienceopen/glowaurora
    :alt: Code Climate
