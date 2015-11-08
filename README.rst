@@ -1,5 +1,8 @@
 .. image:: https://travis-ci.org/scienceopen/glowaurora.svg
     :target: https://travis-ci.org/scienceopen/glowaurora
+
+.. image:: https://coveralls.io/repos/scienceopen/glowaurora/badge.svg?branch=master&service=github 
+    :target: https://coveralls.io/github/scienceopen/glowaurora?branch=master 
     
 .. image:: https://codeclimate.com/github/scienceopen/glowaurora/badges/gpa.svg
    :target: https://codeclimate.com/github/scienceopen/glowaurora
