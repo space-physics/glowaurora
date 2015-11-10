@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from six import integer_types,string_types
 from pandas import DataFrame,Panel
-from numpy import hstack,degrees,zeros_like,ndarray,atleast_1d
+from numpy import hstack,degrees,zeros_like,ndarray,atleast_1d,float32
 from os import chdir
 #
 from histutils.fortrandates import datetime2yd
@@ -22,10 +22,10 @@ from glowaurora import glowfort
 glowpath=glowaurora.__path__[0]
 oldcwd = Path.cwd()
 
-def runglowaurora(eflux,e0,t0,glat,glon,f107apfn='data/RecentIndices.txt',f107a=None,f107=None,f107p=None,ap=None):
+def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p=None,ap=None):
 #%% (-2) check/process user inputs
     assert isinstance(eflux,(float,integer_types,ndarray))
-    assert isinstance(e0,   (float,integer_types))
+    assert isinstance(e0,   (float,float32,integer_types))
     assert isinstance(t0,   (datetime,string_types))
     assert isinstance(glat, (float,integer_types))
     assert isinstance(glon, (float,integer_types))

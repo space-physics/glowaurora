@@ -12,10 +12,11 @@ from __future__ import division,absolute_import
 import logging
 from datetime import datetime
 from itertools import chain
-from numpy import array,zeros,float32,log,isclose,nan
+from numpy import array,zeros,float32,log,isclose,nan,ones_like
 from numpy.testing import assert_allclose
 from os import chdir
 #
+from glowaurora.eigenprof import makeeigen
 from histutils.fortrandates import datetime2yd,datetime2gtd
 try:
     from msise00.runmsis import rungtd1d
@@ -149,6 +150,9 @@ def test_glow():
 
 #def test_glowprog():
 
+def test_eigen():
+    ener,dE = glowfort.egrid()
+    ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
 
 if __name__ == '__main__':
     test_solzen()
@@ -160,3 +164,4 @@ if __name__ == '__main__':
     test_rcolum_qback()
     test_glow()
 #    test_glowprog()
+    test_eigen()
