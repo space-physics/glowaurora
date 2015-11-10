@@ -1,11 +1,12 @@
 from __future__ import division,absolute_import
+from pathlib2 import Path
+from datetime import datetime
 from numpy import loadtxt,append
-from pandas import DataFrame,Panel,Panel4D,read_hdf
-from os.path import expanduser
+from pandas import DataFrame,Panel,Panel4D,read_hdf#
 #
 from .runglow import runglowaurora
 
-def verprodloss(t,glatlon,flux,EK,makeplot,odir,zlim):
+def verprodloss(t,glatlon,flux,EK,makeplot=[None],odir=None,zlim=None):
     """ for a single time, computes VER, production, and loss vs. unit input flux
     inputs:
     -------
@@ -15,7 +16,7 @@ def verprodloss(t,glatlon,flux,EK,makeplot,odir,zlim):
     E0: a vector of energies [eV] to compute unit responses
 
     """
-
+    assert isinstance(t,datetime)
     (glat,glon) = glatlon
 
     vers = None #sentinal
@@ -45,12 +46,13 @@ def ekpcolor(eigen):
         eEnd = eigen['high'].iloc[-1]
         diffnumflux = eigen['flux'].values
     else:
-        if eigen.endswith('.csv'):
-            e0 =   loadtxt(expanduser(eigen),usecols=[0],delimiter=',')
-            eEnd = loadtxt(expanduser(eigen),usecols=[1],delimiter=',')[-1]
+        eigen = Path(eigen).expanduser()
+        if eigen.suffix == '.csv':
+            e0 =   loadtxt(str(eigen),usecols=[0],delimiter=',')
+            eEnd = loadtxt(str(eigen),usecols=[1],delimiter=',')[-1]
             diffnumflux = None
-        elif eigen.endswith('.h5'):
-            bins = read_hdf(expanduser(eigen))
+        elif eigen.suffix == '.h5':
+            bins = read_hdf(str(eigen))
             e0 = bins['low'].values
             eEnd = bins['high'].iloc[-1]
             diffnumflux = bins['flux'].values
@@ -59,9 +61,11 @@ def ekpcolor(eigen):
 
     return append(e0,eEnd),e0,diffnumflux
 
-def makeeigen(EK,diffnumflux,T,glatlon,makeplot,odir,zlim):
-    ver = None
+def makeeigen(EK,diffnumflux,T,glatlon,makeplot=[None],odir=None,zlim=None):
+    if isinstance(T,datetime):
+        T=[T]
 
+    ver = None
     for t in T:
         v,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)
         if ver is None:
