@@ -18,6 +18,6 @@ if [[ $? -eq 0 ]] && [[ -z $2 ]]; then
     mv -v $modpath/../glowfort.* $modpath/
     )
 elif [[ -z $2 ]]; then
-    echo error in compiling GLOW package
+    echo '******* error in compiling GLOW package'
     exit 1
 fi
