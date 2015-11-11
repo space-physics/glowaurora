@@ -24,6 +24,12 @@ iridata = glob(join('iri','*.asc')) #in pyiri90
 with open('README.rst') as f:
 	long_description = f.read()
 
+try:
+    subprocess.call(['conda','install','--file','requirements.txt'],env={'PATH': os.environ['PATH']},shell=False)
+    ok = True
+except Exception as e:
+    ok = False
+
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
                f2py_options=['--quiet'],
@@ -58,3 +64,6 @@ setup(name='glowaurora',
                           'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d',
                             ],
       )
+
+if not ok:
+    print('you will need to install packages in requirements.txt  {}'.format(e))
