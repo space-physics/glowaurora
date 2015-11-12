@@ -25,12 +25,6 @@ iridata = glob(join('iri','*.asc')) #in pyiri90
 with open('README.rst') as f:
 	long_description = f.read()
 
-try:
-    subprocess.call(['conda','install','--yes','--file','requirements.txt'],env={'PATH': os.environ['PATH']},shell=False)
-    ok = True
-except Exception as e:
-    ok = False
-
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
                f2py_options=['--quiet'],
@@ -66,5 +60,7 @@ setup(name='glowaurora',
                             ],
       )
 
-if not ok:
+try:
+    subprocess.call(['conda','install','--yes','--quiet','--file','requirements.txt'],env={'PATH': os.environ['PATH']},shell=False)
+except Exception as e:
     print('you will need to install packages in requirements.txt  {}'.format(e))
