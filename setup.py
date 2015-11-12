@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import setuptools #needed to enable develop
+import subprocess,os
 from numpy.distutils.core import setup,Extension
 from os.path import join
 from glob import glob
