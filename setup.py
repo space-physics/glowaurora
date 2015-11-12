@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import setuptools #needed to enable develop
-import subprocess,os
+import subprocess
 from numpy.distutils.core import setup,Extension
-from os.path import join
+from os.path import join,dirname,abspath
 from glob import glob
 
 # f2py -m aurora -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f aurora_sub.f
@@ -61,6 +61,6 @@ setup(name='glowaurora',
       )
 
 try:
-    subprocess.call(['conda','install','--yes','--quiet','--file','requirements.txt'],shell=False) #don't use os.environ
+    subprocess.call(['conda','install','--yes','--quiet','--file',dirname(abspath(__file__))+'/requirements.txt'],shell=False) #don't use os.environ
 except Exception as e:
     print('you will need to install packages in requirements.txt  {}'.format(e))
