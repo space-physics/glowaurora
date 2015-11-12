@@ -26,7 +26,7 @@ with open('README.rst') as f:
 	long_description = f.read()
 
 try:
-    subprocess.call(['conda','install','--file','requirements.txt'],env={'PATH': os.environ['PATH']},shell=False)
+    subprocess.call(['conda','install','--yes','--file','requirements.txt'],env={'PATH': os.environ['PATH']},shell=False)
     ok = True
 except Exception as e:
     ok = False
