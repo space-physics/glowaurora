@@ -15,7 +15,7 @@ from histutils.findnearest import find_nearest
 from gridaurora.readApF107 import readmonthlyApF107
 from gridaurora.zglow import glowalt
 import glowfort,glowaurora
-glowpath=glowaurora.__path__[0]
+glowpath=Path(glowaurora.__path__[0])/'..'
 oldcwd = Path.cwd()
 
 def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p=None,ap=None):
@@ -32,7 +32,7 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p
         f107  = f107Ap['f107o']
         ap    = (f107Ap['Apo'],)*7
 
-    chdir(glowpath) #FIXME: hack for path issue
+    chdir(str(glowpath)) #FIXME: hack for path issue
 
 #%% flux grid / date
 

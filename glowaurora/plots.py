@@ -1,6 +1,7 @@
 from pathlib import Path
 from numpy import rollaxis
 from numpy.ma import masked_invalid
+from pandas import DataFrame,Panel
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
 from matplotlib.colors import LogNorm
@@ -28,7 +29,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
     else:
         titlend = ''
 
-    z=ver.major_axis.values #[km], for convenience
+    if isinstance(ver,Panel):
+        z=ver.major_axis.values #[km], for convenience
+    elif isinstance(ver,DataFrame):
+        z=ver.index
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
