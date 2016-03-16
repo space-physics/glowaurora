@@ -59,7 +59,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
-    plotprodloss(z,prate,lrate,t,glat,glon,zlim,'',titlend)
+    plotprodloss(phitop.index,z,prate,lrate,t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(t,glat,glon) + titlend)
