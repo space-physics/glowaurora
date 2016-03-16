@@ -59,7 +59,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
-    plotprodloss(phitop.index,z,prate,lrate,t,glat,glon,zlim,'',titlend)
+    plotprodloss(phitop.index,z,prate['final'],lrate['final'],t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(t,glat,glon) + titlend)
@@ -192,7 +192,7 @@ def plotprodloss(EKpcolor,z,prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
     ax[1].set_title('Volume Loss Rates')
 
     for a,r in zip(ax,[prod,loss]):
-        hi=a.pcolormesh(EKpcolor,z,masked_invalid(r),norm=LogNorm()) #pcolormesh canNOT handle nan at all!
+        hi=a.pcolormesh(EKpcolor,z,masked_invalid(r.values),norm=LogNorm()) #pcolormesh canNOT handle nan at all!
         cb=fg.colorbar(hi,ax=a)
         cb.set_label('[cm$^{-3}$ s$^{-1}$ eV$^{-1}$]',labelpad=0)
         a.set_xscale('log')
