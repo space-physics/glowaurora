@@ -8,13 +8,11 @@ f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rco
 nosetests -v test.py
 
 """
-from __future__ import division,absolute_import
 import logging
 from datetime import datetime
 from itertools import chain
 from numpy import array,zeros,float32,log,isclose,nan,ones_like
-from numpy.testing import assert_allclose
-from os import chdir
+from numpy.testing import assert_allclose,run_module_suite
 #
 from glowaurora.eigenprof import makeeigen
 from histutils.fortrandates import datetime2yd,datetime2gtd
@@ -25,11 +23,7 @@ except Exception as e:
     logging.warning('external MSISE00 install not found, skipping MSISE00 verification')
     DOMSIS=False
 #
-import glowaurora
-packpath=glowaurora.__path__[0]
-logging.info('glowaurora loaded from '+packpath)
-from glowaurora import glowfort
-chdir(packpath)
+import glowfort
 #%% test inputs
 z = list(range(30,110+1,1))
 z += (
@@ -148,20 +142,17 @@ def test_glow():
     zcsum = zceta.sum(axis=-1)[:,:11]
     assert_allclose(zcsum,zeta,rtol=1e-6)
 
-#def test_glowprog():
-
 def test_eigen():
     ener,dE = glowfort.egrid()
     ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
 
 if __name__ == '__main__':
-    test_solzen()
     test_egrid_maxt()
+    test_solzen()
     test_snoem()
     test_snoemint()
     test_fieldm()
     test_ssflux()
     test_rcolum_qback()
     test_glow()
-#    test_glowprog()
-    test_eigen()
+    #run_module_suite()

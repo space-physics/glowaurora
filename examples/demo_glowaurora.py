@@ -4,7 +4,6 @@ default parameter values like those of Stan's fortran examples--yield rather sim
 
 Note, this simulation uses a specific input differential number flux spectrum
 """
-from __future__ import division,absolute_import
 from dateutil.parser import parse
 from matplotlib.pyplot import show
 #
