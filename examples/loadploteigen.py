@@ -3,7 +3,6 @@
 loads and plots eigenprofiles vs time
 
 """
-from __future__ import division,absolute_import
 import h5py
 from os.path import expanduser
 from datetime import datetime

@@ -3,11 +3,9 @@
 Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
-from __future__ import division,absolute_import
-from pathlib2 import Path
+from pathlib import Path
 import logging
 from datetime import datetime
-from six import integer_types,string_types
 from pandas import DataFrame,Panel
 from numpy import hstack,degrees,zeros_like,ndarray,atleast_1d,float32
 from os import chdir
@@ -16,26 +14,26 @@ from histutils.fortrandates import datetime2yd
 from histutils.findnearest import find_nearest
 from gridaurora.readApF107 import readmonthlyApF107
 from gridaurora.zglow import glowalt
-import glowaurora
-from glowaurora import glowfort
-#
+import glowfort,glowaurora
 glowpath=glowaurora.__path__[0]
 oldcwd = Path.cwd()
 
 def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p=None,ap=None):
 #%% (-2) check/process user inputs
-    assert isinstance(eflux,(float,integer_types,ndarray))
-    assert isinstance(e0,   (float,float32,integer_types))
-    assert isinstance(t0,   (datetime,string_types))
-    assert isinstance(glat, (float,integer_types))
-    assert isinstance(glon, (float,integer_types))
+    assert isinstance(eflux,(float,int,ndarray))
+    assert isinstance(e0,   (float,float32,int))
+    assert isinstance(t0,   (datetime,str))
+    assert isinstance(glat, (float,int))
+    assert isinstance(glon, (float,int))
 #%% (-1) if no manual f10.7 and ap, autoload by date
     if not(f107a and f107 and f107p and ap):
         f107Ap=readmonthlyApF107(t0,f107apfn)
         f107a = f107p = f107Ap['f107s']
         f107  = f107Ap['f107o']
         ap    = (f107Ap['Apo'],)*7
+
     chdir(glowpath) #FIXME: hack for path issue
+
 #%% flux grid / date
 
     eflux = atleast_1d(eflux)
@@ -108,5 +106,7 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p
 
     sion = glowfort.cglow.sion
 
+
     chdir(str(oldcwd))
+
     return ver,photIon,isrparam,phitop,zceta,sza,prates,lrates,tez,sion

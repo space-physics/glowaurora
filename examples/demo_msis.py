@@ -2,7 +2,6 @@
 """
 this program demos the customized MSIS-E00 used by GLOW
 """
-from __future__ import division,print_function
 import logging
 from dateutil.parser import parse
 from numpy import arange,array

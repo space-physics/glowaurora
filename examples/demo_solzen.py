@@ -4,7 +4,6 @@ Comparing solzen.f solar zenith angle with Astropy, per email discussion with UA
 Michael Hirsch
 2015
 """
-from __future__ import division,absolute_import
 from six.moves import getcwd
 from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel

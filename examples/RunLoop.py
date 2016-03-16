@@ -25,7 +25,6 @@ f10.7 and ap available from ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
 Michael Hirsch
 Sept 2015
 """
-from __future__ import division,absolute_import
 from collections import namedtuple
 from datetime import datetime
 from pytz import UTC
@@ -36,8 +35,6 @@ from matplotlib.pyplot import show
 from glowaurora.runglow import plotprodloss,plotaurora
 from glowaurora.eigenprof import verprodloss,makeeigen,ekpcolor
 from histfeas.plotsnew import ploteigver
-
-epoch = datetime(1970,1,1,tzinfo=UTC)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

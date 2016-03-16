@@ -25,7 +25,6 @@ fail : int
 
 
 """
-from __future__ import division,print_function
 from numpy import zeros,repeat,array
 import sys
 sys.path.append('../fortran')
