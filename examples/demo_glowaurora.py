@@ -7,17 +7,18 @@ Note, this simulation uses a specific input differential number flux spectrum
 from dateutil.parser import parse
 from matplotlib.pyplot import show
 #
-from glowaurora.runglow import runglowaurora,plotaurora
+from glowaurora.runglow import runglowaurora
+from glowaurora.plots import plotaurora
 
 def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 
     (glat,glon) = glatlon
 
     ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = runglowaurora(flux,e0,
-                                                                 t0,glat,glon,
+                                                                 t0,glat,glon,None,
                                                                  f107a,f107,f107p,ap)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,sion,t0,glat,glon,prate,lrate,makeplot=makeplot)
+    plotaurora(phitop,ver,zceta,photIon,isr,sion,t0,glat,glon,prate,lrate,tez,makeplot=makeplot)
 
     return ver,photIon,isr,phitop,zceta,sza
 
