@@ -28,10 +28,7 @@ Installation
 ============
 ::
 
-  git clone --depth 1 https://github.com/scienceopen/glowaurora
-  cd glowaurora
-  conda install --file requirements.txt
-  ./setup.sh
+   python setup.py develop
 
 Examples
 ========

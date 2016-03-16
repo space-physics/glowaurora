@@ -1,4 +1,3 @@
-from __future__ import division,absolute_import
 from pathlib import Path
 from numpy import rollaxis
 from numpy.ma import masked_invalid

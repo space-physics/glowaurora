@@ -50,8 +50,7 @@ setup(name='glowaurora',
                   ], #must have data_files to copy *.dat to site-packages
 
 	  install_requires=[#'msise00','pyiri90', #future
-                         'pymap3d', 'histutils','gridaurora',
-                         'pathlib2>=2.1.0'],
+                         'pymap3d', 'histutils','gridaurora'],
       dependency_links = [#'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
                           #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
                           'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
@@ -61,6 +60,6 @@ setup(name='glowaurora',
       )
 
 try:
-    subprocess.call(['conda','install','--yes','--quiet','--file','requirements.txt'],shell=False) #don't use os.environ
+    subprocess.run(['conda','install','--yes','--quiet','--file','requirements.txt'])
 except Exception as e:
     print('you will need to install packages in requirements.txt  {}'.format(e))

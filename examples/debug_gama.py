@@ -2,7 +2,6 @@
 """
 simulates single float problem in existing Fortran code
 """
-from __future__ import division
 from numpy import float32,isfinite
 
 Prodwnn1 = float32(-1.15867674E+09)

@@ -3,7 +3,6 @@
 Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
-from __future__ import division,absolute_import
 from matplotlib.pyplot import figure, subplots,tight_layout
 from pandas import DataFrame
 from numpy import hstack,arange,append,array,rollaxis
