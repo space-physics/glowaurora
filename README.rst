@@ -109,10 +109,6 @@ Fortran self-test
 
 observe that aurtest.out is almost exactly equal to reference/aurexample.out, to the least digit of precision.
 
-Windows operating system
-========================
-On Windows, consider `factors like <https://scivision.co/f2py-running-fortran-code-in-python-on-windows/>`_
-
 
 Licensing
 =========
