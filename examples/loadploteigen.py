@@ -3,8 +3,8 @@
 loads and plots eigenprofiles vs time
 
 """
+from pathlib import Path
 import h5py
-from os.path import expanduser
 from datetime import datetime
 from pytz import UTC
 #
@@ -19,12 +19,13 @@ p.add_argument('-E','--eigenfn',help='generate eigenprofiles using energies in t
 p.add_argument('-i','--infn',help='input hdf5 to read',default='~/data/transcareigen.h5')
 p = p.parse_args()
 
+fn = Path(p.infn).expanduser()
 
 EKpcolor,e0,diffnumflux = ekpcolor(p.eigenfn)
 
 sim = SimpleSim(filt='none',inpath=None,reacreq='')
 #%% load and plot
-with h5py.File(expanduser(p.infn),'r') as f:
+with h5py.File(str(fn),'r',libver='latest') as f:
     if len(f['/eigenprofile'].shape) == 3:
         for i,v in enumerate(f['/eigenprofile']): #for each time
             try:
