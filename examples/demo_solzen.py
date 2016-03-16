@@ -4,26 +4,17 @@ Comparing solzen.f solar zenith angle with Astropy, per email discussion with UA
 Michael Hirsch
 2015
 """
-from six.moves import getcwd
 from numpy import empty_like,degrees
 from pandas import date_range,DataFrame,Panel
 from matplotlib.pyplot import show
-from os import chdir,environ
 from time import time
-try:
-    import seaborn
-except:
-    pass
+import seaborn
 #
 from histutils.fortrandates import datetime2yd
 from gridaurora.solarangle import solarzenithangle
 #################################
 #TODO hack for module data path issue
-chdir(environ['HOME'])
-import glowaurora
-from glowaurora import glowfort
-chdir(glowaurora.__path__[0])
-print('loaded glow from ' + getcwd())
+import glowfort
 #################################
 #%% demo the solar zenith angle calclation vs AstroPy
 def demosolzen(dtime,glat,glon):
