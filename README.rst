@@ -105,7 +105,7 @@ F2PY compile the Fortran code for use from Python
 You can pick a specific compiler by adding the ``--f90exec=`` option. For example
 you could use the Intel Fortran Compilerseparately for this by starting with::
 
-    f2py3 --f90exec=gfortran-5.2 -m glowfort
+    f2py3 --f90exec=gfortran-5 -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
 
 and so on.
 
@@ -117,6 +117,27 @@ Fortran self-test
   ./auroraexample < aurexample.in > aurtest.out
 
 observe that aurtest.out is almost exactly equal to reference/aurexample.out, to the least digit of precision.
+
+
+Notes
+=====
+
+Windows
+-------
+At this time (March 2016) there is a transition happening with Windows, where the compilers
+available are not yet ready for the current Python version. The best solution overall is to
+have a Linux PC in any case, or at least a virtual machine of Linux. I would suggest using
+Ubuntu 16.04 so that you have Gfortran 5 out of the box. I regret this difficulty, as when I originally did this, Windows "just worked" but that's one
+of the numerous problems with the Windows operation system.
+
+Linux
+-----
+As noted above, you need Gfortran 5, which comes with Ubuntu 16.04. If you are on Ubuntu 14.04,
+do::
+
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test sudo apt-get update 
+    sudo apt-get upgrade 
+    sudo apt-get install gfortran-5
 
 
 Licensing
