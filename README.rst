@@ -26,7 +26,8 @@ glow-aurora
 
 Installation
 ============
-::
+Note, if you don't already have Numpy installed, just run the script below twice. 
+First time installs Numpy if you don't have it, and then the main program.::
 
    python setup.py develop
 
@@ -35,21 +36,20 @@ Examples
 
 Self-test f2py
 --------------
-::
+This self-test should give zero errors. This tests the Fortran code from Python.::
   
-  cd test
-  nosetests -v test.py
+  ./test/test.py -v
 
-the self-test should give zero errors
 
 volume emission rate plots 
 --------------------------
-::
+To produce the plots seen at the Github site::
 
   python examples/demo_glowaurora.py
 
-this produces the plots seen here, with the volume emission rate and intermediate
-processes modeled for the given primary electron precipitation input.
+with the volume emission rate and intermediate
+processes modeled for the given primary electron precipitation input. You can make
+this more generally useful as eigenprofiles in the next section.
 
 production/loss rate eigenprofiles
 ----------------------------------
@@ -70,26 +70,28 @@ http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user)
 =============================================
-has been tested at various times with gfortran 4.6 - 5.2 on Windows and Linux.
-Any issues please contact me.
+has been tested at various times with gfortran 4.8 - 5.2 on Windows and Linux.
+Any issues please contact me. I will try to make my best
+effort, several researchers are using this code already.
 
 
 Download the GLOW v0.973 source code from Stan Solomon
--------------------------------------------------
-::
+------------------------------------------------------
+Stan's team has been working on a new version, Modern Fortran, looked beautiful
+from a sneak peek, but for now we'll be satiated with the original.::
 
   wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
 Download Stan's copy of IRI files
 ---------------------------------
-::
+Stan tweaked IRI90 slightly, here's the copy he uses.::
 
   wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
 
 compile the Fortran code by itself
 ----------------------------------
-::
+The Fortran program used by itself spits out a lot of text as its output::
 
   cd fortran
   make
@@ -98,7 +100,14 @@ F2PY compile the Fortran code for use from Python
 -------------------------------------------------
 ::
 
- f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
+   f2py3 -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
+
+You can pick a specific compiler by adding the ``--f90exec=`` option. For example
+you could use the Intel Fortran Compilerseparately for this by starting with::
+
+    f2py3 --f90exec=gfortran-5.2 -m glowfort
+
+and so on.
 
 
 Fortran self-test

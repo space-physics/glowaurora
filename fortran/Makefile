@@ -12,14 +12,17 @@ ifeq ($(strip $(fc)),)
 FC=gfortran
 endif
 
-FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons 
-#-fdefault-real-8 SEG FAULT
-# -ffpe-trap=precision -g
-#FFLAGS = -g $(DBGFLAGS) 
+#GFORTRAN
+FFLAGS = -O3 -I $(INCLUDE) -L $(LIBDIR) -fno-align-commons
+#FFLAGS -g -Wall -Wextra -fbounds-check
+#FFLAGS += -fdefault-real-8 SEG FAULT
+#FFLAGS += -ffpe-trap=precision -g
+#FFLAGS = -g $(DBGFLAGS)
 
-DBGFLAGS = -debug full -traceback
-DBGFLAGS += -check bounds -check format -check output_conversion -check pointers -check uninit
-DBGFLAGS += -fpe-all=0 # this traps all floating point exceptions
+#IFORT
+IFLAGS = -debug full -traceback
+IFLAGS += -check bounds -check format -check output_conversion -check pointers -check uninit
+IFLAGS += -fpe-all=0 # this traps all floating point exceptions
 
 .SUFFIXES: .o .F .F90 .f90 .f .mod
 
