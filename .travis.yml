@@ -13,10 +13,14 @@ git:
 
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     packages:
-      - gfortran
+    - gfortran-5
 
 before_install:
+    - mkdir -p $HOME/.local/bin
+    - ln -fs /usr/bin/gfortran-5 "$HOME/.local/bin/gfortran" && gfortran --version
     - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
     - chmod +x miniconda.sh
     - bash miniconda.sh -b -p $HOME/miniconda
@@ -26,7 +30,6 @@ install:
     - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
     - source activate test
     - pip -q install coveralls
-#need this here for f2py
     - conda install --yes --quiet numpy
     - python setup.py develop
 
@@ -34,4 +37,4 @@ script:
     - coverage run test/test.py
 
 after_success:
-    - coveralls;
+    - coveralls
