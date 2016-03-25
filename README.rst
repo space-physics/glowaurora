@@ -27,7 +27,8 @@ glow-aurora
 Installation
 ============
 Note, if you don't already have Numpy installed, just run the script below twice. 
-First time installs Numpy if you don't have it, and then the main program.::
+First time installs Numpy if you don't have it, and then the main program. I would
+suggest using `Miniconda Python as it is a tiny, convenient download<http://conda.pydata.org/miniconda.html>`_. You want Python 3.5.::
 
    python setup.py develop
 
