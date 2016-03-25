@@ -142,17 +142,9 @@ def test_glow():
     zcsum = zceta.sum(axis=-1)[:,:11]
     assert_allclose(zcsum,zeta,rtol=1e-6)
 
-def test_eigen():
-    ener,dE = glowfort.egrid()
-    ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
+#def test_eigen():
+#    ener,dE = glowfort.egrid()
+#    ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
 
 if __name__ == '__main__':
-    test_egrid_maxt()
-    test_solzen()
-    test_snoem()
-    test_snoemint()
-    test_fieldm()
-    test_ssflux()
-    test_rcolum_qback()
-    test_glow()
-    #run_module_suite()
+    run_module_suite()
