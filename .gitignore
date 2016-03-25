@@ -5,6 +5,8 @@ fortran/iri
 fortran/out
 fortran/*example
 
+*.out
+
 # C extensions
 *.so
 *.o
