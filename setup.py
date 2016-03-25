@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 import setuptools #needed to enable develop
 import subprocess
+
+
+def prereq():
+    try:
+        subprocess.run(['/tmp/test/bin/conda','install','--yes','--quiet','--file','requirements.txt'])
+    except Exception as e:
+        print('you will need to install packages in requirements.txt  {}'.format(e))
+
+prereq()
+
 from os.path import join
 from numpy.distutils.core import setup,Extension
 from glob import glob
@@ -59,7 +69,4 @@ setup(name='glowaurora',
                             ],
       )
 
-try:
-    subprocess.run(['conda','install','--yes','--quiet','--file','requirements.txt'])
-except Exception as e:
-    print('you will need to install packages in requirements.txt  {}'.format(e))
+
