@@ -133,7 +133,8 @@ Linux
 As noted above, you need Gfortran 5, which comes with Ubuntu 16.04. If you are on Ubuntu 14.04,
 do::
 
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test sudo apt-get update 
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
+    sudo apt-get update 
     sudo apt-get upgrade 
     sudo apt-get install gfortran-5
 
