@@ -71,10 +71,7 @@ http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user)
 =============================================
-has been tested at various times with gfortran 4.8 - 5.2 on Windows and Linux.
-Any issues please contact me. I will try to make my best
-effort, several researchers are using this code already.
-
+You will need the free Gfortran 5 compiler, or Intel Fortran or other favorite Fortran compiler.
 
 Download the GLOW v0.973 source code from Stan Solomon
 ------------------------------------------------------
@@ -94,30 +91,30 @@ compile the Fortran code by itself
 ----------------------------------
 The Fortran program used by itself spits out a lot of text as its output::
 
-  cd fortran
   make
 
 F2PY compile the Fortran code for use from Python
 -------------------------------------------------
 ::
 
-   f2py3 -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
+   make py
 
-You can pick a specific compiler by adding the ``--f90exec=`` option. For example
-you could use the Intel Fortran Compilerseparately for this by starting with::
-
-    f2py3 --f90exec=gfortran-5 -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
-
-and so on.
+You can pick a specific compiler by adding the ``--f90exec=`` option, in the ``PYFLAGS`` variable in the Makefile.  ``--f90exec=gfortran-5``  may be a useful option if you're on
+Ubuntu 14.04 or other system where Gfortran 5 is not the default.
 
 
 Fortran self-test
 -----------------
-::
+Auroral example::
 
-  ./auroraexample < aurexample.in > aurtest.out
+  ./auroraexample < aurexample.in > aurtest.dat
 
 observe that aurtest.out is almost exactly equal to reference/aurexample.out, to the least digit of precision.
+
+High energy example::
+
+  ./hexexample < hexexample.in > hextest.dat
+
 
 
 Notes
