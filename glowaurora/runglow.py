@@ -6,7 +6,7 @@ code wrapping in Python by Michael Hirsch
 from pathlib import Path
 import logging
 from datetime import datetime
-from pandas import DataFrame,Panel
+from xarray import DataArray
 from numpy import hstack,degrees,zeros_like,ndarray,atleast_1d,float32
 from os import chdir
 #
@@ -63,48 +63,61 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p
 #%% handle the outputs including common blocks
     zeta=glowfort.cglow.zeta.T #columns 11:20 are identically zero
 
-    ver = DataFrame(index=z,
-                    data=zeta[:,:11],
-                    columns=[3371., 4278., 5200., 5577., 6300.,7320.,10400.,3466.,7774., 8446.,3726.])
-    photIon = DataFrame(index=z,
-                   data=hstack((photI[:,None],ImpI[:,None],ecalc[:,None],ion)),
-                    columns=['photoIoniz','eImpactIoniz','ne',
-                    'nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+',
-                    'nO','nO2','nN2','nNO'])
+    lamb=[3371., 4278., 5200., 5577., 6300., 7320., 10400., 3466., 7774., 8446., 3726.]
+    products=['nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+','nO','nO2','nN2','nNO']
 
-    isrparam = DataFrame(index=z,
-                         data=isr,
-                         columns=['ne','Te','Ti'])
+    ver = DataArray(dims=['z_km','wavelength_nm'],
+                    coords={'z_km':z,
+                            'wavelength_nm':lamb},
+                    data=zeta[:,:11])
+    photIon = DataArray(dims=['z_km','type'],
+                        coords={'z_km':z,
+                                'type':['photoIoniz','eImpactIoniz','ne']+products},
+                   data=hstack((photI[:,None],ImpI[:,None],ecalc[:,None],ion)))
 
-    phitop = DataFrame(index=phi[:,0], #eV
-                       data=phi[:,2],  #diffnumflux
-                       columns=['diffnumflux'])
+    isrparam = DataArray(dims=['z_km','param'],
+                        coords={'z_km':z,'param':['ne','Te','Ti']},
+                         data=isr)
 
-    zceta = glowfort.cglow.zceta.T  #Nalt x Nwavelengths  xNproductionEmissions
+    phitop = DataArray(coords={'eV':phi[:,0]},
+                       data=phi[:,2])
+
+    zceta = DataArray(dims=['z_km','wavelength_nm','type'],
+                    data=glowfort.cglow.zceta.T[:,:11,:])  #Nalt x Nwavelengths  xNproductionEmissions
+    zceta['z_km']=z
+    zceta['wavelength_nm']=lamb
+    #FIxmE what is 3rd axis?
+
 
     sza = degrees(glowfort.cglow.sza)
 
-    tez = glowfort.cglow.tez #1-D vs. altitude
+    tez = DataArray(coords={'z_km':z},
+                       data=glowfort.cglow.tez)
+
 
 #%% production and loss rates
     prate = prate.T; lrate=lrate.T #fortran to C ordering 2x170x20, only first 12 columns are used
 
     #column labels by inspection of fortran/gchem.f staring after "DO 150 I=1,JMAX" (thanks Stan!)
-    prates = Panel(items=['pre','final'],
-                    major_axis=z,
-                    minor_axis=['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
-                                 'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)'],
-                    data=prate[...,:12], #columns 12:20 are identically zero
-                        )
+    prates = DataArray(data=prate[...,:12], #columns 12:20 are identically zero
+                      dims=['type','z_km','reaction'],
+                      coords={'type':['pre','final'],
+                               'z_km':z,
+                        'reaction':['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
+                                 'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)']}
+                    )
 
-    lrates = Panel(items=['pre','final'],
-                    major_axis=z,
-                    minor_axis=['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
-                                 'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)'],
-                    data=lrate[...,:12], #columns 12:20 are identically zero
-                        )
+    lrates = DataArray(data=lrate[...,:12], #columns 12:20 are identically zero
+                      dims=['type','z_km','reaction'],
+                      coords={'type':['pre','final'],
+                               'z_km':z,
+                        'reaction':['O+(2P)','O+(2D)','O+(4S)','N+','N2+','O2+','NO+',
+                                 'N2(A)','N(2P)','N(2D)','O(1S)','O(1D)']}
+                    )
 
-    sion = glowfort.cglow.sion
+    sion = DataArray(dims=['gas','z_km'],
+                    coords={'gas':['O','O2','N2'],
+                             'z_km':z},data=glowfort.cglow.sion)
 
 
     chdir(str(oldcwd))

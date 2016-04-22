@@ -833,8 +833,8 @@ C
 C
 C Convert brightnesses to Rayleighs:
 C
-      DO 600 IW=1,NW
+      DO IW=1,NW
         VCB(IW) = VCB(IW) / 1.E6
-  600 CONTINUE
+      end do
 
       END SUBROUTINE GCHEM
