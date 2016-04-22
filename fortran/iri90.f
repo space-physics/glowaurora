@@ -1,5 +1,5 @@
 C Subroutine IRI90
-C
+
 C Adapted 7/93 from 10/91 version of IRIS12 by Stan Solomon.
 C Replaces 3/92 adaptation of 12/90 version of IRIS12.
 C Replaced height range and interval with array of heights ZKM
@@ -158,6 +158,9 @@ C
        SUBROUTINE IRI90(JF,JMAG,ALATI,ALONG,RZ12,MMDD,DHOUR,
      &                  ZKM,NZ,drect,OUTF,OARR)
 
+      use, intrinsic :: iso_fortran_env, only : stdout=>output_unit, 
+     &                                          stderr=>error_unit
+
       logical, intent(in) :: JF(12)
       integer,intent(in) :: JMAG,MMDD
       real,intent(in) :: alati,along,rz12
@@ -239,9 +242,8 @@ C FIRST SPECIFY YOUR COMPUTERS CHANNEL NUMBERS ....................
 C AGNR=OUTPUT (OUTPUT IS DISPLAYED OR STORED IN FILE OUTPUT.IRI)...
 C IUCCIR=UNIT NUMBER FOR CCIR COEFFICIENTS ........................
 C
-      MONITO=6
       IUCCIR=10
-      KONSOL=6
+      KONSOL=stdout
       IF (JF(12)) KONSOL=12
 
 c
@@ -284,7 +286,7 @@ C
 !       write(konsol,*) '*** IRI parameters are being calculated ***'
       if(NODEN) goto 2889
        if(LAYVER) write(konsol,*) 'Ne, E-F: The LAY-Version is ',
-     &         'prelimenary. Erroneous profile features can occur.'
+     &         'preliminary. Erroneous profile features can occur.'
        if(GULB0) write(konsol,*) 'Ne, B0: Bottomside thickness is ',
      &         'obtained with Gulyaeva-1987 model.'
        if(OLD79) write(konsol,*) 'Ne: Using IRI-79. Correction',
@@ -430,9 +432,9 @@ C
         MONTHO=MONTH
        GOTO 4291
 
-8448       write(monito,8449) path
+8448       write(stderr,8449) path
 8449       format(' IRI90: File ',A50,'not found')
-       stop
+       stop -1
 C
 C LINEAR INTERPOLATION IN SOLAR ACTIVITY
 C
