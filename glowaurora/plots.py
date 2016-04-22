@@ -1,7 +1,6 @@
 from pathlib import Path
 from numpy import rollaxis
 from numpy.ma import masked_invalid
-from pandas import DataFrame,Panel
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
 from matplotlib.colors import LogNorm
@@ -29,10 +28,6 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
     else:
         titlend = ''
 
-    if isinstance(ver,Panel):
-        z=ver.major_axis.values #[km], for convenience
-    elif isinstance(ver,DataFrame):
-        z=ver.index
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
@@ -40,7 +35,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         ind = ['nO','nO2','nN2','nNO']
         ax = axs[0]
-        ax.semilogx(photIon[ind], z)
+        ax.semilogx(photIon.loc[:,ind], photIon.z_km)
         ax.set_xlabel('Number Density')
         ax.set_xscale('log')
         ax.set_xlim(left=1e1)
@@ -51,7 +46,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         ind=['Te','Ti']
         ax = axs[1]
-        ax.semilogx(isr[ind], z)
+        ax.semilogx(isr.loc[:,ind], isr.z_km)
         ax.set_xlabel('Temperature [K]')
         ax.legend(ind)
         _nicez(ax,zlim)
@@ -59,15 +54,18 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
-    plotprodloss(phitop.index,z,prate['final'],lrate['final'],t,glat,glon,zlim,'',titlend)
+    if 'eig' in makeplot:
+        plotprodloss(Ek,z,
+                 prate.loc['final',...],
+                 lrate.loc['final',...],t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(t,glat,glon) + titlend)
     tight_layout(pad=3.2, w_pad=0.6)
 
-# incident flux at top of ionosphere
+#%% incident flux at top of ionosphere
     ax = axs[0]
-    ax.plot(phitop.index,phitop['diffnumflux'],marker='.')
+    ax.plot(phitop.eV,phitop,marker='.')
 
     titxt='Incident Flux'
     if flux:
@@ -83,7 +81,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 # ver visible
     ind= [4278, 5200, 5577, 6300]
     ax = axs[1]
-    ax.plot(ver.loc[:,:,ind].values.squeeze(),z)
+    ax.plot(ver.loc[...,ind].values.squeeze(), ver.z_km)
     ax.set_xlabel('Volume Emission Rate')
     ax.set_ylabel('altitude [km]')
     _nicez(ax,zlim)
@@ -92,10 +90,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ax.set_xlim(1e-5,1e3)
     ax.legend(ind,loc='best')
     ax.set_title('Volume Emission Rate: Visible')
-# ver invisible
+#%% ver invisible
     ind = [3371,7320,10400,3466,7774, 8446,3726]
     ax = axs[2]
-    ax.plot(ver.loc[:,:,ind].values.squeeze(),z)
+    ax.plot(ver.loc[...,ind].values.squeeze(), ver.z_km)
     ax.set_xlabel('Volume Emission Rate')
     _nicez(ax,zlim)
     ax.set_xscale('log')
@@ -110,7 +108,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ind=['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+']
         fg=figure()
         ax = fg.gca()
-        ax.semilogx(photIon[ind], photIon.index)
+        ax.semilogx(photIon.loc[:,ind], photIon.z_km)
         ax.set_xlabel('Density')
         ax.set_xscale('log')
         ax.set_xlim(left=1e-3)
@@ -122,7 +120,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         writeplots(fg,'effects_',E0,makeplot,odir)
 #%% total energy deposition vs. altitude
     if not 'eig' in makeplot:
-        plotenerdep(z,tez,t,glat,glon,zlim,titlend)
+        plotenerdep(tez,t,glat,glon,zlim,titlend)
 #%% e^- impact ionization rates from ETRANS
         fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
         fg.suptitle('{} ({},{})  '.format(t,glat,glon) + titlend)
@@ -130,22 +128,23 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         ind=['photoIoniz','eImpactIoniz']
         ax = axs[0]
-        ax.plot(photIon[ind],photIon.index)
+        ax.plot(photIon.loc[:,ind],photIon.z_km)
         ax.set_xlabel('ionization')
         ax.set_xscale('log')
         ax.set_xlim(left=1e-1)
         _nicez(ax,zlim)
         ax.legend(ind)
         ax.set_title('Photo and e$^-$ impact ionization')
+        ax.set_ylabel('Altitude [km]')
 
         ind=['O','O2','N2']
         ax = axs[1]
-        ax.plot(sion,z)
+        ax.plot(sion.T, sion.z_km)
         ax.set_xscale('log')
         ax.set_xlim(1e-5,1e4)
         _nicez(ax,zlim)
         ax.set_xlabel('e$^-$ impact ioniz. rate')
-        ax.set_ylabel('Altitude [km]')
+
         ax.set_title('electron impact ioniz. rates')
         ax.legend(ind)
 
@@ -153,34 +152,36 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
     if not 'eig' in makeplot:
-        ind=[3371., 4278., 5200., 5577., 6300., 7320., 10400., 3466., 7774., 8446., 3726.]
         fg,axs = subplots(3,4,sharey=True,figsize=(15,8))
-        for ax,zc,i in zip(axs.ravel(),rollaxis(zceta,1)[:11,...],ind):
-            ax.plot(zc,z)
+        for ax,zc,i in zip(axs.ravel(),
+                           zceta.transpose('wavelength_nm','type','z_km'),
+                           zceta.wavelength_nm):
+            ax.plot(zc.T,zc.z_km)
             ax.set_xscale('log')
             #ax.set_xlabel('emission constituants  ' + titlend)
             ax.set_ylabel('Altitude [km]')
-            ax.set_title('{} angstrom'.format(i))
+            ax.set_title('{} angstrom'.format(i.values))
             #ax.legend(True)
 
         writeplots(fg,'constit_',E0,makeplot,odir)
 
-def plotenerdep(EKpcolor,z,tez,t,glat,glon,zlim,titlend=''):
+def plotenerdep(tez,t,glat,glon,zlim,titlend=''):
     fg= figure()
     ax = fg.gca()
     if tez.ndim==1:
-        ax.plot(tez,z)
+        ax.plot(tez,tez.z_km)
         ax.set_xscale('log')
         ax.set_xlim(1e-1,1e6)
         ax.set_xlabel('Energy Deposited')
     else:
         ax.set_label('Beam Energy [eV]')
-        hi=ax.pcolormesh(EKpcolor,z,masked_invalid(tez),norm=LogNorm())
+        hi=ax.pcolormesh(tez.eV,tez.z_km,masked_invalid(tez.values),norm=LogNorm())
         cb=fg.colorbar(hi,ax=ax)
         cb.set_label('Energy Deposited')
 
     _nicez(ax,zlim)
     ax.set_title('Total Energy Depostiion')
+    ax.set_ylabel('altitude [km]')
 
 def plotprodloss(EKpcolor,z,prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
     fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
