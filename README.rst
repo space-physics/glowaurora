@@ -99,8 +99,9 @@ F2PY compile the Fortran code for use from Python
 
    make py
 
-You can pick a specific compiler by adding the ``--f90exec=`` option, in the ``PYFLAGS`` variable in the Makefile.  ``--f90exec=gfortran-5``  may be a useful option if you're on
-Ubuntu 14.04 or other system where Gfortran 5 is not the default.
+You can pick a specific compiler by adding the ``--f90exec=`` option, in the ``PYFLAGS`` variable in the Makefile. For example::  
+
+    f2py --f90exec=gfortran-5 myfile.f90
 
 
 Fortran self-test
@@ -122,21 +123,7 @@ Notes
 
 Windows
 -------
-At this time (March 2016) there is a transition happening with Windows, where the compilers
-available are not yet ready for the current Python version. The best solution overall is to
-have a Linux PC in any case, or at least a virtual machine of Linux. I would suggest using
-Ubuntu 16.04 so that you have Gfortran 5 out of the box. I regret this difficulty, as when I originally did this, Windows "just worked" but that's one
-of the numerous problems with the Windows operation system.
-
-Linux
------
-As noted above, you need Gfortran 5, which comes with Ubuntu 16.04. If you are on Ubuntu 14.04,
-do::
-
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
-    sudo apt-get update 
-    sudo apt-get upgrade 
-    sudo apt-get install gfortran-5
+Strongly suggest using Linux Subsystem for Windows, if you aren't using it yet you should be for your development work.
 
 
 Licensing
