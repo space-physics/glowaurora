@@ -1,7 +1,8 @@
 from pathlib import Path
 from datetime import datetime
-from numpy import loadtxt,append
-from pandas import DataFrame,Panel,Panel4D,read_hdf#
+from numpy import loadtxt,append,empty
+from pandas import read_hdf
+from xarray import DataArray
 #
 from .runglow import runglowaurora
 
@@ -18,21 +19,32 @@ def verprodloss(t,glatlon,flux,EK,makeplot=[None],odir=None,zlim=None):
     assert isinstance(t,datetime)
     (glat,glon) = glatlon
 
-    vers = None #sentinal
+    vers = None
     for e in EK:
         print('{} E0: {:.0f}'.format(t,e))
 
         ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = runglowaurora(flux,e,t,glat,glon)
         if vers is None:
-            prates=Panel(items=EK, major_axis=prate.major_axis, minor_axis=prate.minor_axis)
-            lrates=Panel(items=EK, major_axis=lrate.major_axis, minor_axis=lrate.minor_axis)
-            vers = Panel(items=EK, major_axis=ver.index,        minor_axis=ver.columns)
-            tezs = DataFrame(index=ver.index,columns=EK)
+            prates = DataArray(data=empty((EK.size,prate.type.size,prate.z_km.size,prate.reaction.size)),
+                               dims=['eV','type','z_km','reaction'],
+                               coords=[EK,prate.type,prate.z_km,prate.reaction])
 
-        vers[e] = ver
-        prates[e]=prate['final']
-        lrates[e]=lrate['final']
-        tezs[e]=tez
+            lrates = DataArray(data=empty((EK.size,lrate.type.size,lrate.z_km.size,lrate.reaction.size)),
+                               dims=['eV','type','z_km','reaction'],
+                               coords=[EK,lrate.type, lrate.z_km, lrate.reaction])
+
+            vers = DataArray(data=empty((EK.size,ver.z_km.size,ver.wavelength_nm.size)),
+                             dims=['eV','z_km','wavelength_nm'],
+                             coords=[EK,ver.z_km,ver.wavelength_nm])
+
+            tezs = DataArray(data=empty((tez.size,EK.size)),
+                             dims=['z_km','eV'],
+                             coords=[tez.z_km,EK] )
+
+        prates.loc[e,...] = prate.loc['final',...]
+        lrates.loc[e,...] = lrate.loc['final',...]
+        vers.loc[e,...]= ver
+        tezs.loc[:,e] = tez
 
         #plotaurora(phitop,ver,flux,sza,zceta,photIon,isr,dtime,glat,glon,e0,zlim,makeplot,odir)
 
@@ -40,11 +52,11 @@ def verprodloss(t,glatlon,flux,EK,makeplot=[None],odir=None,zlim=None):
     return vers,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion
 
 def ekpcolor(eigen):
-    if isinstance(eigen,DataFrame):
-        e0 = eigen['low'].values
-        eEnd = eigen['high'].iloc[-1]
-        diffnumflux = eigen['flux'].values
-    else:
+    if isinstance(eigen,DataArray):
+        e0 = eigen.loc[:,'low'].values
+        eEnd = eigen.loc[:,'high'][-1]
+        diffnumflux = eigen.loc[:,'flux'].values
+    elif isinstance(eigen,(str,Path)):
         eigen = Path(eigen).expanduser()
         if eigen.suffix == '.csv':
             e0 =   loadtxt(str(eigen),usecols=[0],delimiter=',')
@@ -57,6 +69,8 @@ def ekpcolor(eigen):
             diffnumflux = bins['flux'].values
         else:
             raise ValueError('I do not understand what file you want me to read {}'.format(eigen))
+    else:
+        raise ValueError('unknown data type {}'.format(type(eigen)))
 
     return append(e0,eEnd),e0,diffnumflux
 
@@ -67,15 +81,17 @@ def makeeigen(EK,diffnumflux,T,glatlon,makeplot=[None],odir=None,zlim=None):
     ver = None
     for t in T:
         v,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)
-        if ver is None:
-            ver =  Panel4D(labels=T,items=v.items,    major_axis=v.major_axis,    minor_axis=v.minor_axis)
-            prates=Panel4D(labels=T,items=prate.items,major_axis=prate.major_axis,minor_axis=prate.minor_axis)
-            lrates=Panel4D(labels=T,items=lrate.items,major_axis=lrate.major_axis,minor_axis=lrate.minor_axis)
-            tezs=Panel(items=T,major_axis=tez.index,minor_axis=tez.columns)
+       # if ver is None:
+           # ver =  Panel4D(labels=T,items=v.items,    major_axis=v.major_axis,    minor_axis=v.minor_axis)
+           # prates=Panel4D(labels=T,items=prate.items,major_axis=prate.major_axis,minor_axis=prate.minor_axis)
+            #lrates=Panel4D(labels=T,items=lrate.items,major_axis=lrate.major_axis,minor_axis=lrate.minor_axis)
+           # tezs=Panel(items=T,major_axis=tez.index,minor_axis=tez.columns)
 
-        ver[t] = v # v is a 3-D Panel
-        prates[t]=prate
-        lrates[t]=lrate
-        tezs[t]=tez
+       # ver[t] = v # v is a 3-D Panel
+       # prates[t]=prate
+        #lrates[t]=lrate
+        #tezs[t]=tez
+#TODO time stack
+        ver=v; prates=prate; lrates=lrate; tezs=tez
 
     return ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion
