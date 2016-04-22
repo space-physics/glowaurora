@@ -1,5 +1,4 @@
 from pathlib import Path
-from numpy import rollaxis
 from numpy.ma import masked_invalid
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
@@ -56,9 +55,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         writeplots(fg,'bg_',E0,makeplot,odir)
 #%% production and loss rates for species
     if 'eig' in makeplot:
-        plotprodloss(Ek,z,
-                 prate.loc['final',...],
-                 lrate.loc['final',...],t,glat,glon,zlim,'',titlend)
+        plotprodloss(prate.loc['final',...],
+                     lrate.loc['final',...],t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle('{} ({},{}) '.format(t,glat,glon) + titlend)
@@ -184,7 +182,7 @@ def plotenerdep(tez,t,glat,glon,zlim,titlend=''):
     ax.set_title('Total Energy Depostiion')
     ax.set_ylabel('altitude [km]')
 
-def plotprodloss(EKpcolor,z,prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
+def plotprodloss(prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
     fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
     fg.suptitle(titlbeg + ' Volume Production/Loss Rates   {} ({},{}) '.format(t,glat,glon)+ titlend)
 
@@ -193,14 +191,20 @@ def plotprodloss(EKpcolor,z,prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
 
     ax[1].set_title('Volume Loss Rates')
 
-    for a,r in zip(ax,[prod,loss]):
-        hi=a.pcolormesh(EKpcolor,z,masked_invalid(r.values),norm=LogNorm()) #pcolormesh canNOT handle nan at all!
-        cb=fg.colorbar(hi,ax=a)
-        cb.set_label('[cm$^{-3}$ s$^{-1}$ eV$^{-1}$]',labelpad=0)
-        a.set_xscale('log')
-        a.set_xlabel('Beam Energy [eV]')
-#        a.legend(prod.minor_axis,loc='best')  # old, when plotting for each energy / input spectrum
-        _nicez(a,zlim)
+    for a,R in zip(ax,[prod,loss]):
+        try:
+            hi=a.pcolormesh(R.eV.values,
+                            R.z_km.values,
+                            masked_invalid(R.values),
+                            norm=LogNorm()) #pcolormesh canNOT handle nan at all!
+            cb=fg.colorbar(hi,ax=a)
+            cb.set_label('[cm$^{-3}$ s$^{-1}$ eV$^{-1}$]',labelpad=0)
+            a.set_xscale('log')
+            a.set_xlabel('Beam Energy [eV]')
+    #        a.legend(prod.minor_axis,loc='best')  # old, when plotting for each energy / input spectrum
+            _nicez(a,zlim)
+        except TypeError as e:
+            print('prodloss plot error    {}'.format(e))
 
 #%% NOTE: candidate for loading from gridaurora.plots instead
 def writeplots(fg,plotprefix,E0,method,odir):
