@@ -50,6 +50,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ax.set_xlabel('Temperature [K]')
         ax.legend(ind)
         _nicez(ax,zlim)
+        ax.set_xlim(100,10000)
         ax.set_title('Background Temperature')
 
         writeplots(fg,'bg_',E0,makeplot,odir)
