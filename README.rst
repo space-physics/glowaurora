@@ -71,7 +71,6 @@ http://download.hao.ucar.edu/pub/stans/papers/SolomonJGR1988.pdf
 
 Appendix (Not necessary for the typical user)
 =============================================
-You will need the free Gfortran 5 compiler, or Intel Fortran or other favorite Fortran compiler.
 
 Download the GLOW v0.973 source code from Stan Solomon
 ------------------------------------------------------
@@ -91,17 +90,9 @@ compile the Fortran code by itself
 ----------------------------------
 The Fortran program used by itself spits out a lot of text as its output::
 
+  cd bin
+  cmake ../fortran
   make
-
-F2PY compile the Fortran code for use from Python
--------------------------------------------------
-::
-
-   make py
-
-You can pick a specific compiler by adding the ``--f90exec=`` option, in the ``PYFLAGS`` variable in the Makefile. For example::  
-
-    f2py --f90exec=gfortran-5 myfile.f90
 
 
 Fortran self-test
@@ -110,7 +101,6 @@ Auroral example::
 
   ./auroraexample < aurexample.in > aurtest.dat
 
-observe that aurtest.out is almost exactly equal to reference/aurexample.out, to the least digit of precision.
 
 High energy example::
 
