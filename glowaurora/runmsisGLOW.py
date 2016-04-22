@@ -1,17 +1,19 @@
+from pathlib import Path
 import logging
 from numpy import repeat,empty
-from pandas import DataFrame
+from xarray import DataArray
 from numpy import atleast_1d
 from os import chdir
 #
 from histutils.fortrandates import datetime2gtd
 #
 import glowaurora
-glowpath=glowaurora.__path__[0]
-from glowaurora.glowfort import tselec,meters,csw,gtd7
+from glowfort import tselec,meters,csw,gtd7
+glowpath=Path(glowaurora.__path__[0])/'..'
+oldcwd = Path.cwd()
 
 def rungtdGLOW(dtime,altkm,glat,glon,f107a,f107,ap,mass,tselecopts):
-    chdir(glowpath)
+    chdir(str(glowpath))
     ap = atleast_1d(ap)
     if ap.size==1: ap = repeat(ap,7)
     species = ['He','O','N2','O2','Ar','Total','H','N','AnomalousO']
@@ -29,6 +31,8 @@ def rungtdGLOW(dtime,altkm,glat,glon,f107a,f107,ap,mass,tselecopts):
     for i,a in enumerate(altkm):
         dens[i,:],temp[i,:] = gtd7(iyd,utsec,a,glat,glon,stl, f107a,f107, ap,mass)
 
-    densd = DataFrame(dens, index=altkm, columns=species)
-    tempd = DataFrame(temp, index=altkm, columns=ttypes)
+    densd = DataArray(dens, dims=['z_km','species'],
+                      coords={'z_km':altkm, 'species':species})
+    tempd = DataArray(temp, dims=['z_km','temperature'],
+                      coords={'z_km':altkm, 'temperature':ttypes})
     return densd,tempd

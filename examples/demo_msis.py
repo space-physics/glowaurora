@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-this program demos the customized MSIS-E00 used by GLOW
+this program demos the customized MSIS used by GLOW
 """
-import logging
+
 from dateutil.parser import parse
 from numpy import arange,array
 #
@@ -17,8 +17,9 @@ def test_glowmsis(dtime,altkm,glat,glon,f107a,f107,ap,mass):
     from msise00.runmsis import rungtd1d
     dens,temp = rungtd1d(dtime,altkm,glat,glon,p.f107a,p.f107,p.ap,p.mass,tselecopts)
 
-    assert (dens == glowdens).all().all()
-    assert (temp == glowtemp).all().all()
+    #FIXME dim labels the same
+    assert (dens.values == glowdens.values).all().all()
+    assert (temp.values == glowtemp.values).all().all()
     print('OK')
 
     return glowdens,glowtemp
