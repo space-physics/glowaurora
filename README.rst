@@ -46,7 +46,7 @@ volume emission rate plots
 --------------------------
 To produce the plots seen at the Github site::
 
-  python examples/demo_glowaurora.py
+  python RunGlow.py
 
 with the volume emission rate and intermediate
 processes modeled for the given primary electron precipitation input. You can make
