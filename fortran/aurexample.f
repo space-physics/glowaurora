@@ -29,6 +29,7 @@ C NEI     number of states produced by electron impact
 C NF      number of types of auroral fluxes
 C
       Program glowprogram
+       use, intrinsic :: iso_fortran_env, only : stdin=>input_unit
 !      use cglow,only: jmax,nmaj,nex,nw,nc,nst,nei,nf,nbins,lmax,pi
       implicit none
       include 'cglow.h'
@@ -94,7 +95,7 @@ C
      >           770.,790.,810.,830.,850.,870.,890.,910.,930.,950./
 
 C Obtain input parameters from stdin:
-      read (5,*) idate, ut, glat, glong, f107a, f107, f107p, ap, ef, ec
+      read (stdin,*) idate,ut,glat,glong,f107a, f107, f107p, ap, ef, ec
 C
 C
 C Set other parameters and switches:

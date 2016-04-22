@@ -221,7 +221,7 @@ C
      >    PHOTOI, PHOTOD, PHONO, QTI, AURI, PIA, SION,
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, E, DEN, ZETA, ZCETA, VCB
 
-      real A(NR), B(NR), BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
+      real BZ(NR,JMAX), GF(NR,JMAX), KZ(NR,JMAX),
      >          OEI(JMAX), O2EI(JMAX), RN2EI(JMAX), O2PI(JMAX),
      >          RN2PI(JMAX), RN2ED(JMAX), SRCED(JMAX),
      >          T1(JMAX), T2(JMAX), T3(JMAX), T4(JMAX), T5(JMAX),
@@ -234,14 +234,16 @@ C
     
       real(kind=dp) :: COEF(JMAX,5), ROOT(JMAX)
 
-      DATA A / 1.07E-5, 0.00585, 0.00185, 0.04500, 1.06000,
+      real,parameter :: A(12)=[1.07E-5, 0.00585, 0.00185, 0.04500, 
+     &         1.06000,
      >         9.70E-5, 0.04790, 0.17120, 0.00100, 0.77000,
-     >         0.00540, 0.07900, 38*0.0 /
-      DATA B/0.07, 1.20, 0.76, 1.85, 1.00, 0.10, 0.50, 0.81, 0.20, 0.32,
+     >         0.00540, 0.07900]
+      real,parameter :: B(44)=
+     &      [0.07, 1.20, 0.76, 1.85, 1.00, 0.10, 0.50, 0.81, 0.20, 0.32,
      >       0.48, 0.10, 0.10, 0.10, 0.16, 0.50, 0.30, 0.19, 0.00, 0.10,
      >       0.43, 0.51, 0.10, 0.60, 0.54, 0.44, 0.80, 0.20, 1.00, 0.33,
      >       0.33, 0.34, 0.21, 0.20, 0.10, 0.11, 0.65, 0.20, 0.24, 0.02,
-     >       0.18, 0.72, 0.75, 0.10, 6*0./
+     >       0.18, 0.72, 0.75, 0.10]
 C
 C
       IF (KCHEM .EQ. 0) RETURN
@@ -362,7 +364,7 @@ C density in calculated electron density array: put rough estimate of
 C O+ and a priori N(2D) in DEN array:
 
 C
-      DO 100 I=1,JMAX
+      do I=1,JMAX
       OEI(I)   = SION(1,I) + PIA(1,I)
       O2EI(I)  = SION(2,I) + PIA(2,I)
       RN2EI(I) = SION(3,I) + PIA(3,I)
@@ -374,7 +376,7 @@ C
       SRCED(I) = AGLW(4,2,I) + B(35)*PIA(2,I)
       E(I)     = ZE(I)
       DEN(10,I)= ZND(I)
-  100 CONTINUE
+      end do ! I=1,JMAX
 C
 C
 C Find level below which electron density will be calculated:
@@ -392,20 +394,25 @@ C Iterative loop assures that feedback reactions (O+(2P,2D)+e,
 C O+(4S)+N(2D), N2++O) are correctly computed:
 C
       DO 350 ITER=1,3
-C
-C
+  !     print *, 'Feedback iter',iter
 C Calculate atomic ion densities at each altitude:
 C
       DO 150 I=1,JMAX
 C
 C
 C O+(2P):
-C
+      if (debug .and. i.eq.1) print *,'befor', 
+     & iter,photoi(3,1,i),oei(i),o2ei(i),
+     &           SION(1,I),PIA(1,I)
       P(1,I)= PHOTOI(3,1,I)
      >      + B(41) * PHOTOI(5,1,I)
      >      + B(30) * PHOTOI(4,2,I)
      >      + B(9)  * OEI(I)
      >      + B(12) * O2EI(I)
+   
+
+      if (debug .and. i.eq.170) 
+     &  print *,'after',iter,p(1,I),photoi(3,1,170),oei(170),o2ei(170)
       L(1,I)= KZ(16,I) * ZN2(I)
      >      + KZ(17,I) * ZO2(I)
      >      + KZ(19,I) * ZO(I)

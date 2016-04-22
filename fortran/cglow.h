@@ -3,8 +3,7 @@
 ! JMAX (number of vertical levels) is set to 64 for tgcm runs
 ! If not a tgcm run, JMAX is set in the namelist input file
 !
-!  integer :: JMAX
-      logical,parameter :: debug=.false.
+      logical,parameter :: debug=.true.
 
       integer,parameter :: lmax=123
       integer,parameter :: NMAJ=3
@@ -19,7 +18,7 @@
       integer, parameter :: sp = kind(1.0)
       real, parameter    :: pi = 4.*ATAN(1.)
 
-      real, parameter    :: Re = 6.371e8  !radius of earh in centimeters
+      real, parameter    :: Re = 6.371e8  !radius of earth in centimeters
       real, parameter    :: G  = 978.1    !gravitational constant dynes
 
 ! Standard parameters for photoelectron or aurora runs (up to 50 keV):

@@ -87,7 +87,8 @@ def test_snoemint():
     if DOMSIS:
         densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
     # (nighttime background ionization)
-        znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,tempd['heretemp'])
+        znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,
+                                   tempd.loc[:,'heretemp'])
         assert_allclose(znoint[[28,143]], (1.262170e+08,  3.029169e+01),rtol=1e-5) #arbitrary
         return znoint
 
@@ -108,7 +109,9 @@ def test_rcolum_qback():
 
         """ VCD: Vertical Column Density """
         sza = test_solzen()
-        zcol,zvcd = glowfort.rcolum(sza,z*1e5,densd[['O','O2','N2']].values.T,tempd['heretemp'])
+        zcol,zvcd = glowfort.rcolum(sza,z*1e5,
+                                    densd.loc[:,['O','O2','N2']].values.T,
+                                    tempd.loc[:,'heretemp'])
     # FIXME these tests were numerically unstable (near infinity values)
         assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
         assert isclose(zvcd[2,5],5.97157e+28,rtol=1e-2) #TODO changes a bit between python 2 / 3
@@ -117,7 +120,7 @@ def test_rcolum_qback():
         # zeros because nighttime
         photoi = zeros((nst,nmaj,jmax),dtype=float32,order='F')
         phono = zeros((nst,jmax),dtype=float32,order='F')
-        glowfort.qback(zmaj=densd[['O','O2','N2']].values.T,
+        glowfort.qback(zmaj=densd.loc[:,['O','O2','N2']].values.T,
                                     zno=znoint,
                                     zvcd=zvcd,
                                     photoi=photoi,phono=phono)
@@ -147,4 +150,5 @@ def test_glow():
 #    ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
 
 if __name__ == '__main__':
+    #test_snoemint()
     run_module_suite()

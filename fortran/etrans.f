@@ -75,13 +75,16 @@ C
 !
 ! issue with common block? Leave it alone till Stan has new F90 code available.
 ! ************************
+
+      use, intrinsic :: iso_fortran_env, only : stdout=>output_unit, 
+     &                                          stderr=>error_unit
 !      implicit none
       INCLUDE 'cglow.h'
 
       logical isfinite
 
-      integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR,
-     & IIMAXX(NBINS)
+      integer  IDATE, ISCALE, JLOCAL, KCHEM, IERR, IIMAXX(NBINS)
+
       real   UT, GLAT, GLONG,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
      >    ZZ(JMAX), ZO(JMAX), ZN2(JMAX), ZO2(JMAX), ZNO(JMAX),
@@ -191,7 +194,7 @@ C
       DO  J=1,NBINS
         PHIINF(J) = PHITOP(J) / AVMU
         if(debug .and. .not.isfinite(phiinf(j)))
-     &              write(0,*)'etrans: nonfinite PhiInf'
+     &             error stop 'etrans: nonfinite PhiInf'
       End Do
 C
 C
@@ -305,17 +308,17 @@ C
      >                - (PRODWN(I+1,J) - PRODWN(I-1,J))
      >                   /PRODWN(I,J)/DEL2(I))
      >             - PRODUP(I,J) * T1(I)
+        !if (.not.isfinite(GAMA(I))) GAMA(I) = 0. 
         if (debug .and. .not.isfinite(GAMA(I))) then
-         write (0,*),'GAMA PRODWNn1 PRODWN PRODWNp1 PRODUP',
-     >     ' PRODn1 PROD PRODp1 T1 T2 ALPHA DEL2',
-     >     GAMA(I),PRODWN(I-1,J),PRODWN(I,J),PRODWN(I+1,J),
-     >     PRODUP(I,J),PROD(I-1),PROD(I),PROD(I+1),
-     >     T1(I),T2(I),ALPHA(I),
-     >     DEL2(I)
-         write (0,*) 'etran: non-finite GAMA'
+         write (stderr,*),'etrans.f: GAMA PRODWNn1 PRODWN PRODWNp1',
+     &     ' PRODUP PRODn1 PROD PRODp1 T1 T2 ALPHA DEL2'
+         write(stderr,*), GAMA(I),PRODWN(I-1,J),PRODWN(I,J),
+     &     PRODWN(I+1,J), PRODUP(I,J),PROD(I-1),PROD(I),PROD(I+1),
+     &     T1(I),T2(I),ALPHA(I), DEL2(I)
+         error stop 'etran: non-finite GAMA'
         end if
       End DO
-C
+
       IF (ABS(BETA(2)) .LT. 1.E-20) THEN
         BETA(2) = 1.E-20
         IERR = 2
@@ -323,11 +326,13 @@ C
       PHIDWN(2) = GAMA(2) / BETA(2)
       DEN(1) = PHIDWN(2)
       FLUXJ = PHIINF(J)
-      CALL IMPIT(FLUXJ)
+      CALL IMPIT(FLUXJ) !computes DEN via COMMON array
       DO I = 1, JMAX
         PHIDWN(I) = DEN(I)
-        if(debug .and..not.isfinite(phidwn(i))) 
-     &       write(0,*)'etrans: nonfinite PHIDWN (jlocal != 1)'
+        if(debug .and. phidwn(i).gt.1e30) then
+            write(stderr,*) 'GAMA(i), beta(i)',gama(i),beta(i)
+          error stop 'etrans: very large PHIDWN (jlocal != 1)'
+        endif
       End Do
 C
 C
@@ -344,7 +349,7 @@ C
       DO I=2,JMAX
         PHIUP(I) = R1(I) + (PHIUP(I-1)-R1(I)) * EXPT2(I)        
         if (debug .and. .not.isfinite(phiup(i))) 
-     &           write(0,*) 'etrans: nonfinite PHIUP  (jlocal != 1)'
+     &           error stop 'etrans: nonfinite PHIUP  (jlocal != 1)'
       End DO
 
       GOTO 930
@@ -361,9 +366,9 @@ C
         PHIUP(I) = (PROD(I)/2.0 + PRODUP(I,J)) / (T2(I) - T1(I))
         PHIDWN(I) = (PROD(I)/2.0 + PRODWN(I,J)) / (T2(I) - T1(I))
         if (debug .and. .not. isfinite(phiup(i))) 
-     &       write(0,*) 'etrans: nonfinite PHIUP  (jlocal=1)'
-        if (debug .and. .not. isfinite(phidwn(i))) 
-     &       write(0,*) 'etrans: nonfinite PHIDWN (jlocal=1)'
+     &       error stop 'etrans: nonfinite PHIUP  (jlocal=1)'
+        if (debug .and. phidwn(i).gt.1e30) 
+     &       error stop 'etrans: very large PHIDWN (jlocal=1)'
       End Do
 C
   930 CONTINUE  ! if jlocal != 1
@@ -436,20 +441,27 @@ C
 C Calculate production of secondaries into K bin for energy J bin and
 C add to production:
 C
-      DO 1090 K = 1, IIMAXX(J)
+      DO 1090 K = 1, IIMAXX(J) ! iimaxx set near exsect.f:424
         DO 1080 N = 1, NMAJ
           DO 1070 I = 1, JMAX
             SECP(N,I) = SEC(N,K,J) * ZMAJ(N,I) * (PHIUP(I) + PHIDWN(I))
 !            if (isnan(sec(n,k,j))) stop 'etrans: NaN in SEC'
 !            if (isnan(zmaj(n,i))) stop 'etrans: NaN in ZMAJ'
 !            if (isnan(phiup(i))) stop 'etrans: NaN in PHIUP'
-!            if (isnan(phidwn(i))) stop 'etrans: NaN in PHIDWN'
-          if (debug .and. .not.isfinite(secp(n,i)))
-     &             write(0,*)'etrans: nonfinit SECP'
+            if (debug .and. phidwn(i).gt.1e30) 
+     &            error stop 'etrans.f: very large PHIDWN'
+            if (debug .and. .not.isfinite(secp(n,i)))
+     &            error stop 'etrans: nonfinite SECP'
             SION(N,I) = SION(N,I) + SECP(N,I) * DEL(K)
             
-            if (debug .and. .not.isfinite(sion(n,i))) 
-     &        write(0,*) 'etrans: nonfinite impact ionization SION'
+            if (debug .and. .not.isfinite(sion(n,i)))  then
+             write(stderr,*)'etrans: nonfinite impact ioniz SION.',
+     &                 '  k,n,i=',k,n,i
+             write(stderr,*) 'del(k)=',del(k)
+             write(stderr,*) 'secp(n,i)=',secp(n,i)
+             write(stderr,*) 'sion(n,i)=',sion(n,i)
+            error stop
+            endif
 
             SECION(I) = SECION(I) + SECP(N,I) * DEL(K)
             PRODUP(I,K) = PRODUP(I,K) + (SECP(N,I)*.5*RMUSIN)
@@ -508,6 +520,8 @@ C Subroutine IMPIT solves parabolic differential equation by implicit
 C Crank-Nicholson method
 C
       SUBROUTINE IMPIT(FLUXJ)
+      use, intrinsic :: iso_fortran_env, only : stdout=>output_unit, 
+     &                                          stderr=>error_unit
 !      use cglow,only: jmax
       Implicit None
       include 'cglow.h'
@@ -532,30 +546,31 @@ C
         C(I) = PSI(I) / DELM(I) - ALPHA(I) / DEL2(I)
         D(I) = GAMA(I)
        if(debug .and. .not.isfinite(c(i)))
-     &              write(0,*)'etrans:impit nonfinite C(I)'
+     &              error stop 'etrans:impit nonfinite C(I)'
        if(debug .and. .not.isfinite(d(i)))
-     &              write(0,*)'etrans:impit nonfinite D(I)'
+     &              error stop 'etrans:impit nonfinite D(I)'
       End Do
 
       K(2) = (D(2) - C(2)*DEN(1)) / B(2)
       L(2) = A(2) / B(2)
       if (debug .and. .not.isfinite(k(2))) then
-      write(0,*) '***********    **********'
-      write(0,*) 'K(2) D(2) C(2) DEN(1) B(2)',K(2),D(2),C(2),DEN(1),B(2)
-       write(0,*) 'etrans:impit non-finite K(2)'
+        write(stderr,*) '***********    **********'
+        write(stderr,*) 'K(2) D(2) C(2) DEN(1) B(2)',K(2),D(2),C(2),
+     &   DEN(1),B(2)
+        error stop 'etrans:impit non-finite K(2)'
       end if
 !      if (isnan(k(2))) stop 'etrans:impit NaN in K(2)'
 
       DO I = 3, I1
         DEM = B(I) - C(I) * L(I-1)
         if (debug .and. .not.isfinite(dem)) 
-     &               write(0,*)'etrans:impit nonfinite DEM'
+     &        error stop 'etrans:impit nonfinite DEM'
         K(I) = (D(I) - C(I)*K(I-1)) / DEM
         L(I) = A(I) / DEM
 
         if (debug .and. .not. isfinite(K(i))) then
-         write(0,*) k
-         write(0,*) 'etrans:impit NaN in K(i)'
+         write(stderr,*) k
+         error stop 'etrans:impit NaN in K(i)'
         end if
 !        if (isnan(L(i))) stop'etrans:impit NaN in L(i)'
       End DO   
@@ -564,15 +579,15 @@ C
 !      if (isnan(K(i1))) stop'etrans:impit NaN in K(i1)'
 !      if (isnan(L(i1))) stop'etrans:impit NaN in L(i1)'
       if(debug .and. .not.isfinite(den(i1)))
-     &           write(0,*)'impit nonfinite DEN(I1)'
+     &          error stop 'impit nonfinite DEN(I1)'
       DEN(JMAX) = DEN(I1)
       
       Do KK = 1, JMAX-3
         JK = I1 - KK
         DEN(JK) = K(JK) - L(JK) * DEN(JK + 1)
-        if (debug .and. .not.isfinite(den(jk))) then 
-          write(0,*) 'etrans:impit: non-finite DEN'
-        end if
+        if (debug .and. .not.isfinite(den(jk)))
+     &    error stop 'etrans:impit: non-finite DEN'
+
       End Do
 
       END Subroutine IMPIT

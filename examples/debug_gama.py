@@ -20,10 +20,13 @@ Alpha= float32(1.47421190E-06)
 Del2= float32(200000.000)
 
 
+A2 = (-T1 - T2 - Alpha - (Prodp1 - Prodn1) /Prod / Del2)
+A3 = ( -Alpha - T2 - (Prodwnp1 - Prodwnn1) /PROdwn / Del2 )
+
 gama = (
-        (Prod/float32(2)) * (-T1 - T2 - Alpha - (Prodp1 - Prodn1) /Prod / Del2)
+        (Prod/float32(2)) * A2
                   + PROdwn
-                  * ( -Alpha - T2 - (Prodwnp1 - Prodwnn1) /PROdwn / Del2 )
+                  * A3
                   - PROdup * T1
        )
 
