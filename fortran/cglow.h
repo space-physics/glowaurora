@@ -3,7 +3,7 @@
 ! JMAX (number of vertical levels) is set to 64 for tgcm runs
 ! If not a tgcm run, JMAX is set in the namelist input file
 !
-      logical,parameter :: debug=.true.
+      logical,parameter :: debug=.false.
 
       integer,parameter :: lmax=123
       integer,parameter :: NMAJ=3
