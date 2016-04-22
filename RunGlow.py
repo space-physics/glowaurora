@@ -26,10 +26,10 @@ def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
-    p.add_argument('simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',nargs='?',default='2013-04-14T15:54Z')
+    p.add_argument('-t','--simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',default='2013-04-14T15:54Z')
     p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(65.,-148.))
 #    p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190) #hard-coded in cglow.h
-    p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1.)
+    p.add_argument('-q','--flux',help='overall incident flux [erg ...]',type=float,default=1.)
     p.add_argument('--e0',help='characteristic energy [eV]',type=float,default=1e3)
     p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=100)
     p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float,default=100)
