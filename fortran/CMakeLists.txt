@@ -1,7 +1,5 @@
-cmake_minimum_required (VERSION 2.8)
-project(spectrum C CXX Fortran)
-
-set(CMAKE_VERBOSE_MAKEFILE off)
+cmake_minimum_required (VERSION 2.8.12)
+project(glowaurora Fortran)
 
 #add_compile_options(-fno-align-commons)
 
@@ -14,4 +12,3 @@ target_link_libraries(aurexample glow)
 #------ test program: high energy precipitation -------------
 add_executable(hexexample hexexample.f)
 target_link_libraries(hexexample glow)
-
