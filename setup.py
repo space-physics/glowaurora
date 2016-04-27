@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 import setuptools #needed to enable develop
 import subprocess
-
-
-def prereq():
-    try:
-        subprocess.run(['conda','install','--yes','--quiet','--file','requirements.txt'])
-    except Exception as e:
-        print('you will need to install packages in requirements.txt  {}'.format(e))
-
-prereq()
-
-from os.path import join
-from numpy.distutils.core import setup,Extension
 from glob import glob
+from os.path import join
+
+try:
+    subprocess.run(['conda','install','--yes','--file','requirements.txt'])
+except Exception as e:
+    print('you will need to install packages in requirements.txt  {}'.format(e))
+
+from numpy.distutils.core import setup,Extension
 
 # f2py -m aurora -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f aurora_sub.f
 
