@@ -24,6 +24,17 @@ glow-aurora
 .. image:: examples/demo_in.png
    :alt: diff num flux input
 
+Prereq
+======
+
+Linux / BSD / Windows::
+
+    sudo apt-get install gfortran
+
+Mac::
+    
+    brew install gcc
+
 Installation
 ============
 Note, if you don't already have Python 3.5 installed, I would
