@@ -60,9 +60,9 @@ To produce the plots seen at the Github site::
 
 with options including:
 
--t,--simtime   time of simulation (ending in Z for UTC)
--c,--latlon    geographic coordinate (lat,lon) [degrees]
--q,--flux      total flux
+-t, --simtime   time of simulation (ending in Z for UTC)
+-c, --latlon    geographic coordinate (lat,lon) [degrees]
+-q, --flux      total flux
 
 with the volume emission rate and intermediate
 processes modeled for the given primary electron precipitation input. You can make
