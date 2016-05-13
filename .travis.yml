@@ -32,7 +32,7 @@ install:
     - source activate test
     - pip -q install coveralls
     - python setup.py develop
-    - conda install --yes scipy=0.16.1 #patch for library travis
+    - conda remove --yes libgfortran
 
 script:
     - coverage run test/test.py
