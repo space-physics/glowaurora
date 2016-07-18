@@ -1,41 +1,49 @@
-sudo: required
-dist: trusty
-
-language: python
-
-python:
-    - 3.5
-
-notifications:
-  email: false
-
-git:
-  depth: 1
+language: generic
 
 addons:
   apt:
-    sources:
-    - ubuntu-toolchain-r-test
     packages:
-    - gfortran-5
+    - gfortran
 
-before_install:
-    - mkdir -p $HOME/.local/bin
-    - ln -fs /usr/bin/gfortran-5 "$HOME/.local/bin/gfortran" && gfortran --version
-    - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-    - chmod +x miniconda.sh
-    - bash miniconda.sh -b -p $HOME/miniconda
-    - export PATH=$HOME/miniconda/bin:$PATH
+
+notifications:
+    email: false
+
+git:
+    depth: 3
+
+matrix:
+  include:
+    - os: osx
+      env: pyv=2.7
+
+    - os: linux
+      env: pyv=2.7
+      
+    - os: osx
+      env: pyv=3.5
+
+    - os: linux
+      env: pyv=3.5
 
 install:
-    - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
+    - if [[ $TRAVIS_OS_NAME == osx ]]; then
+        wget http://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh;
+      else 
+        wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+      fi
+      
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH=$HOME/miniconda/bin:$PATH
+    - hash -r
+    
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    - conda create -n test python=$pyv
     - source activate test
     - pip -q install coveralls
     - python setup.py develop
-    - conda remove --yes libgfortran
 
-script:
-    - coverage run test/test.py
+script: coverage run tests/test.py
 
-after_success:
-    - coveralls
+after_success: coveralls
