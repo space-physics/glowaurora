@@ -1,13 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import setuptools #needed to enable develop
 import subprocess
 from glob import glob
 from os.path import join
 
 try:
-    subprocess.run(['conda','install','--yes','--file','requirements.txt'])
+    subprocess.call(['conda','install','--file','requirements.txt'])
 except Exception as e:
-    print('you will need to install packages in requirements.txt  {}'.format(e))
+    pass
 
 from numpy.distutils.core import setup,Extension
 
@@ -28,9 +28,6 @@ fortranpaths = [join(root,f) for f in fortranfiles]
 fortdata = glob(join(root,'*.dat'))
 iridata = glob(join('iri','*.asc')) #in pyiri90
 #%% prelim
-with open('README.rst') as f:
-	long_description = f.read()
-
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
                f2py_options=['--quiet'],
@@ -41,9 +38,8 @@ ext=[Extension(name='glowfort',
 
 #%% install
 setup(name='glowaurora',
-      version='0.1',
 	 description='Python wrapper for Stan Solomon GLOW auroral model',
-	 long_description=long_description,
+
 	 author='Michael Hirsch',
 	 url='https://github.com/scienceopen/glowaurora',
       packages=['glowaurora'],
