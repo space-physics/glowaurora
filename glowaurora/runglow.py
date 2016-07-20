@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
-from pathlib import Path
+from . import Path
 import logging
 from datetime import datetime
 from xarray import DataArray

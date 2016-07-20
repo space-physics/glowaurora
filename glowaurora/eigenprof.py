@@ -1,4 +1,4 @@
-from pathlib import Path
+from . import Path
 from datetime import datetime
 from numpy import loadtxt,append,empty
 from pandas import read_hdf
