@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 default parameter values like those of Stan's fortran examples--yield rather similar output
 
