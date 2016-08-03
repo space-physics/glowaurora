@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 loads and plots eigenprofiles vs time
 
 """
-from pathlib import Path
+from glowaurora import Path
 import h5py
 from datetime import datetime
 from pytz import UTC
