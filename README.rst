@@ -4,9 +4,6 @@
 .. image:: https://coveralls.io/repos/scienceopen/glowaurora/badge.svg?branch=master&service=github 
     :target: https://coveralls.io/github/scienceopen/glowaurora?branch=master 
     
-.. image:: https://codeclimate.com/github/scienceopen/glowaurora/badges/gpa.svg
-   :target: https://codeclimate.com/github/scienceopen/glowaurora
-   :alt: Code Climate
 
 =============
 glow-aurora
