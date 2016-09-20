@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Registration testing of GLOW
 Michael Hirsch
@@ -17,7 +17,7 @@ from numpy.testing import assert_allclose,run_module_suite
 from glowaurora.eigenprof import makeeigen
 from histutils.fortrandates import datetime2yd,datetime2gtd
 try:
-    from msise00.runmsis import rungtd1d
+    from msise00 import rungtd1d
     DOMSIS=True
 except Exception as e:
     logging.warning('external MSISE00 install not found, skipping MSISE00 verification')
