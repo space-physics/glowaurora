@@ -1,4 +1,5 @@
 from . import Path
+from warnings import warn
 from datetime import datetime
 from numpy import loadtxt,append,empty
 from pandas import read_hdf
@@ -79,18 +80,12 @@ def makeeigen(EK,diffnumflux,T,glatlon,makeplot=[None],odir=None,zlim=None):
         T=[T]
 
     ver = None
+    if len(T) > 1:
+        warn('more than one time not yet implmented. You will get last time')
+
     for t in T:
         v,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)
-       # if ver is None:
-           # ver =  Panel4D(labels=T,items=v.items,    major_axis=v.major_axis,    minor_axis=v.minor_axis)
-           # prates=Panel4D(labels=T,items=prate.items,major_axis=prate.major_axis,minor_axis=prate.minor_axis)
-            #lrates=Panel4D(labels=T,items=lrate.items,major_axis=lrate.major_axis,minor_axis=lrate.minor_axis)
-           # tezs=Panel(items=T,major_axis=tez.index,minor_axis=tez.columns)
 
-       # ver[t] = v # v is a 3-D Panel
-       # prates[t]=prate
-        #lrates[t]=lrate
-        #tezs[t]=tez
 #TODO time stack
         ver=v; prates=prate; lrates=lrate; tezs=tez
 
