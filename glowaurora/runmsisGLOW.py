@@ -1,4 +1,4 @@
-from . import Path
+from pathlib import Path
 import logging
 from numpy import repeat,empty
 from xarray import DataArray

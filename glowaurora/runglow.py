@@ -3,7 +3,7 @@
 Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
-from . import Path
+from pathlib import Path
 import logging
 from datetime import datetime
 from xarray import DataArray
