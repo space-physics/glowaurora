@@ -1,4 +1,4 @@
-from . import Path
+from pathlib import Path
 from warnings import warn
 from datetime import datetime
 from numpy import loadtxt,append,empty

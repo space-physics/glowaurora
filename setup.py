@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import setuptools #needed to enable develop
-import subprocess
 from glob import glob
 from os.path import join
 
 try:
-    subprocess.call(['conda','install','--file','requirements.txt'])
+    import conda.cli
+    conda.cli.main('install','--file','requirements.txt')
 except Exception as e:
-    pass
+    print(e)
 
 from numpy.distutils.core import setup,Extension
 
@@ -38,10 +38,6 @@ ext=[Extension(name='glowfort',
 
 #%% install
 setup(name='glowaurora',
-	 description='Python wrapper for Stan Solomon GLOW auroral model',
-
-	 author='Michael Hirsch',
-	 url='https://github.com/scienceopen/glowaurora',
       packages=['glowaurora'],
 #      package_dir={'glowaurora': 'glowaurora'}, #not working
  #     package_data={'glowaurora': ['fortran/*.dat']}, #not working, use data_files

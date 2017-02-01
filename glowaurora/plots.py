@@ -1,4 +1,4 @@
-from . import Path
+from pathlib import Path
 from numpy.ma import masked_invalid
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
