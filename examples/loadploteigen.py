@@ -3,7 +3,7 @@
 loads and plots eigenprofiles vs time
 
 """
-from glowaurora import Path
+from pathlib import Path
 import h5py
 from datetime import datetime
 from pytz import UTC
