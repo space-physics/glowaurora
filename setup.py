@@ -55,7 +55,6 @@ setup(name='glowaurora',
                           #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
                           'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
                           'https://github.com/scienceopen/histutils/tarball/master#egg=histutils',
-                          'https://github.com/scienceopen/pymap3d/tarball/master#egg=pymap3d',
                             ],
       )
 
