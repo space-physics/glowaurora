@@ -9,10 +9,10 @@ from numpy import hstack,arange,append,array,rollaxis
 from os import chdir
 try:
     import seaborn
-except:
+except ImportError:
     pass
 #
-from histutils.fortrandates import datetime2yd
+from sciencedates import datetime2yd
 from pyiri90.runiri90 import runiri
 from msise00.runmsis import rungtd1d
 import glowaurora

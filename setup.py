@@ -41,6 +41,7 @@ ext=[Extension(name='glowfort',
 #%% install
 setup(name='glowaurora',
       packages=['glowaurora'],
+      author='Michael Hirsch, Ph.D.',
 #      package_dir={'glowaurora': 'glowaurora'}, #not working
  #     package_data={'glowaurora': ['fortran/*.dat']}, #not working, use data_files
       include_package_data=True,
@@ -50,11 +51,11 @@ setup(name='glowaurora',
                   ], #must have data_files to copy *.dat to site-packages
 
 	  install_requires=[#'msise00','pyiri90', #future
-                         'pymap3d', 'histutils','gridaurora'],
-      dependency_links = [#'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
-                          #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
-                          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
-                          'https://github.com/scienceopen/histutils/tarball/master#egg=histutils',
+                         'pymap3d', 'sciencedates','gridaurora'],
+      dependency_links = [
+      #'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
+      #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
+          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
                             ],
       )
 

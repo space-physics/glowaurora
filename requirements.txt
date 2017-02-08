@@ -2,6 +2,7 @@ nose
 python-dateutil
 numpy
 pandas
+xarray
 matplotlib
 seaborn
 astropy

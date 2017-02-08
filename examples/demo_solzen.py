@@ -10,7 +10,7 @@ from matplotlib.pyplot import show
 from time import time
 import seaborn
 #
-from histutils.fortrandates import datetime2yd
+from sciencedates import datetime2yd
 from gridaurora.solarangle import solarzenithangle
 #################################
 #TODO hack for module data path issue

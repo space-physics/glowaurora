@@ -5,7 +5,7 @@ from xarray import DataArray
 from numpy import atleast_1d
 from os import chdir
 #
-from histutils.fortrandates import datetime2gtd
+from sciencedates import datetime2gtd
 #
 import glowaurora
 from glowfort import tselec,meters,csw,gtd7
