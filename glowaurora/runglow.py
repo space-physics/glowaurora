@@ -10,8 +10,7 @@ from xarray import DataArray
 from numpy import hstack,degrees,zeros_like,ndarray,atleast_1d,float32
 from os import chdir
 #
-from histutils.fortrandates import datetime2yd
-from histutils.findnearest import find_nearest
+from sciencedates import datetime2yd, find_nearest
 from gridaurora.readApF107 import readmonthlyApF107
 from gridaurora.zglow import glowalt
 import glowfort,glowaurora

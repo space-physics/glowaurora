@@ -15,7 +15,7 @@ from numpy import array,zeros,float32,log,isclose,nan,ones_like
 from numpy.testing import assert_allclose,run_module_suite
 #
 from glowaurora.eigenprof import makeeigen
-from histutils.fortrandates import datetime2yd,datetime2gtd
+from sciencedates import datetime2yd,datetime2gtd
 try:
     from msise00 import rungtd1d
     DOMSIS=True
