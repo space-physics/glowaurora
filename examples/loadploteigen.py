@@ -29,8 +29,8 @@ with h5py.File(str(fn),'r',libver='latest') as f:
     if len(f['/eigenprofile'].shape) == 3:
         for i,v in enumerate(f['/eigenprofile']): #for each time
             try:
-                t = datetime.fromtimestamp(f['ut1_unix'].value[i],tz=UTC)
-            except:
+                t = datetime.fromtimestamp(f['ut1_unix'][i],tz=UTC)
+            except IndexError:
                 t=None
             ploteig(EKpcolor,f['/altitude'].value,v,(None,)*6,sim,t)
     elif len(f['/eigenprofile'].shape) ==2: #old single time
