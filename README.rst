@@ -26,7 +26,7 @@ Prereq
 
 Linux / BSD / Windows::
 
-    sudo apt-get install gfortran
+    apt install gfortran
 
 Mac::
     
@@ -34,8 +34,7 @@ Mac::
 
 Installation
 ============
-Note, if you don't already have Python 3.5 installed, I would
-suggest using `Miniconda Python as it is a tiny, convenient download <http://conda.pydata.org/miniconda.html>`_. You want Python 3.5.::
+::
 
    python setup.py develop
 
