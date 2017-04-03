@@ -2,15 +2,6 @@
 import setuptools #needed to enable develop
 from glob import glob
 from os.path import join
-
-try:
-    import conda.cli
-    conda.cli.main('install','--file','requirements.txt')
-except Exception as e:
-    print(e)
-    import pip
-    pip.main(['install','-r','requirements.txt'])
-
 from numpy.distutils.core import setup,Extension
 
 # f2py -m aurora -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f aurora_sub.f
@@ -38,6 +29,9 @@ ext=[Extension(name='glowfort',
                #include_dirs=[root],
                #library_dirs=[root])]
 
+req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',
+        'pymap3d','sciencedates','gridaurora']
+
 #%% install
 setup(name='glowaurora',
       packages=['glowaurora'],
@@ -50,12 +44,9 @@ setup(name='glowaurora',
                   ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
 
-	  install_requires=[#'msise00','pyiri90', #future
-                         'pymap3d', 'sciencedates','gridaurora'],
+	  install_requires=req,
       dependency_links = [
-      #'https://github.com/scienceopen/msise00/tarball/master#egg=msise00',
-      #  'https://github.com/scienceopen/pyiri90/tarball/master#egg=pyiri90',
-          'https://github.com/scienceopen/gridaurora/tarball/master#egg=gridaurora',
+          'https://github.com/scivision/gridaurora/tarball/master#egg=gridaurora',
                             ],
       )
 
