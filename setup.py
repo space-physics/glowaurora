@@ -1,8 +1,19 @@
 #!/usr/bin/env python
+req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',]
+pipreq=['pymap3d','sciencedates','gridaurora']
+# %%
+try:
+    import conda.cli
+    conda.cli.main('install',*req)
+except Exception as e:
+    import pip
+    pip.main(['install',*req])
+pip.main(['install',*pipreq])
+# %%
 import setuptools #needed to enable develop
+from numpy.distutils.core import setup,Extension
 from glob import glob
 from os.path import join
-from numpy.distutils.core import setup,Extension
 
 # f2py -m aurora -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f aurora_sub.f
 
@@ -29,13 +40,13 @@ ext=[Extension(name='glowfort',
                #include_dirs=[root],
                #library_dirs=[root])]
 
-req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',
-        'pymap3d','sciencedates','gridaurora']
 
-#%% install
+# %% 
 setup(name='glowaurora',
       packages=['glowaurora'],
       author='Michael Hirsch, Ph.D.',
+      description='Model of auroral and airglow emissions',
+      url='https://github.com/scivision/glowaurora',
 #      package_dir={'glowaurora': 'glowaurora'}, #not working
  #     package_data={'glowaurora': ['fortran/*.dat']}, #not working, use data_files
       include_package_data=True,
@@ -43,11 +54,6 @@ setup(name='glowaurora',
       data_files=[('glowaurora',fortdata),
                   ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
-
-	  install_requires=req,
-      dependency_links = [
-          'https://github.com/scivision/gridaurora/tarball/master#egg=gridaurora',
-                            ],
       )
 
 
