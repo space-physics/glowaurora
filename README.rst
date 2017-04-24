@@ -2,8 +2,9 @@
    :target: https://zenodo.org/badge/latestdoi/34395725
 .. image:: https://travis-ci.org/scivision/glowaurora.svg
     :target: https://travis-ci.org/scivision/glowaurora
-.. image:: https://coveralls.io/repos/scivision/glowaurora/badge.svg?branch=master&service=github 
-    :target: https://coveralls.io/github/scivision/glowaurora?branch=master 
+.. image:: https://coveralls.io/repos/github/scivision/glowaurora/badge.svg?branch=master
+:target: https://coveralls.io/github/scivision/glowaurora?branch=master
+
     
 
 =============
