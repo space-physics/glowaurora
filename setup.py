@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',]
+req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython','pathlib2']
 pipreq=['pymap3d','sciencedates','gridaurora']
 # %%
 import pip
@@ -44,7 +44,7 @@ ext=[Extension(name='glowfort',
 # %% 
 setup(name='glowaurora',
       packages=['glowaurora'],
-      version='1.0.1',
+      version='1.0.2',
       author='Michael Hirsch, Ph.D.',
       description='Model of auroral and airglow emissions',
       url='https://github.com/scivision/glowaurora',
