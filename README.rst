@@ -1,8 +1,9 @@
-.. image:: https://travis-ci.org/scienceopen/glowaurora.svg
-    :target: https://travis-ci.org/scienceopen/glowaurora
-
-.. image:: https://coveralls.io/repos/scienceopen/glowaurora/badge.svg?branch=master&service=github 
-    :target: https://coveralls.io/github/scienceopen/glowaurora?branch=master 
+.. image:: https://zenodo.org/badge/34395725.svg
+   :target: https://zenodo.org/badge/latestdoi/34395725
+.. image:: https://travis-ci.org/scivision/glowaurora.svg
+    :target: https://travis-ci.org/scivision/glowaurora
+.. image:: https://coveralls.io/repos/scivision/glowaurora/badge.svg?branch=master&service=github 
+    :target: https://coveralls.io/github/scivision/glowaurora?branch=master 
     
 
 =============
