@@ -6,9 +6,9 @@ import pip
 try:
     import conda.cli
     conda.cli.main('install',*req)
-except Exception as e:
-    pip.main(['install',*req])
-pip.main(['install',*pipreq])
+except Exception:
+    pip.main(['install'] + req)
+pip.main(['install'] + pipreq)
 # %%
 import setuptools #needed to enable develop
 from numpy.distutils.core import setup,Extension
@@ -44,7 +44,7 @@ ext=[Extension(name='glowfort',
 # %% 
 setup(name='glowaurora',
       packages=['glowaurora'],
-      version='1.0.0',
+      version='1.0.1',
       author='Michael Hirsch, Ph.D.',
       description='Model of auroral and airglow emissions',
       url='https://github.com/scivision/glowaurora',

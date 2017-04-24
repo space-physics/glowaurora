@@ -8,7 +8,7 @@ from dateutil.parser import parse
 from matplotlib.pyplot import show
 import seaborn
 #
-from glowaurora.runglow import runglowaurora
+from glowaurora import runglowaurora
 from glowaurora.plots import plotaurora
 
 def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):

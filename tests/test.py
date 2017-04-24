@@ -11,10 +11,10 @@ nosetests -v test.py
 import logging
 from datetime import datetime
 from itertools import chain
-from numpy import array,zeros,float32,log,isclose,nan,ones_like
+from numpy import array,zeros,float32,log,isclose,nan
 from numpy.testing import assert_allclose,run_module_suite
 #
-from glowaurora.eigenprof import makeeigen
+from glowaurora import makeeigen
 from sciencedates import datetime2yd,datetime2gtd
 try:
     from msise00 import rungtd1d
@@ -85,10 +85,11 @@ def test_snoem():
 
 def test_snoemint():
     if DOMSIS:
-        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
+        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
     # (nighttime background ionization)
+        print(tempd)
         znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,
-                                   tempd.loc[:,'heretemp'])
+                                   tempd.loc[:,'Tn'])
         assert_allclose(znoint[[28,143]], (1.262170e+08,  3.029169e+01),rtol=1e-5) #arbitrary
         return znoint
 
@@ -105,13 +106,13 @@ def test_ssflux():
 
 def test_rcolum_qback():
     if DOMSIS:
-        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7,48,(1,)*25)
+        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
 
         """ VCD: Vertical Column Density """
         sza = test_solzen()
         zcol,zvcd = glowfort.rcolum(sza,z*1e5,
                                     densd.loc[:,['O','O2','N2']].values.T,
-                                    tempd.loc[:,'heretemp'])
+                                    tempd.loc[:,'Tn'])
     # FIXME these tests were numerically unstable (near infinity values)
         assert isclose(zcol[0,0], 1e30) #see rcolum comments for sun below horizon 1e30
         assert isclose(zvcd[2,5],5.97157e+28,rtol=1e-2) #TODO changes a bit between python 2 / 3
