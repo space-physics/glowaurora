@@ -2,11 +2,11 @@
 req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',]
 pipreq=['pymap3d','sciencedates','gridaurora']
 # %%
+import pip
 try:
     import conda.cli
     conda.cli.main('install',*req)
 except Exception as e:
-    import pip
     pip.main(['install',*req])
 pip.main(['install',*pipreq])
 # %%
