@@ -25,7 +25,7 @@ import glowfort
 glowpath=Path(__file__).parents[1]
 oldcwd = Path.cwd()
 
-def runglowaurora(eflux,e0,t0,glat,glon,f107apfn=None,f107a=None,f107=None,f107p=None,ap=None):
+def runglowaurora(eflux,e0,t0,glat,glon,f107a=None,f107=None,f107p=None,ap=None,f107apfn=None):
 #%% (-2) check/process user inputs
     assert isinstance(eflux,(float,int,ndarray))
     assert isinstance(e0,   (float,'float32',int))
