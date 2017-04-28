@@ -3,7 +3,7 @@
 .. image:: https://travis-ci.org/scivision/glowaurora.svg
     :target: https://travis-ci.org/scivision/glowaurora
 .. image:: https://coveralls.io/repos/github/scivision/glowaurora/badge.svg?branch=master
-:target: https://coveralls.io/github/scivision/glowaurora?branch=master
+    :target: https://coveralls.io/github/scivision/glowaurora?branch=master
 
     
 
@@ -45,7 +45,8 @@ Examples
 
 Self-test f2py
 --------------
-This self-test should give zero errors. This tests the Fortran code from Python.::
+This self-test should give zero errors. 
+This tests the Fortran code from Python.::
   
   ./test/test.py -v
 
@@ -62,9 +63,8 @@ with options including:
 -c, --latlon    geographic coordinate (lat,lon) [degrees]
 -q, --flux      total flux
 
-with the volume emission rate and intermediate
-processes modeled for the given primary electron precipitation input. You can make
-this more generally useful as eigenprofiles in the next section.
+with the volume emission rate and intermediate processes modeled for the given primary electron precipitation input.
+You can make this more generally useful as eigenprofiles in the next section.
 
 production/loss rate eigenprofiles
 ----------------------------------
@@ -74,6 +74,11 @@ This requires two steps:
 2. Compute ionospheric energy deposition and hence production/loss rates for the modeled kinetic chemistries (12 in total)
 
 This is handled by the script ``gridaurora/MakeIonoEigenprofile.py``
+
+
+Matlab access to Glow
+---------------------
+Matlab can use Glow via the Python interface, as in the example ``glow.m``.
 
 Papers
 ======
@@ -88,10 +93,9 @@ Appendix (Not necessary for the typical user)
 
 Download the GLOW v0.973 source code from Stan Solomon
 ------------------------------------------------------
-Stan's team has been working on a new version, Modern Fortran, looked beautiful
-from a sneak peek, but for now we'll be satiated with the original.::
+Stan's team has released GLOW v0.98 using modern Fortran, but here's the original.::
 
-  wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
+    wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
 Download Stan's copy of IRI files
 ---------------------------------
@@ -132,10 +136,9 @@ Strongly suggest using Linux Subsystem for Windows, if you aren't using it yet y
 
 Licensing
 =========
-original Fortran code in directory ``fortran/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/:
-
-"This software is part of the GLOW model.  Use is governed by the Open Source Academic Research License
-Agreement contained in the file glowlicense.txt."
+original Fortran code in directory ``fortran/`` as obtained from http://download.hao.ucar.edu/pub/stans/glow/: 
+"This software is part of the GLOW model.  
+Use is governed by the Open Source Academic Research License Agreement contained in the file glowlicense.txt."
 
 
 Python code and modifications to original Fortran code:  GNU Affero GPLv3+
