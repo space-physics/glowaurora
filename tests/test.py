@@ -18,10 +18,9 @@ from glowaurora import makeeigen
 from sciencedates import datetime2yd,datetime2gtd
 try:
     from msise00 import rungtd1d
-    DOMSIS=True
 except Exception as e:
     logging.warning('external MSISE00 install not found, skipping MSISE00 verification')
-    DOMSIS=False
+    msise00=None
 #
 import glowfort
 #%% test inputs
@@ -105,7 +104,7 @@ def test_ssflux():
     assert_allclose(sflux[[11,23]],(4.27225743e+11,   5.54400400e+07))
 
 def test_rcolum_qback():
-    if DOMSIS:
+    if msise00 is not None:
         densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
 
         """ VCD: Vertical Column Density """
