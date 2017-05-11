@@ -5,7 +5,7 @@
 .. image:: https://coveralls.io/repos/github/scivision/glowaurora/badge.svg?branch=master
     :target: https://coveralls.io/github/scivision/glowaurora?branch=master
 
-    
+:NOTE: New Modern Fortran GLOW is being built-up at https://github.com/scivision/GLOW with Python, Matlab, or MPI.
 
 =============
 glow-aurora
