@@ -8,8 +8,8 @@ import h5py
 from datetime import datetime
 from pytz import UTC
 #
-from histfeas.plotsnew import ploteig            # obtained from https://github.com/scienceopen/histfeas
-from transcarread.readTranscar import SimpleSim  # obtained from https://github.com/scienceopen/transcarread
+from histfeas.plotsnew import ploteig  # obtained from https://github.com/scivision/histfeas
+from transcarread import SimpleSim  # obtained from https://github.com/scivision/transcarread
 from glowaurora.eigenprof import ekpcolor
 
 #%% main program
