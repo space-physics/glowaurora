@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 from pathlib import Path
 from numpy.ma import masked_invalid
 from matplotlib.pyplot import figure, subplots,tight_layout,draw
@@ -23,18 +24,19 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         return
 
     if E0 and sza:
-        titlend = '$E_0={:.0f}$ eV  SZA={:.1f}$^\circ$'.format(E0,sza)
+        titlend = '$E_0={E0:.0f}$ eV  SZA={sza:.1f}$^\circ$'
     else:
         titlend = ''
 
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
         fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
-        fg.suptitle('{} ({},{}) '.format(t,glat,glon)+ titlend)
+        fg.suptitle(f'{t} ({glat},{glon}) ' + titlend)
 
         ind = ['nO','nO2','nN2','nNO']
         ax = axs[0]
-        ax.semilogx(photIon.loc[:,ind], photIon.z_km)
+        # Need to use .values here.
+        ax.semilogx(photIon.loc[:,ind].values, photIon.z_km)
         ax.set_xlabel('Number Density')
         ax.set_xscale('log')
         ax.set_xlim(left=1e1)
@@ -45,7 +47,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         ind=['Te','Ti']
         ax = axs[1]
-        ax.semilogx(isr.loc[:,ind], isr.z_km)
+        # Need to use .values here.
+        ax.semilogx(isr.loc[:,ind].values, isr.z_km)
         ax.set_xlabel('Temperature [K]')
         ax.legend(ind)
         _nicez(ax,zlim)
@@ -59,7 +62,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
                      lrate.loc['final',...],t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
     fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
-    fg.suptitle('{} ({},{}) '.format(t,glat,glon) + titlend)
+    fg.suptitle(f'{t} ({glat},{glon}) ' + titlend)
     tight_layout(pad=3.2, w_pad=0.6)
 
 #%% incident flux at top of ionosphere
@@ -68,7 +71,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
     titxt='Incident Flux'
     if flux:
-        titxt+='  Total Flux={:.1f},'.format(flux)
+        titxt += f'  Total Flux={flux:.1f},'
     ax.set_title(titxt)
 
     ax.set_xlabel('Beam Energy [eV]')
@@ -90,9 +93,9 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
     ax.legend(ind,loc='best')
     ax.set_title('Volume Emission Rate: Visible')
 #%% ver invisible
-    ind = [3371,7320,10400,3466,7774, 8446,3726]
+    ind = [3371,7320,10400,3466,7774, 8446,3726,1356., 1304., 1027., 989., 1900.]
     ax = axs[2]
-    ax.plot(ver.loc[...,ind].values.squeeze(), ver.z_km)
+    ax.plot(ver.loc[...,ind].values, ver.z_km)
     ax.set_xlabel('Volume Emission Rate')
     _nicez(ax,zlim)
     ax.set_xscale('log')
@@ -107,7 +110,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ind=['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+']
         fg=figure()
         ax = fg.gca()
-        ax.semilogx(photIon.loc[:,ind], photIon.z_km)
+        ax.semilogx(photIon.loc[:,ind].values, photIon.z_km)
         ax.set_xlabel('Density')
         ax.set_xscale('log')
         ax.set_xlim(left=1e-3)
@@ -122,12 +125,12 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         plotenerdep(tez,t,glat,glon,zlim,titlend)
 #%% e^- impact ionization rates from ETRANS
         fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
-        fg.suptitle('{} ({},{})  '.format(t,glat,glon) + titlend)
+        fg.suptitle(f'{t} ({glat},{glon})  '+ titlend)
         tight_layout(pad=3.2, w_pad=0.3)
 
         ind=['photoIoniz','eImpactIoniz']
         ax = axs[0]
-        ax.plot(photIon.loc[:,ind],photIon.z_km)
+        ax.plot(photIon.loc[:,ind].values, photIon.z_km)
         ax.set_xlabel('ionization')
         ax.set_xscale('log')
         ax.set_xlim(left=1e-1)
@@ -138,7 +141,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
         ind=['O','O2','N2']
         ax = axs[1]
-        ax.plot(sion.T, sion.z_km)
+        ax.plot(sion.T.values, sion.z_km)
         ax.set_xscale('log')
         ax.set_xlim(1e-5,1e4)
         _nicez(ax,zlim)
@@ -159,7 +162,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
             ax.set_xscale('log')
             #ax.set_xlabel('emission constituants  ' + titlend)
             ax.set_ylabel('Altitude [km]')
-            ax.set_title('{} angstrom'.format(i.values))
+            ax.set_title(f'{i.values} angstrom')
             #ax.legend(True)
 
         writeplots(fg,'constit_',E0,makeplot,odir)
@@ -184,7 +187,7 @@ def plotenerdep(tez,t,glat,glon,zlim,titlend=''):
 
 def plotprodloss(prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
     fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
-    fg.suptitle(titlbeg + ' Volume Production/Loss Rates   {} ({},{}) '.format(t,glat,glon)+ titlend)
+    fg.suptitle(titlbeg + f' Volume Production/Loss Rates   {t} ({glat},{glon}) ' + titlend)
 
     ax[0].set_title('Volume Production Rates')
     ax[0].set_ylabel('altitude [km]')
@@ -204,7 +207,7 @@ def plotprodloss(prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
     #        a.legend(prod.minor_axis,loc='best')  # old, when plotting for each energy / input spectrum
             _nicez(a,zlim)
         except TypeError as e:
-            print('prodloss plot error    {}'.format(e))
+            logging.warning(f'prodloss plot error    {e}')
 
 #%% NOTE: candidate for loading from gridaurora.plots instead
 def writeplots(fg,plotprefix,E0,method,odir):
@@ -215,6 +218,6 @@ def writeplots(fg,plotprefix,E0,method,odir):
     #RAW crashes
     #JPG no faster than PNG
     if 'png' in method:
-        cn = (odir / (plotprefix + 'beam{:.0f}.png'.format(E0))).resolve()
-        print('write {}'.format(cn))
-        fg.savefig(cn,bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async
+        cn = odir / (plotprefix + f'beam{E0:.0f}.png')
+        print('write',cn)
+        fg.savefig(str(cn),bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async

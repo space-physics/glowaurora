@@ -6,7 +6,7 @@ C Replaced height range and interval with array of heights ZKM
 C Also supply number of heights NZ; unlimited number of heights allowed.
 C Added DIRECT argument to specify location of CCIR and URSI files.
 C Uses ASCII versions of CCIR and URSI files.
-C Subroutine DFP splices directory and filename together.
+
 C Accepts longitudes -180 to +180; maps internal longitudes 0-360.
 C Added SAVE statements for volatile memory machines.
 C Changed 'file not found' error to output message on unit 6 and stop.
@@ -411,10 +411,10 @@ C!!!!!!! F-REGION PARAMETERS AND E-PEAK !!!!!!!!!!!!!!!!!!!!!!!!!!
 C
 C READ CCIR COEFFICIENT SET FOR CHOSEN MONTH....................
 7797  write(fmonth,'(I2)') month +10
-      print '(A2,I3.3)',fmonth,month+10
-      print *,drect,month,' ',fmonth  !'(I2,I2,A1,A2,A1,A25)'
+!      print '(A2,I3.3)',fmonth,month+10
+!      print *,drect,month,' ',fmonth  !'(I2,I2,A1,A2,A1,A25)'
       path = trim(drect)//'ccir'//fmonth//'.asc'
-      print *,trim(path)
+!      print *,trim(path)
       !call dfp(drect,filename,path)
       OPEN(newunit=iu,FILE=trim(path),
      &      STATUS='OLD',action='read',ERR=8448)
@@ -1019,39 +1019,8 @@ C
       OARR(27)=MODIP
 
       END SUBROUTINE IRI90
-C
-C
-C Subroutine DFP, Stan Solomon, 3/92, splices filename to drectory
-C
-      Subroutine dfp(drect,filename,path)
-      character(*), intent(in) :: drect,filename
-      character(*), intent(out) :: path
-      character(50) blanks
-      data blanks/'                                                  '/
-      path=blanks
-      nch=len(drect)
-      do  i=1,nch
-        if (drect(i:i).ne.' ') exit
-      enddo
-      
-      lb=i
-      do i=nch,1,-1
-        if (drect(i:i).ne.' ') exit
-      enddo
-      
-      le=i
-      if (lb>=nch .or. le<=0) then
-        path(1:10)=filename(1:10)
-      else
-        nd=le-lb+1
-        path(1:nd)=drect(lb:le)
-        path(nd+1:nd+10)=filename(1:10)
-      endif
 
-      end Subroutine dfp
-C
-C
-C
+
 C
 C IRIF12.FOR ------------------------------------- OCTOBER 1991
 C**************************************************************

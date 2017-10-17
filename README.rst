@@ -17,8 +17,11 @@ glow-aurora
 
 .. contents::
 
+.. image:: examples/ver.png
+   :alt: incident energy and VER
+
 .. image:: examples/demo_out.png
-   :alt: vertical profiles of VER
+   :alt: vertical profiles
 
 .. image:: examples/demo_in.png
    :alt: diff num flux input
