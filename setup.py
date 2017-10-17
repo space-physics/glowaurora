@@ -35,7 +35,8 @@ iridata = glob(join('iri','*.asc')) #in pyiri90
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
                f2py_options=['--quiet'],
-               #extra_f77_compile_args=['-finit-local-zero'] #not needed
+               extra_f77_compile_args=['-O0'],
+               #['-finit-local-zero'] #not needed
 )]
                #include_dirs=[root],
                #library_dirs=[root])]

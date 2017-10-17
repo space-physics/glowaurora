@@ -410,10 +410,9 @@ C!!!!!!! F-REGION PARAMETERS AND E-PEAK !!!!!!!!!!!!!!!!!!!!!!!!!!
       IF(MONTH.EQ.MONTHO) GOTO 4291
 C
 C READ CCIR COEFFICIENT SET FOR CHOSEN MONTH....................
-7797  imonth = month +10
-      write(fmonth,'(I2)') imonth
-      print *,trim(fmonth)
-      print *,drect,month,imonth,' ',fmonth  !'(I2,I2,A1,A2,A1,A25)'
+7797  write(fmonth,'(I2)') month +10
+      print '(A2,I3.3)',fmonth,month+10
+      print *,drect,month,' ',fmonth  !'(I2,I2,A1,A2,A1,A25)'
       path = trim(drect)//'ccir'//fmonth//'.asc'
       print *,trim(path)
       !call dfp(drect,filename,path)
