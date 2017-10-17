@@ -95,7 +95,7 @@ Download the GLOW v0.973 source code from Stan Solomon
 ------------------------------------------------------
 Stan's team has released GLOW v0.98 using modern Fortran, but here's the original.
 
-.. code::
+.. code::bash
 
   wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
@@ -103,7 +103,7 @@ Download Stan's copy of IRI files
 ---------------------------------
 Stan tweaked IRI90 slightly, here's the copy he uses.
 
-.. code::
+.. code::bash
 
   wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
@@ -119,12 +119,17 @@ The Fortran program used by itself spits out a lot of text as its output::
 
 Fortran self-test
 -----------------
-Auroral example::
+Auroral example
+
+.. code:: bash
 
   ./auroraexample < aurexample.in > aurtest.dat
 
 
-High energy example::
+High energy example
+
+.. code:: bash
+
 
   ./hexexample < hexexample.in > hextest.dat
 
@@ -133,7 +138,7 @@ High energy example::
 Notes
 =====
 
-[Windows Gfortran, Cmake, make install](https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/)
+`Windows Gfortran, Cmake, make install <https://www.scivision.co/windows-gcc-gfortran-cmake-make-install>`_
 
 
 Licensing
