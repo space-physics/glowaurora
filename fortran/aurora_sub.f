@@ -30,7 +30,7 @@ C
       SUBROUTINE AURORA(Z,idate_, ut_, glat_, glong_, f107a_, f107_,
      &                  f107p,ap,PyPhitop,
      &                  Pyion,Pyecalc,Pypi,Pysi,Pyisr,
-     &                  prate,lrate)
+     &                  prate,lrate,PyUV)
 
 !      use cglow,only: jmax,NMAJ,NEX,NW,NC,NST,NEI,NF,nbins,lmax,PI
       implicit none
@@ -43,7 +43,7 @@ C
 
       Real, Intent(Out)  :: Pyion(JMAX,11), Pyisr(JMAX,nmaj),
      & Pyecalc(jmax),Pypi(jmax),Pysi(jmax),
-     & PRATE(NEX,JMAX,2), LRATE(NEX,JMAX,2)
+     & PRATE(NEX,JMAX,2), LRATE(NEX,JMAX,2), PyUV(5,jmax)
 !PRATE and LRATE are from GCHEM called by GLOW
 !***********************************************************************
 
@@ -279,6 +279,6 @@ C
 ! 795 format (' VCB:',11f7.0)
 !
 !
-     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2)
+     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2,PyUV)
 !
       END SUBROUTINE AURORA
