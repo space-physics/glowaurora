@@ -95,7 +95,7 @@ Download the GLOW v0.973 source code from Stan Solomon
 ------------------------------------------------------
 Stan's team has released GLOW v0.98 using modern Fortran, but here's the original.
 
-.. code::bash
+.. code:: bash
 
   wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
@@ -103,7 +103,7 @@ Download Stan's copy of IRI files
 ---------------------------------
 Stan tweaked IRI90 slightly, here's the copy he uses.
 
-.. code::bash
+.. code:: bash
 
   wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
