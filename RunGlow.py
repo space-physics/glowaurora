@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: future_fstrings -*-
 """
 default parameter values like those of Stan's fortran examples--yield rather similar output
 

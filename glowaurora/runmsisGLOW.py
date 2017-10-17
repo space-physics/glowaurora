@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 from pathlib import Path
 import logging
 from numpy import repeat,empty
@@ -20,7 +21,7 @@ def rungtdGLOW(dtime,altkm,glat,glon,f107a,f107,ap,mass,tselecopts):
     ttypes = ['exotemp','heretemp']
 
     tselec(tselecopts) #like the msis_driver example
-    logging.debug('tselec options used:   {}'.format(csw.sw)) #don't use tretrv, it doesn't work
+    logging.debug(f'tselec options used:   {csw.sw}') #don't use tretrv, it doesn't work
 
     iyd,utsec,stl = datetime2gtd(dtime,glon)
 
