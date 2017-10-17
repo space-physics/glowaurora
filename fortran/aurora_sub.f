@@ -77,6 +77,8 @@ C
      &   SIGS(NMAJ,NBINS), PE(NMAJ,NBINS), PIN(NMAJ,NBINS),
      >                SIGA(NMAJ,NBINS,NBINS), SEC(NMAJ,NBINS,NBINS),
      >                SIGEX(NEI,NMAJ,NBINS), SIGIX(NEI,NMAJ,NBINS)
+     
+      real ef,ez,fracO,fracO2,fracN2
 
       COMMON /CGLOW/ IDATE, UT, GLAT, GLONG, ISCALE, JLOCAL, KCHEM,
      >    F107, F107A, HLYBR, FEXVIR, HLYA, HEIEW, XUVFAC,
@@ -277,8 +279,8 @@ C
 ! 790 format (1x, f5.1, 10f7.1)
 !      write (6,795)  (vcb(iw),iw=1,10)
 ! 795 format (' VCB:',11f7.0)
-!
-!
-     CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2,PyUV)
-!
+
+
+      CALL ROUT('rt.out',EF,EZ,ITAIL,FRACO,FRACO2,FRACN2,PyUV)
+
       END SUBROUTINE AURORA
