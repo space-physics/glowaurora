@@ -66,6 +66,8 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a=None,f107=None,f107p=None,ap=None,
 #%% (2) msis,iri,glow model
     ion,ecalc,photI,ImpI,isr,prate,lrate,UV = glowfort.aurora(z,yd,utsec,glat,glon%360,
                                              f107a,f107,f107p,ap,phi)
+    print(UV.shape)
+    print(UV)
 #%% handle the outputs including common blocks
     zeta=glowfort.cglow.zeta.T #columns 11:20 are identically zero
 

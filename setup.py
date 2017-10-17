@@ -19,7 +19,7 @@ from os.path import join
 
 # FUTURE: iri90.f not included in f2py b/c we use the pyiri90 package
 # FUTURE: nrlmsise00.f not included .... msise00 package
-fortranfiles=['egrid.f','maxt.f','glow.f',
+fortranfiles=['egrid.f','maxt.f','glow.f','rout.f',
               'vquart.f','gchem.f','ephoto.f','solzen.f','rcolum.f',
               'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
               'geomag.f','qback.f','fieldm.f',
