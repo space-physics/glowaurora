@@ -17,7 +17,7 @@ from numpy.testing import assert_allclose,run_module_suite
 from glowaurora import makeeigen
 from sciencedates import datetime2yd,datetime2gtd
 try:
-    from msise00 import rungtd1d
+    import msise00
 except Exception as e:
     msise00=None
 #
@@ -83,7 +83,7 @@ def test_snoem():
 
 def test_snoemint():
     if msise00 is not None:
-        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
+        densd,tempd = msise00.rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
     # (nighttime background ionization)
         print(tempd)
         znoint = glowfort.snoemint(dtime.strftime('%Y%j'),glat,glon,f107,ap,z,
@@ -107,7 +107,7 @@ def test_ssflux():
 
 def test_rcolum_qback():
     if msise00 is not None:
-        densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
+        densd,tempd = msise00.rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
 
         """ VCD: Vertical Column Density """
         sza = test_solzen()

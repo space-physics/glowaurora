@@ -11,7 +11,6 @@ except (ImportError,AttributeError):
     from pathlib2 import Path
 #
 import logging
-from sys import stderr
 from datetime import datetime
 from xarray import DataArray
 from numpy import hstack,degrees,zeros_like,ndarray,atleast_1d,empty,append,loadtxt
@@ -61,7 +60,7 @@ def runglowaurora(eflux,e0,t0,glat,glon,f107a=None,f107=None,f107p=None,ap=None,
         phitop = zeros_like(ener)
         phitop[e0ind] = ener[e0ind] #value in glow grid closest to zett grid
     else:
-        return TypeError('I do not understand your electron flux input. Should be scalar or vector')
+        return ValueError('I do not understand your electron flux input. Should be scalar or vector')
 
     phi = hstack((ener[:,None],dE[:,None],phitop[:,None]))
 #%% (2) msis,iri,glow model
@@ -147,9 +146,10 @@ def verprodloss(t,glatlon,flux,EK,makeplot=[None],odir=None,zlim=None):
 
     vers = None
     for e in EK:
-        print('{} E0: {:.0f}'.format(t,e))
+        print('{t} E0: {e:.0f}')
 
         ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = runglowaurora(flux,e,t,glat,glon)
+     
         if vers is None:
             prates = DataArray(data=empty((EK.size,prate.type.size,prate.z_km.size,prate.reaction.size)),
                                dims=['eV','type','z_km','reaction'],
@@ -194,9 +194,9 @@ def ekpcolor(eigen):
             eEnd = bins['high'].iloc[-1]
             diffnumflux = bins['flux'].values
         else:
-            raise ValueError('I do not understand what file you want me to read {}'.format(eigen))
+            raise ValueError(f'I do not understand what file you want me to read {eigen}')
     else:
-        raise ValueError('unknown data type {}'.format(type(eigen)))
+        raise ValueError(f'unknown data type {type(eigen)}')
 
     return append(e0,eEnd),e0,diffnumflux
 
@@ -206,7 +206,7 @@ def makeeigen(EK,diffnumflux,T,glatlon,makeplot=[None],odir=None,zlim=None):
 
     ver = None
     if len(T) > 1:
-        print('more than one time not yet implmented. You will get last time',file=stderr)
+       logging.error('more than one time not yet implmented. You will get last time')
 
     for t in T:
         v,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = verprodloss(t,glatlon,diffnumflux,EK, makeplot,odir,zlim)

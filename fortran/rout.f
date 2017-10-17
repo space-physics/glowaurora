@@ -18,11 +18,12 @@ C
       character(len=*),intent(in) :: rofile
       real,intent(in) :: ef,ez,FRACO,FRACO2,FRACN2
       integer,intent(in) :: ITAIL
+      real,intent(out) :: PyUV(5,jmax)  ! five UV wavelengths
 
-      integer,parameter :: LUN=13
+      integer :: LUN
 
       real z(jmax), zhe(jmax), e1356(jmax), e1304(jmax),
-     >          e1027(jmax), e989(jmax), elbh(jmax)
+     &          e1027(jmax), e989(jmax), elbh(jmax)
 
 
       integer IDATE, ISCALE, JLOCAL, KCHEM, IERR,j
@@ -54,18 +55,27 @@ C
      >    UFLX, DFLX, AGLW, EHEAT, TEZ, ECALC, ZXDEN, ZETA, ZCETA, VCB
 
 
-      do 50 j=1,jmax
-      z(j)=zz(j)/1.e5
-      zhe(j)=0.
+      do j=1,jmax
+        z(j)=zz(j)/1.e5
+        zhe(j)=0.
 C Temporary fix-up to 1356:
-      e1356(j)=aglw(3,1,j)+aglw(5,1,j)*0.7+ecalc(j)*zxden(3,j)*4.9e-13
-      e1304(j)=aglw(4,1,j)+aglw(6,1,j)+aglw(7,1,j)+aglw(8,1,j)*0.1
-      e1027(j)=aglw(7,1,j)
-      e989(j)=aglw(8,1,j)
-      elbh(j)=aglw(4,3,j)
-  50  continue
-C
-      open(unit=lun,file=rofile,status='unknown')
+        e1356(j)=aglw(3,1,j)+aglw(5,1,j)*0.7+ecalc(j)*zxden(3,j) * 
+     &             4.9e-13
+        e1304(j)=aglw(4,1,j)+aglw(6,1,j)+aglw(7,1,j)+aglw(8,1,j)*0.1
+        e1027(j)=aglw(7,1,j)
+        e989(j)=aglw(8,1,j)
+        elbh(j)=aglw(4,3,j)
+      enddo
+      
+      PyUV(1,:) = e1356
+      PyUV(2,:) = e1304
+      PyUV(3,:) = e1027
+      PyUV(4,:) = e989
+      PyUV(5,:) = elbh
+
+      Return  ! Python doesn't need writing to disk
+
+      open(newunit=lun,file=rofile,status='unknown',action='write')
 C  
       write(lun,100)
  100  format('   JMAX ','   SZA  ','   UT   ','   IDATE',
@@ -88,13 +98,13 @@ C
      >       '    N        Ne       O+      1356  ',
      >       '   1304     1027      989     LBH')
 C
-      do 700,j=1,jmax
+      do j=1,jmax
         write(lun,600) z(j),ztn(j),zti(j),zte(j),
      >               zo(j),zo2(j),zn2(j),zhe(j),
      >               zns(j),ecalc(j),zxden(3,j),e1356(j),
      >               e1304(j),e1027(j),e989(j),elbh(j)
  600    format(0p,f6.1,3f6.0,1p,12e9.2)
- 700  continue
+      enddo
 C
       close(lun)
 
