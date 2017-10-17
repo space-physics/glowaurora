@@ -83,7 +83,7 @@ def test_snoem():
     return nozm
 
 def test_snoemint():
-    if DOMSIS:
+    if msise00 is not None:
         densd,tempd = rungtd1d(dtime,z,glat,glon,f107a,f107,[ap]*7)
     # (nighttime background ionization)
         print(tempd)
@@ -91,6 +91,9 @@ def test_snoemint():
                                    tempd.loc[:,'Tn'])
         assert_allclose(znoint[[28,143]], (1.262170e+08,  3.029169e+01),rtol=1e-5) #arbitrary
         return znoint
+    else:
+        logging.warning('skipped test_snoemint() due to missing external msise00')
+
 
 def test_fieldm():
     xdip,ydip,zdip,totfield,dipang,decl,smodip = glowfort.fieldm(glat,glon%360,z[50])
