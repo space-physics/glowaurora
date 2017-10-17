@@ -162,15 +162,16 @@ C
      &                                          stderr=>error_unit
 
       logical, intent(in) :: JF(12)
-      integer,intent(in) :: JMAG,MMDD
+      integer,intent(in) :: JMAG,MMDD,nz
       real,intent(in) :: alati,along,rz12
       real,intent(out) :: outf(11,nz),oarr(30)
 
-      dimension zkm(nz)
-      character*(*) drect
-      character*50 path
-      character*10 filename
-      INTEGER               DAYNR,DDO,DO2,SEASON,SEADAY
+      real, intent(in) :: zkm(nz)
+      character(*), intent(in) :: drect
+      character(256) :: path
+      character(128) :: filename
+      character(2) ::   fmonth
+      INTEGER ::    imonth, month,  DAYNR,DDO,DO2,SEASON,SEADAY, IU
       REAL               LATI,LONGI,MO2,MO,MODIP,NMF2,MAGBR
       REAL                NMF1,NME,NMD,MM,MLAT,MLONG,NOBO2
       DIMENSION  F(3),RIF(4),E(4),XDELS(4),DNDS(4)
@@ -191,13 +192,15 @@ C
      &         /BLOCK8/HS,TNHS,XSM,MM,DTI,MXSM
      &         /BLOTN/XSM1,TEXOS,TLBDH,SIGMA /BLOTE/AHH,ATE1,STTE,DTE
      &              /BLO10/BETA,ETA,DELTA,ZETA        /ARGEXP/ARGMAX
-      EXTERNAL               XE1,XE2,XE3,XE4,XE5,XE6,TEDER
+     
+      EXTERNAL :: XE1,XE2,XE3,XE4,XE5,XE6,TEDER
+      
       DATA  HOA  /300.,400.,600./,   XNAR       /3*0.0/,
      &      XDELS   /3*5.,10./,      DNDS   /.016,.01,2*.016/,
      &      DDO         /9,5,5,25/,        DO2        /5,5/,
      &      B0B1  /.755566,.778596,.797332,.812928,.826146/
       data icalls/0/
-C
+
       SAVE DAYNR,DO2,SEASON,SEADAY,LATI,LONGI,MO2,
      &     MODIP,MAGBR,NMF1,MLAT,MLONG,NOBO2,
      &     F,RIF,FF0,XM0,F2,FM3,AMP,HXL,SCL,
@@ -237,12 +240,10 @@ C
         DTI(2)=10.
         DTI(3)=20.
         DTI(4)=20.
-C
+
 C FIRST SPECIFY YOUR COMPUTERS CHANNEL NUMBERS ....................
 C AGNR=OUTPUT (OUTPUT IS DISPLAYED OR STORED IN FILE OUTPUT.IRI)...
-C IUCCIR=UNIT NUMBER FOR CCIR COEFFICIENTS ........................
-C
-      IUCCIR=10
+
       KONSOL=stdout
       IF (JF(12)) KONSOL=12
 
@@ -409,33 +410,36 @@ C!!!!!!! F-REGION PARAMETERS AND E-PEAK !!!!!!!!!!!!!!!!!!!!!!!!!!
       IF(MONTH.EQ.MONTHO) GOTO 4291
 C
 C READ CCIR COEFFICIENT SET FOR CHOSEN MONTH....................
-C
-7797    WRITE(filename,104) MONTH+10
-104     FORMAT('ccir',I2,'.asc')
-        call dfp(drect,filename,path)
-        OPEN(IUCCIR,FILE=path,STATUS='OLD',ERR=8448)
-        READ(IUCCIR,4689) F2,FM3
-4689    FORMAT(4E15.8)
-        CLOSE(IUCCIR)
+7797  imonth = month +10
+      write(fmonth,'(I2)') imonth
+      print *,trim(fmonth)
+      print *,drect,month,imonth,' ',fmonth  !'(I2,I2,A1,A2,A1,A25)'
+      path = trim(drect)//'ccir'//fmonth//'.asc'
+      print *,trim(path)
+      !call dfp(drect,filename,path)
+      OPEN(newunit=iu,FILE=trim(path),
+     &      STATUS='OLD',action='read',ERR=8448)
+      READ(IU,4689) F2,FM3
+4689  FORMAT(4E15.8)
+      CLOSE(IU)
 C
 C READ URSI COEFFICIENT SET FOR CHOSEN MONTH....................
 C
-       if (URSIF2) then
-         WRITE(filename,1144) MONTH+10
-1144      FORMAT('ursi',I2,'.asc')
-          call dfp(drect,filename,path)
-          OPEN(IUCCIR,FILE=path,STATUS='OLD',ERR=8448)
-          READ(IUCCIR,4689) F2
-          CLOSE(IUCCIR)
-       endif
+      if (URSIF2) then
+        path = trim(drect)//'ursi'//fmonth//'.asc'
+        !call dfp(drect,filename,path)
+        OPEN(newunit=IU,FILE=trim(path),
+     &         STATUS='OLD',action='read',ERR=8448)
+        READ(IU,4689) F2
+        CLOSE(IU)
+      endif
         URSIFO=URSIF2
         MONTHO=MONTH
        GOTO 4291
 
-8448       write(stderr,8449) path
-8449       format(' IRI90: File ',A50,'not found')
-       stop -1
-C
+8448  write(stderr,*) ' IRI90: File ',trim(path),' not found'
+      error stop
+
 C LINEAR INTERPOLATION IN SOLAR ACTIVITY
 C
 4291    RR2=RG/100.
@@ -1021,20 +1025,23 @@ C
 C Subroutine DFP, Stan Solomon, 3/92, splices filename to drectory
 C
       Subroutine dfp(drect,filename,path)
-      character*(*) drect,filename,path
-      character*50 blanks
+      character(*), intent(in) :: drect,filename
+      character(*), intent(out) :: path
+      character(50) blanks
       data blanks/'                                                  '/
       path=blanks
       nch=len(drect)
-      do 10 i=1,nch
-      if (drect(i:i).ne.' ') goto 20
-   10 continue
-   20 lb=i
-      do 30 i=nch,1,-1
-      if (drect(i:i).ne.' ') goto 40
-   30 continue
-   40 le=i
-      if (lb.ge.nch .or. le.le.0) then
+      do  i=1,nch
+        if (drect(i:i).ne.' ') exit
+      enddo
+      
+      lb=i
+      do i=nch,1,-1
+        if (drect(i:i).ne.' ') exit
+      enddo
+      
+      le=i
+      if (lb>=nch .or. le<=0) then
         path(1:10)=filename(1:10)
       else
         nd=le-lb+1
@@ -1615,7 +1622,6 @@ C ABOVE THE F2-MAXIMUM (DUMBS,SPENNER:AEROS-COMPILATION)
       DO 10 I=1,32
       K=K+1
 10    PG2O(K)=FELD(I)
-      RETURN
       END
 C
 C
@@ -1642,7 +1648,6 @@ C CHOSEN AS TO APPROACH DANILOV-SEMENOV'S COMPILATION.
       DO 10 I=1,80
       K=K+1
 10    PG3O(K)=FELD(I)
-      RETURN
       END
 C
 C
@@ -1705,8 +1710,8 @@ C D.BILITZA,1980.
       F3=0.096*(R-25.0)/150.0
       DELM=F1*(1.0-R/150.0*EXP(-XMAGBR*XMAGBR/1600.0))/(X-F2)+F3
       HMF2ED=1490.0/(XM3+DELM)-176.0
-      RETURN
-      END
+
+      END FUNCTION HMF2ED
 C
 C
       REAL FUNCTION FOF1ED(YLATI,R,CHI)
@@ -1915,7 +1920,7 @@ C LATITUDE:-90 TO 90. LONGITUDE:0 TO 360 EAST.
       IF(SLM.LT..0) MLONG=ZPI-MLONG
       MLAT=MLAT/FAKTOR
       MLONG=MLONG/FAKTOR
-      RETURN
+
       END
 C
 C
@@ -2080,11 +2085,10 @@ C THEN SCHALT=.TRUE.
        X2=X
        F2=FX
       ENDIF
-      IF(ABS(X2-X1).LE.EP) GOTO 800
+      IF(ABS(X2-X1).LE.EP) return
       IF(K) GOTO 300
       IF((LINKS.AND.(.NOT.L1)).OR.(.NOT.LINKS.AND.L1)) NG=2*NG
       GOTO 200
-800   RETURN
       END
 C
 C
@@ -2117,7 +2121,7 @@ C Y(X)=EXP(SPT(1)*X**2+...+SPT(4)*X**5).
       B=4.*SPT(3)/(5.*SPT(4))+SHABR
       C=-2.*SPT(1)/(5*SPT(4)*SHABR)
       Z2=B*B/4.-C
-      IF(Z2.LT.0.0) GOTO 300
+      IF(Z2.LT.0.0) return
       Z3=SQRT(Z2)
       Z1=B/2.
       Z2=-Z1+Z3
@@ -2128,7 +2132,6 @@ C Y(X)=EXP(SPT(1)*X**2+...+SPT(4)*X**5).
       RETURN
 400   Z2=-Z1-Z3
       IF(Z2.GT.0.0.AND.Z2.LT.SHBR) AUS6=.TRUE.
-300   RETURN
       END
 C
 C
@@ -2218,11 +2221,9 @@ c
        sunset = 12. + phi - et
        if(sunrse.lt.0.) sunrse = sunrse + 24.
        if(sunset.ge.24.) sunset = sunset - 24.
-c
-       return
+
        end
-c
-C
+
       FUNCTION HPOL(HOUR,TW,XNW,SA,SU,DSA,DSU)
 C-------------------------------------------------------
 C PROCEDURE FOR SMOOTH TIME-INTERPOLATION USING EPSTEIN
@@ -2242,35 +2243,40 @@ C BILITZA----------------------------------------- 1979.
        ENDIF
       HPOL=XNW+(TW-XNW)*EPST(HOUR,DSA,SA)+
      &       (XNW-TW)*EPST(HOUR,DSU,SU)
-      RETURN
-      END
+
+      END FUNCTION HPOL
 C
 C
-       SUBROUTINE MODA(IN,MONTH,IDAY,IDOY)
+      SUBROUTINE MODA(IN,MONTH,IDAY,IDOY)
 C-------------------------------------------------------------------
 C CALCULATES DAY OF YEAR (IDOY) FROM MONTH (MONTH) AND DAY (IDAY)
 C IF IN=0, OR MONTH (MONTH) AND DAY (IDAY) FROM DAY OF
 C YEAR (IDOY), IF IN=1.
 C-------------------------------------------------------------------
-       DIMENSION       MO(12)
-       DATA              MO/0,31,59,90,120,151,181,212,243,273,304,334/
+      integer, intent(in) :: in
+      integer, intent(inout) :: month,iday
+      integer, intent(out) :: idoy
+ 
+      integer, parameter :: MO(*)=[0,31,59,90,120,151,181,212,243,
+     &                             273,304,334]
        IMO=0
        MOBE=0
-       IF(IN.GT.0) GOTO 5
-              IDOY=MO(MONTH)+IDAY
-              RETURN
-5       IMO=IMO+1
-              MOOLD=MOBE
-              IF(IMO.GT.12) GOTO 55
-              MOBE=MO(IMO)
-              IF(MOBE.LT.IDOY) GOTO 5
-55              MONTH=IMO-1
-              IDAY=IDOY-MOOLD
-       RETURN
-       END
-c
-C
-       REAL FUNCTION B0POL ( HOUR, SAX, SUX, ISEASON, R, DELA)
+       IF(IN>0) GOTO 5
+       
+      IDOY=MO(MONTH)+IDAY
+      RETURN
+5     IMO=IMO+1
+      MOOLD=MOBE
+      IF(IMO.GT.12) GOTO 55
+      MOBE=MO(IMO)
+      IF(MOBE.LT.IDOY) GOTO 5
+55    MONTH=IMO-1
+      IDAY=IDOY-MOOLD
+
+      END SUBROUTINE MODA
+
+
+      REAL FUNCTION B0POL ( HOUR, SAX, SUX, ISEASON, R, DELA)
 C-----------------------------------------------------------------
 C Interpolation procedure for bottomside thickness parameter B0.
 C Array B0F(ILT,ISEASON,IR,ILATI) distinguishes between day and
