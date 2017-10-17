@@ -93,13 +93,17 @@ Appendix (Not necessary for the typical user)
 
 Download the GLOW v0.973 source code from Stan Solomon
 ------------------------------------------------------
-Stan's team has released GLOW v0.98 using modern Fortran, but here's the original.::
+Stan's team has released GLOW v0.98 using modern Fortran, but here's the original.
 
-    wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
+.. code::
+
+  wget -r -np -nc -nH --cut-dirs=4 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/glow/v0.973/
 
 Download Stan's copy of IRI files
 ---------------------------------
-Stan tweaked IRI90 slightly, here's the copy he uses.::
+Stan tweaked IRI90 slightly, here's the copy he uses.
+
+.. code::
 
   wget -r -np -nc -nH --cut-dirs=3 --random-wait --wait 1 -R "index.html*" http://download.hao.ucar.edu/pub/stans/iri/
 
@@ -129,9 +133,7 @@ High energy example::
 Notes
 =====
 
-Windows
--------
-Strongly suggest using Linux Subsystem for Windows, if you aren't using it yet you should be for your development work.
+[Windows Gfortran, Cmake, make install](https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/)
 
 
 Licensing
