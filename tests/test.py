@@ -19,7 +19,6 @@ from sciencedates import datetime2yd,datetime2gtd
 try:
     from msise00 import rungtd1d
 except Exception as e:
-    logging.warning('external MSISE00 install not found, skipping MSISE00 verification')
     msise00=None
 #
 import glowfort
