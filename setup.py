@@ -55,6 +55,7 @@ setup(name='glowaurora',
       data_files=[('glowaurora',fortdata),
                   ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
+      install_requires=req+pipreq,
       )
 
 
