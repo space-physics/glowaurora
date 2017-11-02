@@ -24,7 +24,7 @@ fortranfiles=['egrid.f','maxt.f','glow.f','rout.f',
               'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
               'geomag.f','qback.f','fieldm.f',
               'nrlmsise00.f','iri90.f',
-              'aurora_sub.f']
+              'aurora_sub.f','dayglow_sub.f']
 
 root='fortran'
 
