@@ -1,14 +1,7 @@
 #!/usr/bin/env python
-req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython','pathlib2']
-pipreq=['pymap3d','sciencedates','gridaurora','future-fstrings']
-# %%
-import pip
-try:
-    import conda.cli
-    conda.cli.main('install',*req)
-except Exception:
-    pip.main(['install'] + req)
-pip.main(['install'] + pipreq)
+req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',
+       'pymap3d','sciencedates','gridaurora',
+       'future-fstrings']
 # %%
 import setuptools #needed to enable develop
 from numpy.distutils.core import setup,Extension
@@ -56,6 +49,8 @@ setup(name='glowaurora',
       data_files=[('glowaurora',fortdata),
                   ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
+      install_requires=req,
+      python_requires='>=3.6',
       )
 
 
