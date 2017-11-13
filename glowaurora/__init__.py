@@ -4,12 +4,7 @@
 Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
-try:
-    from pathlib import Path
-    Path().expanduser()
-except (ImportError,AttributeError):
-    from pathlib2 import Path
-#
+from pathlib import Path
 import logging
 from datetime import datetime
 from xarray import DataArray
