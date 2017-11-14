@@ -1,9 +1,16 @@
 .. image:: https://zenodo.org/badge/34395725.svg
    :target: https://zenodo.org/badge/latestdoi/34395725
+   
 .. image:: https://travis-ci.org/scivision/glowaurora.svg
     :target: https://travis-ci.org/scivision/glowaurora
+    
 .. image:: https://coveralls.io/repos/github/scivision/glowaurora/badge.svg?branch=master
     :target: https://coveralls.io/github/scivision/glowaurora?branch=master
+    
+.. image:: https://api.codeclimate.com/v1/badges/0345889286d7ae6a8307/maintainability
+   :target: https://codeclimate.com/github/scivision/glowaurora/maintainability
+   :alt: Maintainability
+
 
 :NOTE: New Modern Fortran GLOW is being built-up at https://github.com/scivision/GLOW with Python, Matlab, or MPI.
 
@@ -28,6 +35,10 @@ glow-aurora
 
 Prereq
 ======
+If you don't already have Numpy::
+
+    pip install numpy
+    
 
 Linux / BSD / Windows::
 
@@ -37,7 +48,7 @@ Mac::
     
     brew install gcc
 
-Installation
+Install
 ============
 ::
 

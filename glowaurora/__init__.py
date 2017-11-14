@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: future_fstrings -*-
 """
 Example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
@@ -9,7 +8,6 @@ import logging
 from datetime import datetime
 from xarray import DataArray
 import numpy as np
-from pandas import read_hdf
 from os import chdir
 #
 from sciencedates import datetime2yd, find_nearest
@@ -278,7 +276,8 @@ def ekpcolor(eigen):
             eEnd = np.loadtxt(eigen, usecols=[1], delimiter=',')[-1]
             diffnumflux = None
         elif eigen.suffix == '.h5':
-            bins = read_hdf(eigen)
+            import pandas
+            bins = pandas.read_hdf(eigen)
             e0 = bins['low'].values
             eEnd = bins['high'].iloc[-1]
             diffnumflux = bins['flux'].values

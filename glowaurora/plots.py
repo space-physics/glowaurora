@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 from pathlib import Path
 from numpy.ma import masked_invalid
 from matplotlib.pyplot import figure, subplots,tight_layout,draw

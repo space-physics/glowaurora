@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: future_fstrings -*-
 """
 Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch

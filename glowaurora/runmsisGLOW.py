@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 from pathlib import Path
 import logging
 from numpy import repeat,empty

@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-req = ['nose','python-dateutil','numpy','pandas','xarray','matplotlib','seaborn','astropy','h5py','cython',
-       'pymap3d','sciencedates','gridaurora',
-       'future-fstrings']
+req = ['nose','python-dateutil','numpy','xarray',
+       'sciencedates','gridaurora']
 # %%
-import setuptools #needed to enable develop
 from numpy.distutils.core import setup,Extension
 from glob import glob
 from os.path import join
@@ -51,6 +49,8 @@ setup(name='glowaurora',
                   ], #must have data_files to copy *.dat to site-packages
       install_requires=req,
       python_requires='>=3.6',
+      extras_require={'plot':['matplotlib','seaborn'],
+                        'io':['h5py','astropy','pandas']},
       )
 
 
