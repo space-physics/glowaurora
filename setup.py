@@ -2,6 +2,7 @@
 req = ['nose','python-dateutil','numpy','xarray',
        'sciencedates','gridaurora']
 # %%
+from setuptools import find_packages
 from numpy.distutils.core import setup,Extension
 from glob import glob
 from os.path import join
@@ -35,7 +36,7 @@ ext=[Extension(name='glowfort',
 
 # %% 
 setup(name='glowaurora',
-      packages=['glowaurora'],
+      packages=find_packages(),
       version='1.1.0',
       author='Michael Hirsch, Ph.D.',
       description='Model of auroral and airglow emissions',
