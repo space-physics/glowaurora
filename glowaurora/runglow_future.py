@@ -3,7 +3,7 @@
 Trivial example of aurora using Stan Solomon's GLOW Auroral model
 code wrapping in Python by Michael Hirsch
 """
-from matplotlib.pyplot import figure, subplots,tight_layout
+from matplotlib.pyplot import figure
 from pandas import DataFrame
 from numpy import hstack,arange,append,array,rollaxis
 from os import chdir
@@ -122,9 +122,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
     ax.set_ylim(bottom=1e-4)
     ax.tick_params(axis='both',which='major',labelsize='medium')
 #%% results of impacts
-    fg,axs = subplots(1,4,sharey=True, figsize=(15,8))
+    fg = figure()
+    axs = fg.subplots(1,4,sharey=True, figsize=(15,8))
     fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='x-large')
-    tight_layout(pad=3.2, w_pad=0.3)
+    fg.tight_layout(pad=3.2, w_pad=0.3)
 
     ax = axs[0]
     ax.plot(ver.values,ver.index)
@@ -164,9 +165,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,dtime,glat,glon):
         a.tick_params(axis='both',which='major',labelsize='medium')
 
 #%% total energy deposition vs. altitude
-    fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
+    fg = figure()
+    axs = fg.subplots(1,2,sharey=True, figsize=(15,8))
     fg.suptitle('{} ({},{})'.format(dtime,glat,glon),fontsize='x-large')
-    tight_layout(pad=3.2, w_pad=0.3)
+    fg.tight_layout(pad=3.2, w_pad=0.3)
 
     ax = axs[0]
     tez = glowfort.cglow.tez

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-req = ['nose','python-dateutil','numpy','xarray',
+install_requires = ['nose','python-dateutil','numpy','xarray',
        'sciencedates','gridaurora']
+tests_require=['pytest','nose','coveralls']
 # %%
 from setuptools import find_packages
 from numpy.distutils.core import setup,Extension
@@ -48,10 +49,12 @@ setup(name='glowaurora',
       data_files=[('glowaurora',fortdata),
                   ('glowaurora/iri',iridata)
                   ], #must have data_files to copy *.dat to site-packages
-      install_requires=req,
+      install_requires=install_requires,
       python_requires='>=3.6',
+      tests_require=tests_require,
       extras_require={'plot':['matplotlib','seaborn'],
-                        'io':['h5py','astropy','pandas']},
+                        'io':['h5py','astropy','pandas'],
+                      'tests':tests_require},
       )
 
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 from numpy.ma import masked_invalid
-from matplotlib.pyplot import figure, subplots,tight_layout,draw
+from matplotlib.pyplot import figure, draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
 from matplotlib.colors import LogNorm
 
@@ -29,7 +29,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
-        fg,axs = subplots(1,2,sharey=True,figsize=(15,8))
+        fg = figure()
+        axs = fg.subplots(1,2,sharey=True,figsize=(15,8))
         fg.suptitle(f'{t} ({glat},{glon}) ' + titlend)
 
         ind = ['nO','nO2','nN2','nNO']
@@ -60,9 +61,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         plotprodloss(prate.loc['final',...],
                      lrate.loc['final',...],t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
-    fg,axs = subplots(1,3,sharey=False, figsize=(15,8))
+    fg = figure()
+    axs = fg.subplots(1,3,sharey=False, figsize=(15,8))
     fg.suptitle(f'{t} ({glat},{glon}) ' + titlend)
-    tight_layout(pad=3.2, w_pad=0.6)
+    fg.tight_layout(pad=3.2, w_pad=0.6)
 
 #%% incident flux at top of ionosphere
     ax = axs[0]
@@ -123,9 +125,10 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
     if not 'eig' in makeplot:
         plotenerdep(tez,t,glat,glon,zlim,titlend)
 #%% e^- impact ionization rates from ETRANS
-        fg,axs = subplots(1,2,sharey=True, figsize=(15,8))
+        fg = figure()
+        axs = fg.subplots(1,2,sharey=True, figsize=(15,8))
         fg.suptitle(f'{t} ({glat},{glon})  '+ titlend)
-        tight_layout(pad=3.2, w_pad=0.3)
+        fg.tight_layout(pad=3.2, w_pad=0.3)
 
         ind=['photoIoniz','eImpactIoniz']
         ax = axs[0]
@@ -153,7 +156,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
     if not 'eig' in makeplot:
-        fg,axs = subplots(3,4,sharey=True,figsize=(15,8))
+        fg = figure()
+        axs = fg.subplots(3,4,sharey=True,figsize=(15,8))
         for ax,zc,i in zip(axs.ravel(),
                            zceta.transpose('wavelength_nm','type','z_km'),
                            zceta.wavelength_nm):
@@ -185,7 +189,8 @@ def plotenerdep(tez,t,glat,glon,zlim,titlend=''):
     ax.set_ylabel('altitude [km]')
 
 def plotprodloss(prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
-    fg,ax = subplots(1,2,sharey=True,figsize=(15,8))
+    fg = figure()
+    ax = fg.subplots(1,2,sharey=True,figsize=(15,8))
     fg.suptitle(titlbeg + f' Volume Production/Loss Rates   {t} ({glat},{glon}) ' + titlend)
 
     ax[0].set_title('Volume Production Rates')
@@ -219,4 +224,4 @@ def writeplots(fg,plotprefix,E0,method,odir):
     if 'png' in method:
         cn = odir / (plotprefix + f'beam{E0:.0f}.png')
         print('write',cn)
-        fg.savefig(str(cn),bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async
+        fg.savefig(cn,bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async
