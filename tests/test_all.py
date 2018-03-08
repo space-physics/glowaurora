@@ -5,8 +5,7 @@ Michael Hirsch
 
 f2py -m glowfort -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f iri90.f aurora_sub.f --quiet
 
-nosetests -v test.py
-
+pytest -v
 """
 import logging
 from datetime import datetime
@@ -14,7 +13,8 @@ from itertools import chain
 from numpy import array,zeros,float32,log,isclose,nan
 from numpy.testing import assert_allclose,run_module_suite
 #
-from glowaurora import makeeigen
+import glowaurora
+#
 from sciencedates import datetime2yd,datetime2gtd
 try:
     import msise00
@@ -152,5 +152,4 @@ def test_glow():
 #    ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
 
 if __name__ == '__main__':
-    #test_snoemint()
     run_module_suite()

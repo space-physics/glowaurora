@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-install_requires = ['nose','python-dateutil','numpy','xarray',
-       'sciencedates','gridaurora']
+install_requires = ['python-dateutil','numpy','xarray',
+                   'sciencedates']
 tests_require=['pytest','nose','coveralls']
 # %%
 from setuptools import find_packages
@@ -35,12 +35,13 @@ ext=[Extension(name='glowfort',
                #library_dirs=[root])]
 
 
-# %% 
+# %%
 setup(name='glowaurora',
       packages=find_packages(),
-      version='1.1.0',
+      version='1.1.1',
       author='Michael Hirsch, Ph.D.',
       description='Model of auroral and airglow emissions',
+      long_description=open('README.rst').read(),
       url='https://github.com/scivision/glowaurora',
 #      package_dir={'glowaurora': 'glowaurora'}, #not working
  #     package_data={'glowaurora': ['fortran/*.dat']}, #not working, use data_files
@@ -52,9 +53,19 @@ setup(name='glowaurora',
       install_requires=install_requires,
       python_requires='>=3.6',
       tests_require=tests_require,
-      extras_require={'plot':['matplotlib','seaborn'],
-                        'io':['h5py','astropy','pandas'],
+      extras_require={'plot':['matplotlib>=2.2','seaborn'],
+                        'io':['h5py','astropy','pandas',
+                              'gridaurora'],
                       'tests':tests_require},
+        classifiers=[
+      'Development Status :: 4 - Beta',
+      'Environment :: Console',
+      'Intended Audience :: Science/Research',
+      'Operating System :: OS Independent',
+      'Programming Language :: Python :: 3',
+      'Programming Language :: Python',
+      'Topic :: Scientific/Engineering :: Atmospheric Science',
+      ],
       )
 
 

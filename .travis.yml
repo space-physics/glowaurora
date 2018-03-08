@@ -18,14 +18,14 @@ addons:
       - gfortran
 
 before_install:
-    # temporary for pip < 9.1
-    - pip -q install numpy
+  # temporary for pip < 9.1
+  - pip -q install numpy
 
 install: pip -q install -e .[tests]
 
-script: 
-  - pytest
-  - coverage run tests/test_all.py -v
+script: pytest -v
 
-after_success: coveralls
+after_success: 
+  - coverage run tests/test_all.py -v
+  - coveralls
 
