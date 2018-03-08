@@ -19,7 +19,7 @@ except ImportError:
 # Fortran GLOW
 import glowfort
 # path monkey patching
-glowpath=Path(__file__).parents[0]
+glowpath=Path(__file__).parents[1]
 oldcwd = Path.cwd()
 
 GRIDERR = 'gridaurora is required for this program.  pip install gridaurora.'

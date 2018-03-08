@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 from numpy.ma import masked_invalid
 from matplotlib.pyplot import figure, draw
 from matplotlib.ticker import MultipleLocator #LogFormatterMathtext,
@@ -8,7 +9,8 @@ dymaj=50
 dymin=10
 dpi = 100
 
-def _nicez(ax,zlim):
+def _nicez(ax, zlim:tuple=None):
+    """ make ordinate axis look nice for altitude """
     ax.autoscale(True,axis='both',tight=True)
     ax.set_ylim(zlim)
     ax.yaxis.set_major_locator(MultipleLocator(dymaj))
@@ -17,8 +19,12 @@ def _nicez(ax,zlim):
     ax.grid(True,which='minor',linewidth=0.5)
     ax.tick_params(axis='both',which='major',labelsize='medium')
 
-def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
-               E0=None,flux=None,sza=None,zlim=(None,None),makeplot=None,odir=''):
+
+def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat:float, glon:float,
+               prate, lrate, tez, E0:float,
+               flux:float=None, sza:float=None, zlim:tuple=None,
+               makeplot:list=None, odir:Path=None):
+    """ Plot all sorts of auroral/dayglow parameters from GLOW simulation. """
     if makeplot is None:
         return
 
@@ -29,8 +35,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
 
 #%% neutral background (MSIS) and Te,Ti (IRI-90)
     if not 'eig' in makeplot:
-        fg = figure()
-        axs = fg.subplots(1,2,sharey=True,figsize=(15,8))
+        fg = figure(figsize=(15,8))
+        axs = fg.subplots(1,2,sharey=True,)
         fg.suptitle(f'{t} ({glat},{glon}) ' + titlend)
 
         ind = ['nO','nO2','nN2','nNO']
@@ -55,14 +61,14 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ax.set_xlim(100,10000)
         ax.set_title('Background Temperature')
 
-        writeplots(fg,'bg_',E0,makeplot,odir)
+        writeplots(fg,odir,'bg_',E0,makeplot)
 #%% production and loss rates for species
     if 'eig' in makeplot:
         plotprodloss(prate.loc['final',...],
                      lrate.loc['final',...],t,glat,glon,zlim,'',titlend)
 #%% volume emission rate
-    fg = figure()
-    axs = fg.subplots(1,3,sharey=False, figsize=(15,8))
+    fg = figure(figsize=(15,8))
+    axs = fg.subplots(1,3,sharey=False)
     fg.suptitle(f'{t} ({glat},{glon}) ' + titlend)
     fg.tight_layout(pad=3.2, w_pad=0.6)
 
@@ -81,7 +87,7 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
     ax.set_yscale('log')
     ax.set_ylim(1e-4,1e6)
     ax.grid(True)
-# ver visible
+# %% ver visible
     ind= [4278, 5200, 5577, 6300]
     ax = axs[1]
     ax.plot(ver.loc[...,ind].values.squeeze(), ver.z_km)
@@ -105,8 +111,8 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
     ax.legend(ind,loc='best')
     ax.set_title('Volume Emission Rate: IR & UV')
 
-    writeplots(fg,'ver_',E0,makeplot,odir)
-#%% Ne, Ni
+    writeplots(fg,odir,'ver_',E0,makeplot)
+# %% Ne, Ni
     if not 'eig' in makeplot:
         ind=['ne','nO+(2P)','nO+(2D)','nO+(4S)','nN+','nN2+','nO2+','nNO+']
         fg=figure()
@@ -120,13 +126,13 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ax.set_title('Electron and Ion Densities')
         ax.set_ylabel('Altitude [km]')
 
-        writeplots(fg,'effects_',E0,makeplot,odir)
-#%% total energy deposition vs. altitude
+        writeplots(fg,odir,'effects_',E0,makeplot)
+# %% total energy deposition vs. altitude
     if not 'eig' in makeplot:
         plotenerdep(tez,t,glat,glon,zlim,titlend)
-#%% e^- impact ionization rates from ETRANS
-        fg = figure()
-        axs = fg.subplots(1,2,sharey=True, figsize=(15,8))
+#% % e^- impact ionization rates from ETRANS
+        fg = figure(figsize=(15,8))
+        axs = fg.subplots(1,2,sharey=True,)
         fg.suptitle(f'{t} ({glat},{glon})  '+ titlend)
         fg.tight_layout(pad=3.2, w_pad=0.3)
 
@@ -152,12 +158,12 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
         ax.set_title('electron impact ioniz. rates')
         ax.legend(ind)
 
-        writeplots(fg,'ioniz_',E0,makeplot,odir)
+        writeplots(fg,odir,'ioniz_',E0,makeplot)
 #%% constituants of per-wavelength VER
 #    zcsum = zceta.sum(axis=-1)
     if not 'eig' in makeplot:
-        fg = figure()
-        axs = fg.subplots(3,4,sharey=True,figsize=(15,8))
+        fg = figure(figsize=(15,8))
+        axs = fg.subplots(3,4,sharey=True)
         for ax,zc,i in zip(axs.ravel(),
                            zceta.transpose('wavelength_nm','type','z_km'),
                            zceta.wavelength_nm):
@@ -168,9 +174,11 @@ def plotaurora(phitop,ver,zceta,photIon,isr,sion,t,glat,glon,prate,lrate,tez,
             ax.set_title(f'{i.values} angstrom')
             #ax.legend(True)
 
-        writeplots(fg,'constit_',E0,makeplot,odir)
+        writeplots(fg,odir,'constit_',E0,makeplot)
+
 
 def plotenerdep(tez,t,glat,glon,zlim,titlend=''):
+    """ plot energy deposition vs. altitude """
     fg= figure()
     ax = fg.gca()
     if tez.ndim==1:
@@ -188,9 +196,11 @@ def plotenerdep(tez,t,glat,glon,zlim,titlend=''):
     ax.set_title('Total Energy Depostiion')
     ax.set_ylabel('altitude [km]')
 
+
 def plotprodloss(prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
-    fg = figure()
-    ax = fg.subplots(1,2,sharey=True,figsize=(15,8))
+    """ plot production/loss vs. alttiude """
+    fg = figure(figsize=(15,8))
+    ax = fg.subplots(1,2,sharey=True)
     fg.suptitle(titlbeg + f' Volume Production/Loss Rates   {t} ({glat},{glon}) ' + titlend)
 
     ax[0].set_title('Volume Production Rates')
@@ -213,15 +223,33 @@ def plotprodloss(prod,loss,t,glat,glon,zlim,titlbeg='',titlend=''):
         except TypeError as e:
             logging.warning(f'prodloss plot error    {e}')
 
-#%% NOTE: candidate for loading from gridaurora.plots instead
-def writeplots(fg,plotprefix,E0,method,odir):
-    odir = Path(odir)
+# %%
+def writeplots(fg:figure, odir:Path, plotprefix:str, E0:float, method:str='png'):
+    """ Save Matplotlib plots to disk.
+
+    inputs:
+    ------
+
+    fg: Matplotlib figure handle
+    odir: directory to write image into e.g. for this particular simulation.
+    plotprefix: stem of filename
+    E0: beam energy (eV)
+    method: format of image
+
+    Some observations on image formats:
+
+      * TIF was not faster and was 100 times the file size!
+      * PGF is slow and big file,
+      * RAW crashes
+      * JPG no faster than PNG
+    """
+    if not odir:
+        return
+
+    odir = Path(odir).expanduser()
     draw() #Must have this here or plot doesn't update in animation multiplot mode!
-    #TIF was not faster and was 100 times the file size!
-    #PGF is slow and big file,
-    #RAW crashes
-    #JPG no faster than PNG
+
     if 'png' in method:
-        cn = odir / (plotprefix + f'beam{E0:.0f}.png')
+        cn = odir / (plotprefix + f'beam{E0:.0f}.{method}')
         print('write',cn)
-        fg.savefig(cn,bbox_inches='tight',format='png',dpi=dpi)  # this is slow and async
+        fg.savefig(cn, bbox_inches='tight', dpi=dpi)  # this is slow and async

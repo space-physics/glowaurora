@@ -5,20 +5,20 @@ default parameter values like those of Stan's fortran examples--yield rather sim
 Note, this simulation uses a specific input differential number flux spectrum
 """
 from matplotlib.pyplot import show
-import seaborn
+#import seaborn
 #
-from glowaurora import runglowaurora
+import glowaurora as glow
 from glowaurora.plots import plotaurora
 
 def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
 
     (glat,glon) = glatlon
 
-    ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = runglowaurora(flux,e0,
+    ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = glow.runglowaurora(flux,e0,
                                                                  t0,glat,glon,
                                                                  f107a,f107,f107p,ap)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,sion,t0,glat,glon,prate,lrate,tez,makeplot=makeplot)
+    plotaurora(phitop,ver,zceta,photIon,isr,sion,t0,glat,glon,prate,lrate,tez,e0,makeplot=makeplot)
 
     return ver,photIon,isr,phitop,zceta,sza
 
