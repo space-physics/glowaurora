@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 install_requires = ['python-dateutil','numpy','xarray',
-                   'sciencedates']
+                   'sciencedates','gridaurora']
 tests_require=['pytest','nose','coveralls']
 # %%
 from setuptools import find_packages
@@ -38,7 +38,7 @@ ext=[Extension(name='glowfort',
 # %%
 setup(name='glowaurora',
       packages=find_packages(),
-      version='1.1.1',
+      version='1.2.0',
       author='Michael Hirsch, Ph.D.',
       description='Model of auroral and airglow emissions',
       long_description=open('README.rst').read(),
@@ -54,8 +54,7 @@ setup(name='glowaurora',
       python_requires='>=3.6',
       tests_require=tests_require,
       extras_require={'plot':['matplotlib>=2.2','seaborn'],
-                        'io':['h5py','astropy','pandas',
-                              'gridaurora'],
+                        'io':['h5py','astropy','pandas',],
                       'tests':tests_require},
         classifiers=[
       'Development Status :: 4 - Beta',
