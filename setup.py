@@ -10,8 +10,6 @@ from os.path import join
 
 # f2py -m aurora -c egrid.f maxt.f glow.f vquart.f gchem.f ephoto.f solzen.f rcolum.f etrans.f exsect.f ssflux.f snoem.f snoemint.f geomag.f nrlmsise00.f qback.f fieldm.f aurora_sub.f
 
-# FUTURE: iri90.f not included in f2py b/c we use the pyiri90 package
-# FUTURE: nrlmsise00.f not included .... msise00 package
 fortranfiles=['egrid.f','maxt.f','glow.f','rout.f',
               'vquart.f','gchem.f','ephoto.f','solzen.f','rcolum.f',
               'etrans.f','exsect.f','ssflux.f','snoem.f','snoemint.f',
@@ -23,7 +21,7 @@ root='fortran'
 
 fortranpaths = [join(root,f) for f in fortranfiles]
 fortdata = glob(join(root,'*.dat'))
-iridata = glob(join('iri','*.asc')) #in pyiri90
+iridata = glob(join('iri','*.asc'))
 #%% prelim
 ext=[Extension(name='glowfort',
                sources=fortranpaths,
@@ -66,5 +64,4 @@ setup(name='glowaurora',
       'Topic :: Scientific/Engineering :: Atmospheric Science',
       ],
       )
-
 
