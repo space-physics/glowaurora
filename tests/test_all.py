@@ -149,7 +149,7 @@ def test_glow():
 
 #def test_eigen():
 #    ener,dE = glowfort.egrid()
-#    ver,photIon,isr,phitop,zceta,sza,prates,lrates,tezs,sion=makeeigen(ener,ones_like(ener),dtime,(glat,glon))
+#    sim = makeeigen(ener,ones_like(ener),dtime,(glat,glon))
 
 if __name__ == '__main__':
     run_module_suite()

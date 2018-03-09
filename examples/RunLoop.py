@@ -26,21 +26,22 @@ Michael Hirsch
 Sept 2015
 """
 from collections import namedtuple
-from datetime import datetime
-from pytz import UTC
 from dateutil import rrule
 from dateutil.parser import parse
 from matplotlib.pyplot import show
 #
-from glowaurora.runglow import plotprodloss,plotaurora
-from glowaurora.eigenprof import verprodloss,makeeigen,ekpcolor
-from histfeas.plotsnew import ploteigver
+from glowaurora.plots import plotprodloss,plotaurora
+from glowaurora import verprodloss,makeeigen,ekpcolor
+try:
+    from histfeas.plotsnew import ploteigver
+except ImportError:
+    ploteigvar=None
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
-    p.add_argument('-t','--simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',nargs='+',required=True)#,default='1999-12-21T00:00:00Z')
-    p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(70,0))
+    p.add_argument('-t','--simtime',help='yyyy-mm-ddTHH:MM:SSZ time of sim',nargs='+',default=['2013-04-14T15:54Z'])
+    p.add_argument('-c','--latlon',help='geodetic latitude/longitude (deg)',type=float,nargs=2,default=(65,-148))
     p.add_argument('--flux',help='overall incident flux [erg ...]',type=float,default=1.)
     #grp = parser.add_mutually_exclusive_group()
 
@@ -48,53 +49,54 @@ if __name__ == '__main__':
     p.add_argument('-E','--eigenprof',help='generate eigenprofiles using energies in this HDF5 or CSV file')
     p.add_argument('--e0',help='characteristic energy [eV]',type=float,nargs='+',default=(1e3,))
 
-    p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float,default=100)
-    p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float,default=100)
-    p.add_argument('--f107',help='F10.7 for sim. day',type=float,default=100)
-    p.add_argument('--ap',help='daily ap',type=float,default=4)
     p.add_argument('-m','--makeplot',help='show to show plots, png to save pngs of plots',nargs='+',default=['show'])
     p.add_argument('-o','--odir',help='output directory to write plots',default='')
     p.add_argument('-z','--zlim',help='minimum,maximum altitude [km] to plot',nargs=2,default=(60,350),type=float)
     p = p.parse_args()
 
+    params = {'glat':p.latlon[0],
+              'glon':p.latlon[1],
+              'flux':p.flux,
+              'EK':p.e0,
+              'makeplot':p.makeplot,
+              'zlim':p.zlim,
+              'plotformat':'png',
+            }
+
     if len(p.simtime) == 1:
-        T = [parse(p.simtime[0])]
+        params['t0'] = [parse(p.simtime[0])]
     elif len(p.simtime) == 2:
-        T = list(rrule.rrule(rrule.HOURLY,
+        params['t0'] = list(rrule.rrule(rrule.HOURLY,
                                  dtstart=parse(p.simtime[0]),
                                  until =parse(p.simtime[1])))
 
-    makeplot = p.makeplot
-
     if p.eigenprof: #loop over time
-        makeplot.append('eig')
+        params['makeplot'].append('eig')
         EKpcolor,EK,diffnumflux = ekpcolor(p.eigenprof)
 
-        ver,photIon,isr,phitop,zceta,sza,EKpcolor,prates,lrates,sion = makeeigen(EK,diffnumflux,T,p.latlon,
-                                                                             p.f107a,p.f107,p.f107p,p.ap,
-                                                                             p.makeplot,p.odir,p.zlim)
+        sim = makeeigen(params)
     else: #single time
-        ver,photIon,isr,phitop,zceta,sza,prates,lrates,sion = verprodloss(T[0],p.latlon,p.flux,p.e0,
-                                                                       p.f107a,p.f107,p.f107p,p.ap,
-                                                                       p.makeplot,p.odir,p.zlim)
+        sim = verprodloss(params)
 
 #%% plotting
     if p.eigenprof:
-        z=ver.major_axis.values
-        sim = namedtuple('sim',['reacreq','opticalfilter']); sim.reacreq=sim.opticalfilter=''
+        z=sim['ver'].major_axis.values
+        optsim = namedtuple('sim',['reacreq','opticalfilter']); sim.reacreq=sim.opticalfilter=''
         zlim=(None,None)
         glat=p.latlon[0]; glon=p.latlon[1]
-        z=ver.major_axis.values
-        for t in ver: #for each time
+        z = sim.z_km
+        for t in sim.time: #for each time
             #VER eigenprofiles
-            ploteigver(EKpcolor,z,ver[t].values,(None,)*6,sim,str(t)+' Vol. Emis. Rate ')
-
-            if False:
-                for prate,lrate,E0 in zip(prates,lrates,EKpcolor):
+            if ploteigver:
+                ploteigver(EKpcolor,z,sim['ver'][t].values, (None,)*6, optsim,
+                           f'{t} Vol. Emis. Rate ')
+            else:
+                for prate,lrate,E0 in zip(sim['prates'],sim['lrates'],EKpcolor):
                     #production eigenprofiles
-                    plotprodloss(z,prate,lrate,t,glat,glon,zlim,'Volume Production/Loss Rates',' E0: {:.0f}'.format(E0))
+                    plotprodloss(z,prate,lrate,t,glat,glon,zlim,
+                                 f'Volume Production/Loss Rates',' E0: {E0:.0f}')
                     #loss eigenprofiles
     else:
-        plotaurora(phitop,ver,zceta,photIon,isr,sion,T[0],p.latlon[0],p.latlon[1],prates,lrates,makeplot=makeplot)
+        plotaurora(params, sim)
 
     show()

@@ -10,17 +10,14 @@ from matplotlib.pyplot import show
 import glowaurora as glow
 from glowaurora.plots import plotaurora
 
-def E0aurora(t0,glatlon,flux,e0,f107a,f107,f107p,ap,makeplot):
+def E0aurora(params:dict):
 
-    (glat,glon) = glatlon
+    sim = glow.runglowaurora(params)
 
-    ver,photIon,isr,phitop,zceta,sza,prate,lrate,tez,sion = glow.runglowaurora(flux,e0,
-                                                                 t0,glat,glon,
-                                                                 f107a,f107,f107p,ap)
+    plotaurora(params,sim)
 
-    plotaurora(phitop,ver,zceta,photIon,isr,sion,t0,glat,glon,prate,lrate,tez,e0,makeplot=makeplot)
+    return sim
 
-    return ver,photIon,isr,phitop,zceta,sza
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -30,13 +27,20 @@ if __name__ == '__main__':
 #    p.add_argument('-n','--nbins',help='number of energy bins in incident diff num flux',type=int,default=190) #hard-coded in cglow.h
     p.add_argument('-q','--flux',help='overall incident flux [erg ...]',type=float,default=1.)
     p.add_argument('--e0',help='characteristic energy [eV]',type=float,default=1e3)
-    p.add_argument('--f107a',help='AVERAGE OF F10.7 FLUX',type=float)
-    p.add_argument('--f107p',help='DAILY F10.7 FLUX FOR PREVIOUS DAY',type=float)
-    p.add_argument('--f107',help='F10.7 for sim. day',type=float)
-    p.add_argument('--ap',help='daily ap',type=float)
     p.add_argument('-m','--makeplot',help='show to show plots, png to save pngs of plots',nargs='+',default=['show'])
+    p.add_argument('-zlim', help='plot limits of altitude axis [km]',nargs=2,type=float)
     p = p.parse_args()
 
-    ver,photIon,isr,phitop,zceta,sza = E0aurora(p.simtime,p.latlon,p.flux,p.e0,p.f107a,p.f107,p.f107p,p.ap,p.makeplot)
+    params = {'t0':p.simtime,
+              'glat':p.latlon[0],
+              'glon':p.latlon[1],
+              'flux':p.flux,
+              'E0':p.e0,
+              'makeplot':p.makeplot,
+              'zlim':p.zlim,
+              'plotformat':'png',
+            }
+
+    sim = E0aurora(params)
 
     show()
