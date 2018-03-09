@@ -246,6 +246,7 @@ def plotenerdep(tez,params,titlend=''):
 
 def plotprodloss(prod,loss,params,st):
     """ plot production/loss vs. alttiude """
+
     fg = figure(figsize=(15,8))
     ax = fg.subplots(1,2,sharey=True)
     fg.suptitle(f' Volume Production/Loss Rates   {st}')
@@ -254,7 +255,7 @@ def plotprodloss(prod,loss,params,st):
         if R.ndim==2:
             a.set_title('Volume {title} Rates')
             try:
-                hi=a.pcolormesh(R.eV.values,
+                hi=a.pcolormesh(R.values,
                                 R.z_km.values,
                                 masked_invalid(R.values),
                                 norm=LogNorm()) #pcolormesh canNOT handle nan at all!

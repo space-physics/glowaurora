@@ -25,7 +25,7 @@ install: pip -q install -e .[tests]
 
 script: pytest -v
 
-after_success: 
-  - coverage run tests/test_all.py -v
+after_success:
+  - coverage run tests/test_all.py
   - coveralls
 

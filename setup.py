@@ -38,7 +38,7 @@ ext=[Extension(name='glowfort',
 # %%
 setup(name='glowaurora',
       packages=find_packages(),
-      version='1.2.0',
+      version='1.2.1',
       author='Michael Hirsch, Ph.D.',
       description='Model of auroral and airglow emissions',
       long_description=open('README.rst').read(),
