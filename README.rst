@@ -40,13 +40,10 @@ If you don't already have Numpy::
     pip install numpy
     
 
-Linux / BSD / Windows::
-
-    apt install gfortran
-
-Mac::
-    
-    brew install gcc
+* Linux / BSD / 
+  `Windows Subsystem for Linux <https://www.scivision.co/install-windows-subsystem-for-linux/>`_: 
+  ``apt install gfortran``
+* Mac: ``brew install gcc``
 
 Install
 ============
@@ -62,14 +59,14 @@ Self-test f2py
 This self-test should give zero errors. 
 This tests the Fortran code from Python.::
   
-  ./test/test.py -v
+    pytest -v
 
 
 volume emission rate plots 
 --------------------------
 To produce the plots seen at the Github site::
 
-  ./RunGlow.py
+    python RunGlow.py
 
 with options including:
 
