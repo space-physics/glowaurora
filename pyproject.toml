@@ -1,3 +1,2 @@
 [build-system]
-requires = ['python-dateutil','numpy','xarray',
-       'sciencedates'] 
+requires = ['setuptools','wheel','numpy'] 
