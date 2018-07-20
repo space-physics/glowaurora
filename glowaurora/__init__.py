@@ -12,10 +12,10 @@ from os import chdir
 #
 from sciencedates import datetime2yd, find_nearest
 try:
-    from gridaurora import readmonthlyApF107
+    from gridaurora import getApF107
     from gridaurora.zglow import glowalt
 except ImportError:
-    readmonthlyApF107 = glowalt = None
+    getApF107 = glowalt = None
 # Fortran GLOW
 import glowfort
 # path monkey patching
@@ -35,12 +35,12 @@ def runglowaurora(params:dict, z_km:np.ndarray=None) -> xarray.Dataset:
     assert isinstance(params['glon'], (float,int))
 #%% (-1) if no manual f10.7 and ap, autoload by date
     if not 'f107a' in params or params['f107a'] is None:
-        if readmonthlyApF107 is None:
+        ifgetApF107 is None:
             raise ImportError(GRIDERR)
-        f107Ap = readmonthlyApF107(params['t0'])
-        params['f107a'] = params['f107p'] = f107Ap['f107s']
-        params['f107']  = f107Ap['f107o']
-        params['Ap']    = (f107Ap['Apo'],)*7
+        f107Ap = getApF107(params['t0'])
+        params['f107a'] = params['f107p'] = f107Ap['f107s'].item()
+        params['f107']  = f107Ap['f107'].item()
+        params['Ap']    = (f107Ap['Ap'].item(),)*7
 
     chdir(glowpath) #FIXME: hack for path issue
 #%% flux grid / date
