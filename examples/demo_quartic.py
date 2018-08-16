@@ -24,11 +24,11 @@ fail : int
 
 
 """
-from numpy import zeros,repeat,array,roots
-import sys
-sys.path.append('../fortran')
+from numpy import zeros, repeat, array, roots
 #
 import glowfort
+import sys
+sys.path.append('../fortran')
 try:
     from quartic import rpoly
 except Exception as e:
@@ -36,33 +36,37 @@ except Exception as e:
     print('in Terminal, type: ')
     print('f2py3 -m quartic -c fortran/493.f')
 
-Lrpoly = 101 #493.f
-Lin=170 #must match compiled cglow.h
-nj=20 #arbitrary
-nc=5 #per vquart.f
+Lrpoly = 101  # 493.f
+Lin = 170  # must match compiled cglow.h
+nj = 20  # arbitrary
+nc = 5  # per vquart.f
+
 
 def rootnumpy(pin):
     R = roots(pin)
-    return R[R.imag==0].real
+    return R[R.imag == 0].real
+
 
 def runvquart(pin):
-    polyin = repeat(pin[:,None],nc,1) #this is what vquart.f expects
-    return glowfort.vquart(polyin,pin.size)
+    polyin = repeat(pin[:, None], nc, 1)  # this is what vquart.f expects
+    return glowfort.vquart(polyin, pin.size)
+
 
 def runrpoly(pin):
-    rootreal,rootimag,fail=rpoly(pin,pin.size)
+    rootreal, rootimag, fail = rpoly(pin, pin.size)
     if not fail:
         return rootreal
 
+
 if __name__ == '__main__':
-    pin = array([1,0,0,1])
+    pin = array([1, 0, 0, 1])
     polyin = zeros(Lin)
     polyin[:pin.size] = pin
-#%% defective glow routine
+# %% defective glow routine
     root = runvquart(polyin)[:pin.size]
-#%% correct 493.f routine
+# %% correct 493.f routine
     r = runrpoly(polyin[:Lrpoly])
-#%% numpy
+# %% numpy
     rootnumpy = rootnumpy(pin)
 
     print('vquart.f: {}'.format(root))
