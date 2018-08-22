@@ -15,7 +15,7 @@ fortranfiles = ['egrid.f', 'maxt.f', 'glow.f', 'rout.f',
                 'nrlmsise00.f', 'iri90.f',
                 'aurora_sub.f', 'dayglow_sub.f']
 
-root = 'fortran'
+root = 'src'
 
 fortranpaths = [join(root, f) for f in fortranfiles]
 fortdata = glob(join(root, '*.dat'))
@@ -23,7 +23,7 @@ iridata = glob(join('iri', '*.asc'))
 # %% prelim
 ext = [Extension(name='glowfort',
                  sources=fortranpaths,
-                 f2py_options=['--quiet'],
+                 f2py_options=[],
                  # extra_f77_compile_args=['-O0'],
                  # ['-finit-local-zero'] #not needed
                  )]

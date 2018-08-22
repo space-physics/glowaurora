@@ -29,7 +29,7 @@ def runglowaurora(params: dict, z_km: np.ndarray=None) -> xarray.Dataset:
     """ Runs Fortran GLOW program and collects results in friendly arrays with metadata. """
     # %% (-2) check/process user inputs
     assert isinstance(params['flux'], (float, int, np.ndarray))
-    assert isinstance(params['E0'], (float, 'float32', int))
+    assert isinstance(params['E0'], (float, np.float32, int))
     assert isinstance(params['t0'], (datetime, str))
     assert isinstance(params['glat'], (float, int))
     assert isinstance(params['glon'], (float, int))

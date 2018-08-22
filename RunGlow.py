@@ -5,8 +5,7 @@ default parameter values like those of Stan's fortran examples--yield rather sim
 Note, this simulation uses a specific input differential number flux spectrum
 """
 from matplotlib.pyplot import show
-# import seaborn
-#
+from argparse import ArgumentParser
 import glowaurora as glow
 from glowaurora.plots import plotaurora
 
@@ -20,8 +19,7 @@ def E0aurora(params: dict):
     return sim
 
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
+def main():
     p = ArgumentParser(description="Stan Solomon's GLOW auroral model")
     p.add_argument('-t', '--simtime',
                    help='yyyy-mm-ddTHH:MM:SSZ time of sim', default='2013-04-14T15:54Z')
@@ -49,6 +47,10 @@ if __name__ == '__main__':
               'plotformat': 'png',
               }
 
-    sim = E0aurora(params)
+    E0aurora(params)
 
     show()
+
+
+if __name__ == '__main__':
+    main()

@@ -7,9 +7,8 @@ from os import chdir
 #
 from sciencedates import datetime2gtd
 #
-import glowaurora
 from glowfort import tselec, meters, csw, gtd7
-glowpath = Path(glowaurora.__path__[0]) / '..'
+glowpath = Path(__file__).resolve().parents[1]
 oldcwd = Path.cwd()
 
 

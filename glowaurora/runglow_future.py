@@ -7,14 +7,14 @@ from matplotlib.pyplot import figure
 from pandas import DataFrame
 from numpy import hstack, arange, append, array, rollaxis
 from os import chdir
+from pathlib import Path
 #
 from sciencedates import datetime2yeardoy
 from pyiri90.runiri90 import runiri
 from msise00.runmsis import rungtd1d
-import glowaurora
 from glowaurora import glowfort
 #
-glowpath = glowaurora.__path__[0]
+glowpath = Path(__file__).resolve().parents[1]
 
 
 def runglowaurora(eflux, e0, dt, glat, glon, f107a, f107, f107p, ap, mass):
