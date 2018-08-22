@@ -46,7 +46,7 @@ dtime = datetime(1999, 12, 21)
 
 def test_egrid_maxt():
     ener, dE = glowfort.egrid()
-    assert ener[[maxind, maxind + 10, -1]] == approx([1017.7124, 1677.9241, 47825.418], rel=0.001)
+    assert ener[[maxind, maxind + 10, -1]] == approx([1017.7124, 1677.9241, 1.0046427e+08], rel=0.001)
 # %% test of maxt
     phi = glowfort.maxt(eflux, e0, ener, dE, itail=0, fmono=np.nan, emono=np.nan)
     assert phi.argmax() == maxind
@@ -91,4 +91,4 @@ def test_ssflux():
 
 
 if __name__ == '__main__':
-    pytest.main(['-xv', __file__])
+    pytest.main(['-xrsv', __file__])
