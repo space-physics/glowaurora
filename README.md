@@ -1,7 +1,12 @@
 [![image](https://zenodo.org/badge/34395725.svg)](https://zenodo.org/badge/latestdoi/34395725)
 [![image](https://travis-ci.org/scivision/glowaurora.svg)](https://travis-ci.org/scivision/glowaurora)
 [![image](https://coveralls.io/repos/github/scivision/glowaurora/badge.svg?branch=master)](https://coveralls.io/github/scivision/glowaurora?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/m1004c80hu92yhq3?svg=true)](https://ci.appveyor.com/project/scivision/glowaurora)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0345889286d7ae6a8307/maintainability)](https://codeclimate.com/github/scivision/glowaurora/maintainability)
+[![PyPi version](https://img.shields.io/pypi/pyversions/glowaurora.svg)](https://pypi.python.org/pypi/glowaurora)
+[![PyPi formats](https://img.shields.io/pypi/format/glowaurora.svg)](https://pypi.python.org/pypi/glowaurora)
+[![PyPi Download stats](http://pepy.tech/badge/glowaurora)](http://pepy.tech/project/glowaurora)
+
 
 New [Modern Fortran GLOW](https://github.com/scivision/GLOW) with Python, Matlab, or MPI.
 
