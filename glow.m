@@ -1,6 +1,7 @@
 function glow()
-% quick demo calling GLOW model from Matlab.
+%% GLOW model from Matlab.
 % https://www.scivision.co/matlab-python-user-module-import/
+assert(~verLessThan('matlab', '9.5'), 'Matlab >= R2018b required')
 
 params = py.dict(pyargs('flux', 1, 'E0', 1e3, 'glat', 65.1, 'glon', -147.5, 't0', '2015-12-13T10'));
 
