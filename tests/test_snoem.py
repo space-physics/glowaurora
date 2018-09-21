@@ -32,7 +32,6 @@ z = np.append(z, np.arange(570, 950 + 20, 20))
 yd, utsec = sd.datetime2yeardoy(dtime)[:2]
 
 
-@pytest.fixture
 def solzen():
     sza = ga.glowfort.solzen(yd, utsec, glat, glon)
     assert sza == approx(133.43113708496094)
@@ -40,7 +39,6 @@ def solzen():
     return sza
 
 
-@pytest.fixture
 def snoem():
     doy = sd.datetime2gtd(dtime)[0]
 
@@ -50,7 +48,6 @@ def snoem():
     return nozm
 
 
-@pytest.fixture
 def snoemint():
     msise00 = pytest.importorskip('msise00')
 

@@ -2,24 +2,19 @@ function glow()
 % quick demo calling GLOW model from Matlab.
 % https://www.scivision.co/matlab-python-user-module-import/
 
-flux = 1;  % [erg ...]
-E0 = 1e3; % [eV]
+params = py.dict(pyargs('flux', 1, 'E0', 1e3, 'glat', 65.1, 'glon', -147.5, 't0', '2015-12-13T10'));
 
-glat = 65.1;
-glon = -147.5;
-t = '2015-12-13T10'; 
+G = py.glowaurora.runglowaurora(params);
 
-G = py.glowaurora.runglowaurora(flux, E0, t, glat, glon);
+ver = xarray2mat(G{'ver'});  
+z_km = xarrayind2vector(G,'z_km');
+lambda = xarrayind2vector(G,'wavelength_nm')/10;
+sza = G.attrs{'sza'};
 
-ver = xarray2mat(G(1));  
-z_km = xarrayind2vector(G(1),'z_km');
-lambda = xarrayind2vector(G(1),'wavelength_nm')/10;
-sza = G(6); sza = char(sza{1});
-
-plotglow(ver,z_km,lambda,sza,t,glat,glon)
+plotglow(ver,z_km,lambda,sza, params)
 end
 
-function plotglow(ver,z_km,lambda,sza,t,glat,glon)
+function plotglow(ver,z_km,lambda, sza, params)
   figure(1), clf(1)
   ax = axes('nextplot','add');
    
@@ -28,7 +23,9 @@ function plotglow(ver,z_km,lambda,sza,t,glat,glon)
   end
   
   set(ax,'xscale','log')
-  title({[t,' SZA: ',sza,' deg.  (',num2str(glat),',', num2str(glon),')']})
+  title({[char(params{'t0'}),' SZA: ',num2str(double(sza)),' deg.  (',...
+         num2str(params{'glat'}),',',...
+         num2str(params{'glon'}),')']})
   xlabel('Volume Emission Rate [photons ...]')
   ylabel('altitude [km]')
   ylim([100,400])
@@ -38,19 +35,12 @@ function plotglow(ver,z_km,lambda,sza,t,glat,glon)
     
 end
 
-function V = xarray2mat(V)
-  % convert xarray 2-D array to Matlab matrix
-
-  
-V= V{1}.values; 
-S = V.shape;
-V = cell2mat(cell(V.ravel('F').tolist()));
-V = reshape(V,[int64(S{1}), int64(S{2})]);
-    
+function M = xarray2mat(V)
+M = double(py.numpy.asfortranarray(V));
 end
 
 function I = xarrayind2vector(V,key)
     
-I = cell2mat(cell(V{1}.indexes{key}.values.tolist)); 
+I = cell2mat(cell(V.indexes{key}.values.tolist)); 
     
 end

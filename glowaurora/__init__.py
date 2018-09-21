@@ -25,7 +25,7 @@ oldcwd = Path.cwd()
 GRIDERR = 'gridaurora is required for this program.  pip install gridaurora.'
 
 
-def runglowaurora(params: dict, z_km: np.ndarray=None) -> xarray.Dataset:
+def runglowaurora(params: dict, z_km: np.ndarray = None) -> xarray.Dataset:
     """ Runs Fortran GLOW program and collects results in friendly arrays with metadata. """
     # %% (-2) check/process user inputs
     assert isinstance(params['flux'], (float, int, np.ndarray))
@@ -37,7 +37,7 @@ def runglowaurora(params: dict, z_km: np.ndarray=None) -> xarray.Dataset:
     if 'f107a' not in params or params['f107a'] is None:
         if getApF107 is None:
             raise ImportError(GRIDERR)
-        f107Ap = getApF107(params['t0'])
+        f107Ap = getApF107(params['t0'], smoothdays=30)
         params['f107a'] = f107Ap['f107s'].item()
         params['f107'] = f107Ap['f107'].item()
         params['Ap'] = (f107Ap['Ap'].item(),) * 7
@@ -74,7 +74,7 @@ def runglowaurora(params: dict, z_km: np.ndarray=None) -> xarray.Dataset:
 # %% (2) msis,iri,glow model
     ion, ecalc, photI, ImpI, isr, prate, lrate, UV = glowfort.aurora(
         z_km, yeardoy, utsec, params['glat'], params['glon'] %
-        360, params['f107a'], params['f107'], params['f107p'], params['Ap'], phi)
+        360, params['f107a'], params['f107'], params['f107'], params['Ap'], phi)
 
 # %% (3) collect outputs
     zeta = glowfort.cglow.zeta.T  # columns 11:20 are identically zero
