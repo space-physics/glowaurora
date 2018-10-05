@@ -4,7 +4,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/m1004c80hu92yhq3?svg=true)](https://ci.appveyor.com/project/scivision/glowaurora)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0345889286d7ae6a8307/maintainability)](https://codeclimate.com/github/scivision/glowaurora/maintainability)
 [![PyPi version](https://img.shields.io/pypi/pyversions/glowaurora.svg)](https://pypi.python.org/pypi/glowaurora)
-[![PyPi formats](https://img.shields.io/pypi/format/glowaurora.svg)](https://pypi.python.org/pypi/glowaurora)
 [![PyPi Download stats](http://pepy.tech/badge/glowaurora)](http://pepy.tech/project/glowaurora)
 
 
